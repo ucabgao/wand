@@ -26,6 +26,7 @@ void PicocInitialise(Picoc *pc, int StackSize)
 #endif
     PlatformLibraryInit(pc);
     DebugInit(pc);
+    SocketInit(pc);
 }
 
 /* free memory */
@@ -87,6 +88,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
         else
             PicocParse(pc, "startup", CALL_MAIN_WITH_ARGS_RETURN_INT, strlen(CALL_MAIN_WITH_ARGS_RETURN_INT), TRUE, TRUE, FALSE, TRUE);
     }
+    DisplaySocket(pc);
 }
 #endif
 

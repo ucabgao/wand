@@ -1454,6 +1454,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     int ArgCount;
     enum LexToken Token = LexGetToken(Parser, NULL, TRUE);    /* open bracket */
     enum RunMode OldMode = Parser->Mode;
+    short int FuncLine = Parser->Line;
     
     if (RunIt)
     { 
@@ -1489,7 +1490,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         if (RunIt && ArgCount < FuncValue->Val->FuncDef.NumParams)
             ParamArray[ArgCount] = VariableAllocValueFromType(Parser->pc, Parser, FuncValue->Val->FuncDef.ParamType[ArgCount], FALSE, NULL, FALSE);
         
-        if (ExpressionParse(Parser, &Param))
+        if (ExpressionParse(Parser, &Param)) // Took away the TokenIdentifier/TokenIntegerConstant, so the next LexGetToken will get the next token
         {
             if (RunIt)
             { 
@@ -1506,7 +1507,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
             }
             
             ArgCount++;
-            Token = LexGetToken(Parser, NULL, TRUE);
+            Token = LexGetToken(Parser, NULL, TRUE); // either a TokenComma or TokenCloseBracket
             if (Token != TokenComma && Token != TokenCloseBracket)
                 ProgramFail(Parser, "comma expected");
         }
@@ -1563,8 +1564,13 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
             
             VariableStackFramePop(Parser);
         }
-        else
+        else {
             FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
+            if (strcmp(FuncName, "socket") == 0)
+                AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, Parser->Line);
+            else if (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)
+                AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+        }
 
         HeapPopStackFrame(Parser->pc);
     }

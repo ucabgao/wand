@@ -466,6 +466,8 @@ struct Picoc_Struct
     struct Table StringTable;
     struct TableEntry *StringHashTable[STRING_TABLE_SIZE];
     char *StrEmpty;
+
+    struct Socket *SocketList;
 };
 
 /* table.c */
@@ -656,5 +658,11 @@ void UnistdSetupFunc(Picoc *pc);
 extern const char SocketDefs[]; 
 extern struct LibraryFunction SocketFunctions[]; 
 void SocketSetupFunc(Picoc *pc); 
+
+/* graph.c */
+void SocketInit(Picoc *pc);
+void AddSocket(Picoc *pc, int fd, int type, short int line);
+void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
+void DisplaySocket(Picoc *pc);
 
 #endif /* INTERPRETER_H */
