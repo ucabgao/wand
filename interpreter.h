@@ -468,6 +468,11 @@ struct Picoc_Struct
     char *StrEmpty;
 
     struct Socket *SocketList;
+    int Main;
+    int sp;
+    int level;
+    enum LexToken PreviousToken;
+    struct IgnoreLevel *SourceIgnoreLevel;
 };
 
 /* table.c */
@@ -664,5 +669,45 @@ void SocketInit(Picoc *pc);
 void AddSocket(Picoc *pc, int fd, int type, short int line);
 void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
 void DisplaySocket(Picoc *pc);
+
+void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName);
+void SocketCopy(Picoc *pc, struct Socket *newSocketList);
+void UpdateSource(Picoc *pc, int fd, const char *FuncName);
+void SocketRevertSource(Picoc *pc, struct Socket *oldSocketList);
+void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList);
+void SocketAddIgnoreLevel(Picoc *pc);
+void SocketRemoveIgnoreLevel(Picoc *pc);
+int SocketCheckIgnoreLevel(Picoc *pc);
+void DisplayNFA(Picoc *pc);
+
+/* socket states */
+enum SocketState
+{
+    Creation,       /* socket() */
+    Binding,        /* bind() (only applicable to TCP) */
+    Listening,      /* listen() (only applicable to TCP) */
+    Open,           /* accept() (only applicable to TCP) */
+    Close,          /* close() */
+};
+
+/* structure of a socket node */
+struct Socket
+{
+    int FileDescriptor;                     /* file descriptor of the socket */
+    int Type;                               /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) */
+    struct SocketStateGraph *StateGraph;    /* the state graph of the socket (or are we just interested in the current state?) */
+    struct SocketNFA *NFA;
+    // enum SocketState CurrentSource;
+    struct Source *SourceStack;
+    struct Socket *Next;                /* next socket in the list */
+};
+
+struct IgnoreLevel
+{
+    int Level;
+    struct IgnoreLevel *Next;
+};
+
+
 
 #endif /* INTERPRETER_H */

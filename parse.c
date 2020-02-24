@@ -592,6 +592,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
     /* take note of where we are and then grab a token to see what statement we have */   
     ParserCopy(&PreState, Parser);
     Token = LexGetToken(Parser, &LexerValue, TRUE);
+
     // printf("ZZZParse Token: %x\n", Token);
     switch (Token)
     {
@@ -668,31 +669,78 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             break;
             
         case TokenLeftBrace:
+            Parser->pc->PreviousToken = Token;
             ParseBlock(Parser, FALSE, TRUE);
             CheckTrailingSemicolon = FALSE;
             break;
             
         case TokenIf:
-            if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
-                ProgramFail(Parser, "'(' expected");
-                
-            Condition = ExpressionParseInt(Parser);
-            
-            if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
-                ProgramFail(Parser, "')' expected");
-
-            if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk)
-                ProgramFail(Parser, "statement expected");
-            
-            if (LexGetToken(Parser, NULL, FALSE) == TokenElse)
             {
-                LexGetToken(Parser, NULL, TRUE);
-                if (ParseStatementMaybeRun(Parser, !Condition, TRUE) != ParseResultOk)
+                enum LexToken PreviousToken = Parser->pc->PreviousToken;
+                if (PreviousToken != TokenElse)
+                    Parser->pc->level++;
+                // for each socket, store the current source
+                struct Socket *tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
+                SocketCopy(Parser->pc, tempSocketList);
+
+                if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
+                    ProgramFail(Parser, "'(' expected");
+                    
+                Condition = ExpressionParseInt(Parser);
+                
+                if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
+                    ProgramFail(Parser, "')' expected");
+
+                if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk) // parse if block
                     ProgramFail(Parser, "statement expected");
+
+                // struct Socket *tempSocketList2 = (struct Socket *) malloc(sizeof(struct Socket));
+                // SocketCopy(Parser->pc, tempSocketList2);
+
+                // SocketRevertSource(Parser->pc, tempSocketList);
+                
+                if (LexGetToken(Parser, NULL, FALSE) == TokenElse)
+                {   // if there is else but no if, then the states for this will replace current source
+                    LexGetToken(Parser, NULL, TRUE);
+                    // int ignoreOrigSrc = 0;
+                    // Parser->pc->PreviousToken = TokenElse;
+
+                    if (LexGetToken(Parser, NULL, FALSE) == TokenIf) {
+                        Parser->pc->PreviousToken = TokenElse;
+                        // Parser->pc->level--;
+                    } else {
+                        // ignoreOrigSrc = 1;
+                        if (SocketCheckIgnoreLevel(Parser->pc))
+                            SocketAddIgnoreLevel(Parser->pc);
+                    }
+                    // }
+
+                    struct Socket *tempSocketList2 = (struct Socket *) malloc(sizeof(struct Socket));
+                    SocketCopy(Parser->pc, tempSocketList2);
+
+                    SocketRevertSource(Parser->pc, tempSocketList);
+
+                    if (ParseStatementMaybeRun(Parser, !Condition, TRUE) != ParseResultOk) // subsequent if block or finally else block
+                        ProgramFail(Parser, "statement expected");
+    
+                    SocketCombineSource(Parser->pc, tempSocketList2);
+                    // if (!ignoreOrigSrc)
+                    //     Parser->pc->level--;
+                }
+
+                if (SocketCheckIgnoreLevel(Parser->pc)) {
+                    SocketCombineSource(Parser->pc, tempSocketList);
+                }
+
+                if (PreviousToken != TokenElse) {
+                    SocketRemoveIgnoreLevel(Parser->pc);
+                    Parser->pc->level--;
+                }
+
+
+                CheckTrailingSemicolon = FALSE;
+                break;
             }
-            CheckTrailingSemicolon = FALSE;
-            break;
-        
         case TokenWhile:
             {
                 struct ParseState PreConditional;
@@ -940,7 +988,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
         if (LexGetToken(Parser, NULL, TRUE) != TokenSemicolon)
             ProgramFail(Parser, "';' expected");
     }
-    
+    // Parser->pc->PreviousToken = Token;
     return ParseResultOk;
 }
 

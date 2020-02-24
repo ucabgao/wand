@@ -53,8 +53,10 @@ int main(int argc, char **argv)
         for (; ParamCount < argc && strcmp(argv[ParamCount], "-") != 0; ParamCount++)
             PicocPlatformScanFile(&pc, argv[ParamCount]);
         
-        if (!DontRunMain)
+        if (!DontRunMain) {
+            (&pc)->Main = 1;
             PicocCallMain(&pc, argc - ParamCount, &argv[ParamCount]);
+        }
     }
     
     PicocCleanup(&pc);

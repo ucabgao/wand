@@ -89,6 +89,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
             PicocParse(pc, "startup", CALL_MAIN_WITH_ARGS_RETURN_INT, strlen(CALL_MAIN_WITH_ARGS_RETURN_INT), TRUE, TRUE, FALSE, TRUE);
     }
     DisplaySocket(pc);
+    DisplayNFA(pc);
 }
 #endif
 

@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -pedantic -g -DUNIX_HOST -DVER=\"2.1\"
+CFLAGS=-Wall -pedantic -g -fno-stack-protector -DUNIX_HOST -DVER=\"2.1\"
 LIBS=-lm -lreadline
 
 TARGET	= picoc

@@ -1455,8 +1455,14 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     enum LexToken Token = LexGetToken(Parser, NULL, TRUE);    /* open bracket */
     enum RunMode OldMode = Parser->Mode;
     short int FuncLine = Parser->Line;
+    int sp = 0;
     
-    if (RunIt)
+    if (Parser->pc->Main == 1 && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
+        sp = 1;
+        Parser->Mode = RunModeRun;
+    }
+    
+    if (RunIt || sp)
     { 
         /* get the function definition */
         VariableGet(Parser->pc, Parser, FuncName, &FuncValue);
@@ -1483,7 +1489,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         ExpressionPushInt(Parser, StackTop, 0);
         Parser->Mode = RunModeSkip;
     }
-        
+
     /* parse arguments */
     ArgCount = 0;
     do {
@@ -1504,6 +1510,8 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
                     if (!FuncValue->Val->FuncDef.VarArgs)
                         ProgramFail(Parser, "too many arguments to %s()", FuncName);
                 }
+            } else if (sp) {
+                ParamArray[ArgCount] = Param;
             }
             
             ArgCount++;
@@ -1520,7 +1528,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         }
         
     } while (Token != TokenCloseBracket);
-    
+    // RunIt = oRunIt;
     if (RunIt) 
     { 
         /* run the function */
@@ -1568,12 +1576,22 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
             FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
             if (strcmp(FuncName, "socket") == 0)
                 AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, Parser->Line);
-            else if (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)
+            else if (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0) {
                 AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+                // AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+                // UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
+            }
         }
-
+    }
+    if (RunIt || sp) {
         HeapPopStackFrame(Parser->pc);
     }
+    if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
+        AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+        UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
+    }
+    //     AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+    // ddSocketNFA(Picoc *pc, int fd, enum SocketState src, enum SocketState dst, short int line) {
 
     Parser->Mode = OldMode;
 }
