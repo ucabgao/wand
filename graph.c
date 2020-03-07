@@ -29,7 +29,7 @@ struct Source
 void SocketAddIgnoreLevel(Picoc *pc) {
     struct IgnoreLevel *newIgnoreLevel = (struct IgnoreLevel *) malloc(sizeof(struct IgnoreLevel));
 
-    newIgnoreLevel->Level = pc->level;
+    newIgnoreLevel->Level = pc->Level;
     newIgnoreLevel->Next = pc->SourceIgnoreLevel;
 
     pc->SourceIgnoreLevel = newIgnoreLevel;
@@ -39,14 +39,14 @@ void SocketAddIgnoreLevel(Picoc *pc) {
 void SocketRemoveIgnoreLevel(Picoc *pc) {
     struct IgnoreLevel *head = pc->SourceIgnoreLevel, *prev;
 
-    if (head != NULL && head->Level == pc->level) 
+    if (head != NULL && head->Level == pc->Level) 
     { 
         pc->SourceIgnoreLevel = head->Next;
         // free(temp);               // free old head 
         return; 
     } 
   
-    while (head != NULL && head->Level == pc->level) 
+    while (head != NULL && head->Level == pc->Level) 
     { 
         prev = head; 
         head = head->Next; 
@@ -61,7 +61,7 @@ void SocketRemoveIgnoreLevel(Picoc *pc) {
 
 int SocketCheckIgnoreLevel(Picoc *pc) {
     struct IgnoreLevel *head = pc->SourceIgnoreLevel;
-    int level = pc->level;
+    int level = pc->Level;
     // struct IgnoreLevel *newIgnoreLevel = (struct IgnoreLevel *) malloc(sizeof(struct IgnoreLevel));
 
     while(head != NULL) {
@@ -122,7 +122,7 @@ void SocketInit(Picoc *pc)
     // newSocket->Next = NULL;
 
     pc->SocketList = NULL;
-    pc->level = 0;
+    pc->Level = 0;
     pc->PreviousToken = TokenNone;
 }
 
@@ -132,11 +132,11 @@ void AddSocket(Picoc *pc, int fd, int type, short int line) {
     struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
     struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
 
-    newSocketStateGraph->State = Creation;
+    newSocketStateGraph->State = Initial;
     newSocketStateGraph->Line = line;
     newSocketStateGraph->Next = NULL;
 
-    newSource->State = Creation;
+    newSource->State = Initial;
     newSource->Next = NULL;
 
     newSocket->FileDescriptor = fd;
@@ -186,6 +186,19 @@ enum SocketState FindState(const char *FuncName) {
     return s;
 }
 
+int NFAEdgeExists(struct SocketNFA *socketNFAHead, enum SocketState src, enum SocketState dst, int line) {
+    struct SocketNFA *temp = socketNFAHead;
+
+    while(temp != NULL) {
+        if (temp->SourceState == src && temp->DestState == dst && temp->Line == line) {
+            return 1;
+        }
+
+        temp = temp->Next;
+    }
+
+    return 0;
+}
 
 void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName) {
     struct Socket *head = pc->SocketList;
@@ -198,13 +211,15 @@ void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName) {
     struct Source *source = s->SourceStack;
 
     while (source != NULL) {
-        struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
-        newSocketNFA->SourceState = source->State;
-        newSocketNFA->DestState = dst;
-        newSocketNFA->Line = line;
-        newSocketNFA->Next = s->NFA;
+        if (!NFAEdgeExists(s->NFA, source->State, dst, line)) {
+            struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
+            newSocketNFA->SourceState = source->State;
+            newSocketNFA->DestState = dst;
+            newSocketNFA->Line = line;
+            newSocketNFA->Next = s->NFA;
 
-        s->NFA = newSocketNFA;
+            s->NFA = newSocketNFA;
+        }
 
         source = source->Next;
     }
@@ -278,7 +293,7 @@ void DisplaySocket(Picoc *pc) {
         while (headSSG != NULL) {
             char stateStr[20];
             switch (headSSG->State) {
-                case 0: strcpy(stateStr, "Creation"); break;
+                case 0: strcpy(stateStr, "Initial"); break;
                 case 1: strcpy(stateStr, "Binding"); break;
                 case 2: strcpy(stateStr, "Listening"); break;
                 case 3: strcpy(stateStr, "Open"); break;
@@ -295,7 +310,7 @@ void DisplaySocket(Picoc *pc) {
 
 char *GetStateNameString(enum SocketState state, char *stateStr) {
     switch (state) {
-        case 0: strcpy(stateStr, "Creation"); break;
+        case 0: strcpy(stateStr, "Initial"); break;
         case 1: strcpy(stateStr, "Binding"); break;
         case 2: strcpy(stateStr, "Listening"); break;
         case 3: strcpy(stateStr, "Open"); break;
@@ -392,7 +407,7 @@ void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList) {
             oldHead = oldHead->Next;
         }
 
-
+        oldHead = oldSocketList;
         head = head->Next;
     }
 }

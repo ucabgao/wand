@@ -467,12 +467,13 @@ struct Picoc_Struct
     struct TableEntry *StringHashTable[STRING_TABLE_SIZE];
     char *StrEmpty;
 
+    /* graph related */
     struct Socket *SocketList;
-    int Main;
-    int sp;
-    int level;
-    enum LexToken PreviousToken;
     struct IgnoreLevel *SourceIgnoreLevel;
+    int Main;
+    int Level;
+    enum LexToken PreviousToken;
+
 };
 
 /* table.c */
@@ -683,7 +684,7 @@ void DisplayNFA(Picoc *pc);
 /* socket states */
 enum SocketState
 {
-    Creation,       /* socket() */
+    Initial,       /* socket() */
     Binding,        /* bind() (only applicable to TCP) */
     Listening,      /* listen() (only applicable to TCP) */
     Open,           /* accept() (only applicable to TCP) */

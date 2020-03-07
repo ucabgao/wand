@@ -678,16 +678,17 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             {
                 enum LexToken PreviousToken = Parser->pc->PreviousToken;
                 if (PreviousToken != TokenElse)
-                    Parser->pc->level++;
-                // for each socket, store the current source
-                struct Socket *tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-                SocketCopy(Parser->pc, tempSocketList);
+                    Parser->pc->Level++;
 
                 if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
                     ProgramFail(Parser, "'(' expected");
                     
                 Condition = ExpressionParseInt(Parser);
                 
+                // for each socket, store the current source
+                struct Socket *tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
+                SocketCopy(Parser->pc, tempSocketList);
+
                 if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                     ProgramFail(Parser, "')' expected");
 
@@ -708,10 +709,10 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     if (LexGetToken(Parser, NULL, FALSE) == TokenIf) {
                         Parser->pc->PreviousToken = TokenElse;
                         // Parser->pc->level--;
-                    } else {
+                    } else { // if you have an else (not else-if) in an if-else-if statement
                         // ignoreOrigSrc = 1;
-                        if (SocketCheckIgnoreLevel(Parser->pc))
-                            SocketAddIgnoreLevel(Parser->pc);
+                        if (SocketCheckIgnoreLevel(Parser->pc)) // check if the level is already in the ignore level list
+                            SocketAddIgnoreLevel(Parser->pc); // if it is not, add the level to ignore the source combination
                     }
                     // }
 
@@ -728,13 +729,13 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     //     Parser->pc->level--;
                 }
 
-                if (SocketCheckIgnoreLevel(Parser->pc)) {
-                    SocketCombineSource(Parser->pc, tempSocketList);
+                if (SocketCheckIgnoreLevel(Parser->pc)) { // if the level is not to be ignored
+                    SocketCombineSource(Parser->pc, tempSocketList); // combine the source
                 }
 
                 if (PreviousToken != TokenElse) {
                     SocketRemoveIgnoreLevel(Parser->pc);
-                    Parser->pc->level--;
+                    Parser->pc->Level--;
                 }
 
 
@@ -744,7 +745,10 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
         case TokenWhile:
             {
                 struct ParseState PreConditional;
+                struct Socket *tempSocketList;
                 enum RunMode PreMode = Parser->Mode;
+                int firstEntry = 1;
+                int onceMore = 0;
 
                 if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
                     ProgramFail(Parser, "'(' expected");
@@ -753,7 +757,36 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                 do
                 {
                     ParserCopyPos(Parser, &PreConditional);
+
                     Condition = ExpressionParseInt(Parser);
+
+                    if (onceMore) { // loop once more
+                        // while first loop can be false, it is possible that 2nd loop is true 
+                        // (i.e. first loop - (bind() == -1) == false, 2nd loop can == true)
+                        // therefore need to explicit set condition as false
+                        Condition = 0; 
+                        onceMore = 0;
+                        Parser->Mode = PreMode;
+                    }
+
+                    if (firstEntry && !Condition) { // if first loop and condition false
+                        Parser->Mode = RunModeSkip; // set mode to skip - don't execute
+                        Condition = 1; // set condition as true so that it won't affect 2nd loop
+                        onceMore = 1;
+                    }
+
+                    // if (!Condition && !onceMore) {
+                    //     Parser->Mode = RunModeSkip;
+                    //     Condition = 1;
+                    //     onceMore = 1;
+                    // }
+
+                    // for each socket, store the current source
+                    if (firstEntry) {
+                        tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
+                        SocketCopy(Parser->pc, tempSocketList);
+                    }
+
                     if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                         ProgramFail(Parser, "')' expected");
                     
@@ -762,8 +795,19 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     
                     if (Parser->Mode == RunModeContinue)
                         Parser->Mode = PreMode;
-                    
-                } while (Parser->Mode == RunModeRun && Condition);
+
+                    // if (onceMore)
+
+                    if (firstEntry)
+                        firstEntry = 0;
+
+                    // if (!Condition && !onceMore) {
+                    //     onceMore = 1;
+                    //     Condition = 1;
+                    // }
+
+                } while ((Parser->Mode == RunModeRun && Condition) || onceMore);
+                SocketCombineSource(Parser->pc, tempSocketList);
                 
                 if (Parser->Mode == RunModeBreak)
                     Parser->Mode = PreMode;
@@ -776,12 +820,16 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             {
                 struct ParseState PreStatement;
                 enum RunMode PreMode = Parser->Mode;
+                int firstEntry = 1;
+                int onceMore = 0;
+
                 ParserCopyPos(&PreStatement, Parser);
                 do
                 {
                     ParserCopyPos(Parser, &PreStatement);
                     if (ParseStatement(Parser, TRUE) != ParseResultOk)
                         ProgramFail(Parser, "statement expected");
+
                 
                     if (Parser->Mode == RunModeContinue)
                         Parser->Mode = PreMode;
@@ -793,10 +841,27 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                         ProgramFail(Parser, "'(' expected");
                         
                     Condition = ExpressionParseInt(Parser);
+
+                    if (firstEntry && !Condition) { // if first loop and condition false
+                        Parser->Mode = RunModeSkip; // set mode to skip - don't execute
+                        // Condition = 1; // set condition as true so that it won't affect 2nd loop
+                        onceMore = 1;
+                    }
+
                     if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                         ProgramFail(Parser, "')' expected");
+
+
+                    if (!firstEntry && onceMore) {
+                        Parser->Mode = PreMode;
+                        Condition = 0;
+                        onceMore = 0;
+                    }
+
+                    if (firstEntry)
+                        firstEntry = 0;
                     
-                } while (Condition && Parser->Mode == RunModeRun);           
+                } while ((Condition && Parser->Mode == RunModeRun) || onceMore);           
                 
                 if (Parser->Mode == RunModeBreak)
                     Parser->Mode = PreMode;
