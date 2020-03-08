@@ -55,11 +55,55 @@ int main()
 	// } //check if i got no change of state inside, what happens? this works
 
 
-// src = I
 	int i = 0;
+
+	for(i; i==1 ; i++) {
+		for(int j = 1; j < 1; j++) {
+			bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+			i++;
+			printf("1Val of i: %d\n",i);
+		}
+		listen(server_fd, 3);
+		// new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+		i++;
+		printf("2Val of i: %d\n",i);
+	} // i>bX, b>bX, b>lX, i>lX, l>bX, l>lX, i>cX, l>cX
+
+// do {
+// 	bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+// 	do {
+// 		listen(server_fd, 3);
+// 		i++;
+// 	} while (i < 2);
+// 	i++;
+// } while (i < 4);
+
+	// if(1) {
+	// 	if (0) {
+	// 		i++;
+	// 		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+	// 	} else {
+	// 		i++;
+	// 		listen(server_fd, 3);
+	// 	}
+	// } else if (0) {
+	// 	i++;
+	// 	listen(server_fd, 3);
+
+	// 	if(1) {
+	// 		i++;
+	// 		new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+	// 	}
+	// } else {
+	// 	i++;
+	// 	new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+	// }
+
+
+// src = I
 		// while (i < 2) {
 		// while(i != 0) {
-		while(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1) {
+		// while(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1) {
 		// while(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1 && listen(server_fd, 3) == -1) { // src = B
 		// 	bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 		// 	bind(server_fd2, (struct sockaddr *)&address, sizeof(address));
@@ -72,10 +116,10 @@ int main()
 	 // 		// src = L
 	 	// 	while (0) {
 	 	// 		i++;
-	 			listen(server_fd, 3);
+	 			// listen(server_fd, 3);
 	 	// 		new_socket = accept(server_fd, (struct sockaddr *)&address, 
 			// 		(socklen_t*)&addrlen);
-	 		}
+	 		// }
 	 		
 	 	// } // if there is a socket func in the while cond then that has to be my final src
 	 	// if there isn't, then my final src will be the final state at the end of the block

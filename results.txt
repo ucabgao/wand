@@ -34,6 +34,16 @@ Line 63 : (Initial -> Binding)
 
 
 
+int i = 0;
+do {
+	bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+	do {
+		listen(server_fd, 3);
+		i++;
+	} while (i < 2);
+	i++;
+} while (i < 4);
+----OR----
 do {
 	bind(server_fd, (struct sockaddr *)&address, sizeof(address));
 	do {
@@ -50,15 +60,15 @@ Line 89 : (Initial -> Binding)
 
 
 do {
-		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
-		do {
-			listen(server_fd, 3);
-			while (i == 1) {
-				new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-				// i++;
-			}
-		} while (0);
+	bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+	do {
+		listen(server_fd, 3);
+		while (i == 1) {
+			new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+			// i++;
+		}
 	} while (0);
+} while (0);
 
 Line 160 : (Listening -> Close)
 Line 160 : (Open -> Close)
@@ -95,12 +105,88 @@ Line 46 : (Initial -> Listening)
 
 
 
+if(1) {
+	if (0)
+		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+	else
+		listen(server_fd, 3);
+} else if (0) {
+	listen(server_fd, 3);
+
+	if(1) {
+		new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+	}
+} else {
+	new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+}
+
+Line 176 : (Binding -> Close)
+Line 176 : (Listening -> Close)
+Line 176 : (Open -> Close)
+Line 69 : (Initial -> Open)
+Line 66 : (Listening -> Open)
+Line 63 : (Initial -> Listening)
+Line 61 : (Initial -> Listening)
+Line 59 : (Initial -> Binding)
+
+
+
 while(bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1) {
 	listen(server_fd, 3);
 }
 
 Line 161 : (Binding -> Close)
-Line 161 : (Listening -> Close) [In actual case this should not exist]
+Line 161 : (Listening -> Close) [****In actual case this should not exist?****]
 Line 62 : (Listening -> Binding)
 Line 75 : (Binding -> Listening)
+Line 62 : (Initial -> Binding)
+
+
+
+for(i; i == 1 ; i++) {
+	for(int j = 0; j < 1; j++) {
+		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+	}
+	listen(server_fd, 3);
+	new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+	i++;
+}
+
+Line 202 : (Initial -> Close)
+Line 202 : (Open -> Close)
+Line 64 : (Open -> Listening)
+Line 62 : (Open -> Binding)
+Line 65 : (Listening -> Open)
+Line 64 : (Initial -> Listening)
+Line 64 : (Binding -> Listening)
+Line 62 : (Binding -> Binding)
+Line 62 : (Initial -> Binding)
+
+
+
+for(i=0; i==0 ; i++) {
+	for(int j = 0; j < 1; j++) {
+		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+		i++;
+	}
+	listen(server_fd, 3);
+	i++;
+}
+----OR----
+for(i = 0 ; i == 1 ; i++) {
+	for(int j = 0; j < 1; j++) {
+		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+		i++;
+	}
+	listen(server_fd, 3);
+	i++;
+}
+
+Line 202 : (Initial -> Close)
+Line 202 : (Listening -> Close)
+Line 64 : (Listening -> Listening))
+Line 65 : (Listening -> Binding)
+Line 64 : (Initial -> Listening)
+Line 64 : (Binding -> Listening)
+Line 62 : (Binding -> Binding)
 Line 62 : (Initial -> Binding)
