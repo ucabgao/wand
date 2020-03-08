@@ -667,7 +667,7 @@ void SocketSetupFunc(Picoc *pc);
 
 /* graph.c */
 void SocketInit(Picoc *pc);
-void AddSocket(Picoc *pc, int fd, int type, short int line);
+void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
 void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
 void DisplaySocket(Picoc *pc);
 
@@ -680,15 +680,19 @@ void SocketAddIgnoreLevel(Picoc *pc);
 void SocketRemoveIgnoreLevel(Picoc *pc);
 int SocketCheckIgnoreLevel(Picoc *pc);
 void DisplayNFA(Picoc *pc);
+int CheckFuncOfInterest(const char *FuncName);
 
 /* socket states */
 enum SocketState
 {
-    Initial,       /* socket() */
-    Binding,        /* bind() (only applicable to TCP) */
-    Listening,      /* listen() (only applicable to TCP) */
-    Open,           /* accept() (only applicable to TCP) */
-    Close,          /* close() */
+    Initial,        /* socket() */
+    Binding,        /* bind() */
+    Passive,      /* listen() (only applicable to TCP) */
+    AwaitConnection,           /* accept() (only applicable to TCP) */
+    Closed,         /* close() */
+    Connected,      /* initial state of child socket created by accept() */
+    Reading,           /* read(), recv(), recvfrom() */
+    Writing           /* write(), send(), sendto() */
 };
 
 /* structure of a socket node */
@@ -700,6 +704,7 @@ struct Socket
     struct SocketNFA *NFA;
     // enum SocketState CurrentSource;
     struct Source *SourceStack;
+    int ParentFileDescriptor;
     struct Socket *Next;                /* next socket in the list */
 };
 

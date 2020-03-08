@@ -57,17 +57,17 @@ int main()
 
 	int i = 0;
 
-	for(i; i==1 ; i++) {
-		for(int j = 1; j < 1; j++) {
-			bind(server_fd, (struct sockaddr *)&address, sizeof(address));
-			i++;
-			printf("1Val of i: %d\n",i);
-		}
-		listen(server_fd, 3);
-		// new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-		i++;
-		printf("2Val of i: %d\n",i);
-	} // i>bX, b>bX, b>lX, i>lX, l>bX, l>lX, i>cX, l>cX
+	// for(i; i==1 ; i++) {
+	// 	for(int j = 1; j < 1; j++) {
+	// 		bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+	// 		i++;
+	// 		printf("1Val of i: %d\n",i);
+	// 	}
+	// 	listen(server_fd, 3);
+	// 	// new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+	// 	i++;
+	// 	printf("2Val of i: %d\n",i);
+	// } // i>bX, b>bX, b>lX, i>lX, l>bX, l>lX, i>cX, l>cX
 
 // do {
 // 	bind(server_fd, (struct sockaddr *)&address, sizeof(address));
@@ -180,27 +180,27 @@ int main()
 	// 	}
 	// }
 
-	// if (bind(server_fd, (struct sockaddr *)&address, 
-	// 							sizeof(address))<0) 
-	// { 
-	// 	perror("bind failed"); 
-	// 	exit(EXIT_FAILURE); 
-	// } 
-	// if (listen(server_fd, 3) < 0) 
-	// { 
-	// 	perror("listen"); 
-	// 	exit(EXIT_FAILURE); 
-	// } 
-	// new_socket = accept(server_fd, (struct sockaddr *)&address, 
-	// 				(socklen_t*)&addrlen);
-	// if (new_socket<0) 
-	// { 
-	// 	perror("accept"); 
-	// 	exit(EXIT_FAILURE); 
-	// } 
-	// valread = read( new_socket , buffer, 1024); 
-	// printf("%s\n",buffer ); 
-	// send(new_socket , hello , strlen(hello) , 0 );
+	if (bind(server_fd, (struct sockaddr *)&address, 
+								sizeof(address))<0) 
+	{ 
+		perror("bind failed"); 
+		exit(EXIT_FAILURE); 
+	} 
+	if (listen(server_fd, 3) < 0) 
+	{ 
+		perror("listen"); 
+		exit(EXIT_FAILURE); 
+	} 
+	new_socket = accept(server_fd, (struct sockaddr *)&address, 
+					(socklen_t*)&addrlen);
+	if (new_socket<0) 
+	{ 
+		perror("accept"); 
+		exit(EXIT_FAILURE); 
+	} 
+	valread = read( new_socket , buffer, 1024); 
+	printf("%s\n",buffer ); 
+	send(new_socket , hello , strlen(hello) , 0 );
 
 	close(server_fd);
 	printf("Hello message sent\n"); 

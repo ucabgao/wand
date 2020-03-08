@@ -1574,9 +1574,14 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         }
         else {
             FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
-            if (strcmp(FuncName, "socket") == 0)
-                AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, Parser->Line);
-            else if (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0) {
+            if (!strcmp(FuncName, "socket"))
+                AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, FuncLine, -1);
+            else if (!strcmp(FuncName, "accept")) {
+                AddSocket(Parser->pc, ReturnValue->Val->Integer, -1, FuncLine, ParamArray[0]->Val->Integer);
+                AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+            }
+            // else if (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0) {
+            else if (CheckFuncOfInterest(FuncName)) {
                 AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
                 // AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
                 // UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
@@ -1586,9 +1591,10 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     if (RunIt || sp) {
         HeapPopStackFrame(Parser->pc);
     }
-    if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
+    // if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
+    if (Parser->pc->SocketList && CheckFuncOfInterest(FuncName)) {
         AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
-        UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
+        // UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
     }
     //     AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
     // ddSocketNFA(Picoc *pc, int fd, enum SocketState src, enum SocketState dst, short int line) {

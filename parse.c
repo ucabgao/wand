@@ -495,7 +495,8 @@ void ParseFor(struct ParseState *Parser)
     int origCond = Condition;
     for (int i = 0; i < 2; i++) {
 
-            ParserCopyPos(Parser, &PreStatement);
+        ParserCopyPos(Parser, &PreStatement);
+        
         if(i == 0) {
             Condition = FALSE;
         } else {
