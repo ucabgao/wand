@@ -685,14 +685,15 @@ int CheckFuncOfInterest(const char *FuncName);
 /* socket states */
 enum SocketState
 {
-    Initial,        /* socket() */
-    Binding,        /* bind() */
-    Passive,      /* listen() (only applicable to TCP) */
-    AwaitConnection,           /* accept() (only applicable to TCP) */
-    Closed,         /* close() */
-    Connected,      /* initial state of child socket created by accept() */
-    Reading,           /* read(), recv(), recvfrom() */
-    Writing           /* write(), send(), sendto() */
+    None,
+    Initial,            /* socket() */
+    Binding,            /* bind() */
+    Passive,            /* listen() (only applicable to TCP) */
+    AwaitConnection,    /* accept() (only applicable to TCP) */
+    Closed,             /* close() */
+    Connected,          /* initial state of child socket created by accept() */
+    Reading,            /* read(), recv(), recvfrom() */
+    Writing             /* write(), send(), sendto() */
 };
 
 /* structure of a socket node */

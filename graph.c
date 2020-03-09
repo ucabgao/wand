@@ -75,14 +75,6 @@ int SocketCheckIgnoreLevel(Picoc *pc) {
     return TRUE;
 }
 
-// struct SourceStack
-// {
-//     enum SocketState State;
-//     struct SourceStack *Next;
-// };
-
-
-
 void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
     // memcpy((void *)newSocketList, (void *)pc->SocketList, sizeof(*newSocketList));
 
@@ -131,6 +123,7 @@ void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
     struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
     struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
     struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
+    struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
 
     newSocketStateGraph->State = Initial;
     newSocketStateGraph->Line = line;
@@ -144,10 +137,16 @@ void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
         newSource->State = Connected;
     }
 
+    newSocketNFA->SourceState = None;
+    newSocketNFA->DestState = newSource->State;
+    newSocketNFA->Line = line;
+    newSocketNFA->Next = NULL;
+
     newSocket->FileDescriptor = fd;
     newSocket->Type = type;
     newSocket->StateGraph = newSocketStateGraph;
-    newSocket->NFA = NULL;
+    newSocket->NFA = newSocketNFA;
+    // newSocket->NFA = NULL;
     // newSocket->Source = newSource;
     newSocket->SourceStack = newSource;
     newSocket->ParentFileDescriptor = parent;
@@ -155,14 +154,6 @@ void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
 
     pc->SocketList = newSocket;
 }
-
-// void {
-//     while( != NULL) { //socket
-//         while ( != NULL) { //source
-
-//         }
-//     }
-// }
 
 struct Socket *FindSocket(struct Socket *s, int fd) {
     while(s != NULL) {
@@ -197,7 +188,7 @@ enum SocketState FindState(const char *FuncName) {
 }
 
 int CheckFuncOfInterest(const char *FuncName) {
-    char * fn [] = { "bind", "listen", "accept", "read", "recv", "recvfrom", "write", "send", "sendto" };
+    char * fn [] = { "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto" };
     int len = sizeof(fn)/sizeof(fn[0]);
     int i;
 
@@ -357,14 +348,15 @@ void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName
 
 char *GetStateNameString(enum SocketState state, char *stateStr) {
     switch (state) {
-        case 0: strcpy(stateStr, "Initial"); break;
-        case 1: strcpy(stateStr, "Binding"); break;
-        case 2: strcpy(stateStr, "Passive"); break;
-        case 3: strcpy(stateStr, "AwaitConnection"); break;
-        case 4: strcpy(stateStr, "Closed"); break;
-        case 5: strcpy(stateStr, "Connected"); break;
-        case 6: strcpy(stateStr, "Reading"); break;
-        case 7: strcpy(stateStr, "Writing"); break;
+        case 0: strcpy(stateStr, ""); break;
+        case 1: strcpy(stateStr, "Initial"); break;
+        case 2: strcpy(stateStr, "Binding"); break;
+        case 3: strcpy(stateStr, "Passive"); break;
+        case 4: strcpy(stateStr, "AwaitConnection"); break;
+        case 5: strcpy(stateStr, "Closed"); break;
+        case 6: strcpy(stateStr, "Connected"); break;
+        case 7: strcpy(stateStr, "Reading"); break;
+        case 8: strcpy(stateStr, "Writing"); break;
     }
 
     return stateStr;
@@ -385,13 +377,6 @@ void DisplaySocket(Picoc *pc) {
 
         while (headSSG != NULL) {
             char stateStr[20];
-            // switch (headSSG->State) {
-            //     case 0: strcpy(stateStr, "Initial"); break;
-            //     case 1: strcpy(stateStr, "Binding"); break;
-            //     case 2: strcpy(stateStr, "Passive"); break;
-            //     case 3: strcpy(stateStr, "AwaitConnection"); break;
-            //     case 4: strcpy(stateStr, "Closed"); break;
-            // }
             printf("%s (line %d) <- ", GetStateNameString(headSSG->State, stateStr), headSSG->Line);
             headSSG = headSSG->Next;
         }
