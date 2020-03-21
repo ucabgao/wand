@@ -25,6 +25,7 @@
 #define MEM_ALIGN(x) (((x) + sizeof(ALIGN_TYPE) - 1) & ~(sizeof(ALIGN_TYPE)-1))
 
 #define GETS_BUF_MAX 256
+#define MAX_IDENTIFIER_SIZE 31
 
 /* for debugging */
 #define PRINT_SOURCE_POS ({ PrintSourceTextErrorLine(Parser->pc->CStdOut, Parser->FileName, Parser->SourceText, Parser->Line, Parser->CharacterPos); PlatformPrintf(Parser->pc->CStdOut, "\n"); })
@@ -473,6 +474,7 @@ struct Picoc_Struct
     int Main;
     int Level;
     enum LexToken PreviousToken;
+    char *IdentifierAssignedTo;
 
 };
 
@@ -667,13 +669,15 @@ void SocketSetupFunc(Picoc *pc);
 
 /* graph.c */
 void SocketInit(Picoc *pc);
-void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
+// void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
+void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char *parent);
 void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
 void DisplaySocket(Picoc *pc);
 
 void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName);
 void SocketCopy(Picoc *pc, struct Socket *newSocketList);
 void UpdateSource(Picoc *pc, int fd, const char *FuncName);
+void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName);
 void SocketRevertSource(Picoc *pc, struct Socket *oldSocketList);
 void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList);
 void SocketAddIgnoreLevel(Picoc *pc);
@@ -681,6 +685,9 @@ void SocketRemoveIgnoreLevel(Picoc *pc);
 int SocketCheckIgnoreLevel(Picoc *pc);
 void DisplayNFA(Picoc *pc);
 int CheckFuncOfInterest(const char *FuncName);
+void MergeSockets(Picoc *pc, struct Socket *oldSocketList);
+void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName);
+struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier);
 
 /* socket states */
 enum SocketState
@@ -699,13 +706,15 @@ enum SocketState
 /* structure of a socket node */
 struct Socket
 {
+    char *Identifier;
     int FileDescriptor;                     /* file descriptor of the socket */
-    int Type;                               /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) */
+    char *Type;                               /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) */
     struct SocketStateGraph *StateGraph;    /* the state graph of the socket (or are we just interested in the current state?) */
     struct SocketNFA *NFA;
-    // enum SocketState CurrentSource;
+    enum SocketState CurrentState;
     struct Source *SourceStack;
     int ParentFileDescriptor;
+    char *ParentIdentifier;
     struct Socket *Next;                /* next socket in the list */
 };
 

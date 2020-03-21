@@ -1087,6 +1087,7 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
     int IgnorePrecedence = DEEP_PRECEDENCE;
     struct ExpressionStack *StackTop = NULL;
     int TernaryDepth = 0;
+    // char IdentifierAssignedTo[31] = "";
     
     debugf("ExpressionParse():\n");
     do
@@ -1105,8 +1106,9 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
             if (PrefixState)
             { 
                 /* expect a prefix operator */
-                if (OperatorPrecedence[(int)Token].PrefixPrecedence == 0)
-                    ProgramFail(Parser, "operator not expected here");
+                if (OperatorPrecedence[(int)Token].PrefixPrecedence == 0) {
+                    ProgramFail(Parser, "operator not expected here1"); //here
+                }
                 
                 LocalPrecedence = OperatorPrecedence[(int)Token].PrefixPrecedence;
                 Precedence = BracketPrecedence + LocalPrecedence;
@@ -1195,6 +1197,10 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
                 }
                 else if (OperatorPrecedence[(int)Token].InfixPrecedence != 0)
                 { 
+                    if (Token == TokenAssign) {
+                        // strcpy(Parser->pc->IdentifierAssignedTo,LexValue->Val->Identifier);
+                        // printf("IdentifierAssignedTo: %s\n", IdentifierAssignedTo);
+                    }
                     /* scan and collapse the stack, then push */
                     Precedence = BracketPrecedence + OperatorPrecedence[(int)Token].InfixPrecedence;
                     
@@ -1240,7 +1246,7 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
                     }
                 }
                 else
-                    ProgramFail(Parser, "operator not expected here");
+                    ProgramFail(Parser, "operator not expected here2");
             }
         }
         else if (Token == TokenIdentifier)
@@ -1250,11 +1256,17 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
             /* it's a variable, function or a macro */
             if (!PrefixState)
                 ProgramFail(Parser, "identifier not expected here");
+
+            if (LexGetToken(Parser, NULL, FALSE) == TokenLeftSquareBracket || LexGetToken(Parser, NULL, FALSE) == TokenAssign) {
+                strcpy(Parser->pc->IdentifierAssignedTo,LexValue->Val->Identifier);                
+            }
                 
             if (LexGetToken(Parser, NULL, FALSE) == TokenOpenBracket)
             {
                 // printf("ZZZEP Function Call Identifier: %s\n", LexValue->Val->Identifier);
+                printf("IdentifierAssignedTo: %s | ", Parser->pc->IdentifierAssignedTo);
                 printf("Function Identifier: %s | Line: %d\n", LexValue->Val->Identifier, Parser->Line);
+
                 ExpressionParseFunctionCall(Parser, &StackTop, LexValue->Val->Identifier, Parser->Mode == RunModeRun && Precedence < IgnorePrecedence);
             }
             else
@@ -1322,9 +1334,13 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
             TypeValue->Val->Typ = Typ;
             ExpressionStackPushValueNode(Parser, &StackTop, TypeValue);
         }
-        else
+        else // TokenSemicolon comes in here
         { 
             /* it isn't a token from an expression */
+            if (Token == TokenSemicolon) {
+                free(Parser->pc->IdentifierAssignedTo);
+                Parser->pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+            }
             ParserCopy(Parser, &PreState);
             Done = TRUE;
         }
@@ -1333,7 +1349,7 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
     
     /* check that brackets have been closed */
     if (BracketPrecedence > 0)
-        ProgramFail(Parser, "brackets not closed");
+        ProgramFail(Parser, "brackets not closed2");
         
     /* scan and collapse the stack to precedence 0 */
     ExpressionStackCollapse(Parser, &StackTop, 0, &IgnorePrecedence);
@@ -1455,17 +1471,22 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     enum LexToken Token = LexGetToken(Parser, NULL, TRUE);    /* open bracket */
     enum RunMode OldMode = Parser->Mode;
     short int FuncLine = Parser->Line;
+    char *IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char)); 
+    strcpy(IdentifierAssignedTo, Parser->pc->IdentifierAssignedTo);
     int sp = 0;
+    struct Value *LexValue;
+    char **ParamNameArray;
     
-    if (Parser->pc->Main == 1 && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
+    if (/*Parser->pc->Main == 1 && */CheckFuncOfInterest(FuncName)) {
         sp = 1;
-        Parser->Mode = RunModeRun;
+        // Parser->Mode = RunModeRun;
     }
     
     if (RunIt || sp)
     { 
         /* get the function definition */
         VariableGet(Parser->pc, Parser, FuncName, &FuncValue);
+
         
         if (FuncValue->Typ->Base == TypeMacro)
         {
@@ -1480,7 +1501,15 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         ExpressionStackPushValueByType(Parser, StackTop, FuncValue->Val->FuncDef.ReturnType);
         ReturnValue = (*StackTop)->Val;
         HeapPushStackFrame(Parser->pc);
-        ParamArray = HeapAllocStack(Parser->pc, sizeof(struct Value *) * FuncValue->Val->FuncDef.NumParams);    
+        ParamArray = HeapAllocStack(Parser->pc, sizeof(struct Value *) * FuncValue->Val->FuncDef.NumParams);   
+
+        ParamNameArray = (char **) malloc(FuncValue->Val->FuncDef.NumParams * sizeof(char*));
+        if (CheckFuncOfInterest(FuncName)) {
+            for(int i = 0; i < FuncValue->Val->FuncDef.NumParams; i++) {
+                ParamNameArray[i] = (char *) malloc(MAX_IDENTIFIER_SIZE * sizeof(char));
+            }   
+        }
+
         if (ParamArray == NULL)
             ProgramFail(Parser, "out of memory");
     }
@@ -1496,8 +1525,16 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         if (RunIt && ArgCount < FuncValue->Val->FuncDef.NumParams)
             ParamArray[ArgCount] = VariableAllocValueFromType(Parser->pc, Parser, FuncValue->Val->FuncDef.ParamType[ArgCount], FALSE, NULL, FALSE);
         
+        if (sp && LexGetToken(Parser, &LexValue, FALSE) == TokenIdentifier) {
+            printf("Print! %s\n", LexValue->Val->Identifier);          
+            strcpy(ParamNameArray[ArgCount], LexValue->Val->Identifier);
+            // ParamNameArray[ArgCount] = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+
+        }
+
         if (ExpressionParse(Parser, &Param)) // Took away the TokenIdentifier/TokenIntegerConstant, so the next LexGetToken will get the next token
         {
+
             if (RunIt)
             { 
                 if (ArgCount < FuncValue->Val->FuncDef.NumParams)
@@ -1513,6 +1550,10 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
             } else if (sp) {
                 ParamArray[ArgCount] = Param;
             }
+
+            // struct Value *ParamName = malloc(Param);
+            // ParamName->Val->Identifier = "test";
+            // // ParamNameArray[ArgCount] = ParamName;
             
             ArgCount++;
             Token = LexGetToken(Parser, NULL, TRUE); // either a TokenComma or TokenCloseBracket
@@ -1574,30 +1615,44 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         }
         else {
             FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
-            if (!strcmp(FuncName, "socket"))
-                AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, FuncLine, -1);
+            if (!strcmp(FuncName, "socket")) {
+                // AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, FuncLine, -1);
+                // AddSocket(Parser->pc, IdentifierAssignedTo, ParamArray[1]->Val->Integer, FuncLine, "");
+            }
             else if (!strcmp(FuncName, "accept")) {
-                AddSocket(Parser->pc, ReturnValue->Val->Integer, -1, FuncLine, ParamArray[0]->Val->Integer);
-                AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+                // AddSocket(Parser->pc, ReturnValue->Val->Integer, -1, FuncLine, ParamArray[0]->Val->Integer);
+                // AddSocket(Parser->pc, IdentifierAssignedTo, -1, FuncLine, ParamNameArray[0]);
+                // AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
             }
             // else if (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0) {
             else if (CheckFuncOfInterest(FuncName)) {
-                AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+                // AddSocketStateGraph(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+                /*
                 // AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
                 // UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
+                */
             }
         }
     }
     if (RunIt || sp) {
         HeapPopStackFrame(Parser->pc);
     }
-    // if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
-    if (Parser->pc->SocketList && CheckFuncOfInterest(FuncName)) {
-        AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
-        // UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName);
-    }
-    //     AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
-    // ddSocketNFA(Picoc *pc, int fd, enum SocketState src, enum SocketState dst, short int line) {
+
+    // if (sp) {
+        // if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
+        if (!strcmp(FuncName, "socket")) {
+            AddSocket(Parser->pc, IdentifierAssignedTo, ParamNameArray[1], FuncLine, "");
+        } else if (!strcmp(FuncName, "accept")) {
+            AddSocket(Parser->pc, IdentifierAssignedTo, "", FuncLine, ParamNameArray[0]);
+        } else if (CheckFuncOfInterest(FuncName)) {
+            printf("%s\n", ParamNameArray[0]);
+            // AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+            /*// UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName); */
+            UpdateCurrentState(Parser->pc, ParamNameArray[0], FuncName);
+        }
+        //     AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
+        // AddSocketNFA(Picoc *pc, int fd, enum SocketState src, enum SocketState dst, short int line) {
+    // }
 
     Parser->Mode = OldMode;
 }

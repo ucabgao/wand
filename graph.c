@@ -1,7 +1,6 @@
 #include <sys/socket.h>
 #include "interpreter.h"
 
-
 /* structure of a socket state graph node*/
 struct SocketStateGraph
 {
@@ -84,6 +83,8 @@ void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
     while (head != NULL) {
         struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
         newSocket->FileDescriptor = head->FileDescriptor;
+        newSocket->Identifier = head->Identifier;
+        newSocket->CurrentState = head->CurrentState;
         newSocket->SourceStack = NULL;
         newSocket->Next = nSL;
         struct Source *sourceHead = head->SourceStack;
@@ -116,9 +117,11 @@ void SocketInit(Picoc *pc)
     pc->SocketList = NULL;
     pc->Level = 0;
     pc->PreviousToken = TokenNone;
+    pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
 }
 
-void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
+// void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
+void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char* parent) {
     struct Socket *head = pc->SocketList;
     struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
     struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
@@ -132,24 +135,36 @@ void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
     newSource->State = Initial;
     newSource->Next = NULL;
 
-    if (parent != -1 && type == -1) {
+
+    newSocket->CurrentState = Initial;
+
+    if (strcmp(parent,"") && !strcmp(type,"")) { // parent is not "" and type is ""
         newSocketStateGraph->State = Connected;
         newSource->State = Connected;
+        newSocket->CurrentState = Connected;
     }
+
 
     newSocketNFA->SourceState = None;
     newSocketNFA->DestState = newSource->State;
     newSocketNFA->Line = line;
     newSocketNFA->Next = NULL;
 
-    newSocket->FileDescriptor = fd;
-    newSocket->Type = type;
+    // newSocket->FileDescriptor = fd;
+    newSocket->Identifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+    strcpy(newSocket->Identifier, identifier);
+    newSocket->Type = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+    strcpy(newSocket->Type, type);
     newSocket->StateGraph = newSocketStateGraph;
     newSocket->NFA = newSocketNFA;
     // newSocket->NFA = NULL;
     // newSocket->Source = newSource;
     newSocket->SourceStack = newSource;
-    newSocket->ParentFileDescriptor = parent;
+
+    newSocket->ParentIdentifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+    strcpy(newSocket->ParentIdentifier, parent);
+
+    // newSocket->ParentFileDescriptor = parent;
     newSocket->Next = head;
 
     pc->SocketList = newSocket;
@@ -158,6 +173,7 @@ void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
 struct Socket *FindSocket(struct Socket *s, int fd) {
     while(s != NULL) {
         if (s->FileDescriptor == fd) {
+        // if (!strcmp(s->Identifier, 0)) {
 
             return s;
         }
@@ -167,28 +183,9 @@ struct Socket *FindSocket(struct Socket *s, int fd) {
     return NULL;
 }
 
-enum SocketState FindState(const char *FuncName) {
-    enum SocketState s = -1;
-
-    if (!strcmp(FuncName, "bind")) {
-        s = Binding;
-    } else if (!strcmp(FuncName, "listen")) {
-        s = Passive;
-    } else if (!strcmp(FuncName, "accept")) {
-        s = AwaitConnection;
-    } else if (!strcmp(FuncName, "close")) {
-        s = Closed;
-    } else if (!strcmp(FuncName, "read")) {
-        s = Reading;
-    } else if (!strcmp(FuncName, "send")) {
-        s = Writing;
-    }
-
-    return s;
-}
 
 int CheckFuncOfInterest(const char *FuncName) {
-    char * fn [] = { "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto" };
+    char * fn [] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto" };
     int len = sizeof(fn)/sizeof(fn[0]);
     int i;
 
@@ -234,6 +231,27 @@ int CheckIfWriteFunc(const char *FuncName) {
 
     return FALSE;
 }
+
+enum SocketState FindState(const char *FuncName) {
+    enum SocketState s = -1;
+
+    if (!strcmp(FuncName, "bind")) {
+        s = Binding;
+    } else if (!strcmp(FuncName, "listen")) {
+        s = Passive;
+    } else if (!strcmp(FuncName, "accept")) {
+        s = AwaitConnection;
+    } else if (!strcmp(FuncName, "close")) {
+        s = Closed;
+    } else if (CheckIfReadFunc(FuncName) /*!strcmp(FuncName, "read")*/) {
+        s = Reading;
+    } else if (CheckIfWriteFunc(FuncName) /*!strcmp(FuncName, "send")*/) {
+        s = Writing;
+    }
+
+    return s;
+}
+
 
 int NFAEdgeExists(struct SocketNFA *socketNFAHead, enum SocketState src, enum SocketState dst, int line) {
     struct SocketNFA *temp = socketNFAHead;
@@ -324,7 +342,7 @@ void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName
     struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
 
     if (!strcmp(FuncName, "bind")) {
-        if (s->Type == SOCK_STREAM) {
+        if (!strcmp(s->Type, "SOCK_STREAM")) {
             newSocketStateGraph->State = Binding;
         } else {
             newSocketStateGraph->State = AwaitConnection;
@@ -366,10 +384,11 @@ void DisplaySocket(Picoc *pc) {
     struct Socket *head = pc->SocketList;
 
     while (head != NULL) {
-        printf("Socket FD %d - ", head->FileDescriptor);
-        if (head->Type == SOCK_STREAM) {
+        // printf("Socket FD %d - ", head->FileDescriptor);
+        printf("\nSocket ID %s - ", head->Identifier);
+        if (!strcmp(head->Type, "SOCK_STREAM")) {
             printf("TCP: ");
-        } else if (head->Type == SOCK_DGRAM) {
+        } else if (!strcmp(head->Type, "SOCK_DGRAM")) {
             printf("UDP: ");
         }
 
@@ -381,6 +400,9 @@ void DisplaySocket(Picoc *pc) {
             headSSG = headSSG->Next;
         }
 
+        char stateStr[20];
+        printf("\nParent: %s | Current State: %s", head->ParentIdentifier, GetStateNameString(head->CurrentState, stateStr));
+
         printf("\n");
         head = head->Next;
     }
@@ -391,12 +413,13 @@ void DisplayNFA(Picoc *pc) {
     char stateStr[20];
 
     while (head != NULL) {
-        printf("Socket FD %d - ", head->FileDescriptor);
-        if (head->Type == SOCK_STREAM) {
+        // printf("Socket FD %d - ", head->FileDescriptor);
+        printf("Socket ID %s - ", head->Identifier);
+        if (!strcmp(head->Type, "SOCK_STREAM")) {
             printf("TCP - ");
-        } else if (head->Type == SOCK_DGRAM) {
+        } else if (!strcmp(head->Type, "SOCK_DGRAM")) {
             printf("UDP - ");
-        } else if (head->Type == -1) {
+        } else if (!strcmp(head->Type, "")) {
             printf("Child of FD %d - ", head->ParentFileDescriptor);
         }
 
@@ -469,6 +492,70 @@ void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList) {
                     } 
                     sourceHead = sourceHead->Next; 
                 } 
+                break;
+            }
+
+            oldHead = oldHead->Next;
+        }
+
+        oldHead = oldSocketList;
+        head = head->Next;
+    }
+}
+
+
+struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier) {
+    while(s != NULL) {
+        // if (s->FileDescriptor == fd) {
+        if (!strcmp(s->Identifier, identifier)) {
+
+            return s;
+        }
+        s = s->Next;
+    }
+
+    return NULL;
+}
+
+void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
+    struct Socket *head = pc->SocketList; 
+    struct Socket *socket = FindSocketByIdentifier(head, identifier);
+    // struct Source *source = socket->SourceStack;
+    // struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
+    
+    // newSource->State = FindState(FuncName);
+    // newSource->Next = NULL;
+    if (socket)
+        socket->CurrentState = FindState(FuncName);
+    // socket->SourceStack = newSource;
+    // while (source != NULL) {
+    //     source->FindState(FuncName);
+    // }
+}
+
+
+enum SocketState MergeStates(enum SocketState state1, enum SocketState state2) {
+    enum SocketState state;
+    if ((state1 >= 0x2 && state1 <= 0x4) || (state2 >= 0x2 && state2 <= 0x4)) {
+        state = AwaitConnection;
+    } else {
+        state = state1;
+    }
+
+    return state;
+}
+
+
+void MergeSockets(Picoc *pc, struct Socket *oldSocketList) {
+    struct Socket *head = pc->SocketList;
+    struct Socket *oldHead = oldSocketList;
+    // int newSocket;
+
+    while(head != NULL) {
+        // newSocket = 1;
+        while(oldHead != NULL) {
+            if (head->Identifier == oldHead->Identifier) {
+                head->CurrentState = MergeStates(head->CurrentState, oldHead->CurrentState);
                 break;
             }
 
