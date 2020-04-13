@@ -475,7 +475,9 @@ struct Picoc_Struct
     int Level;
     enum LexToken PreviousToken;
     char *IdentifierAssignedTo;
-
+    struct Id *VarIdList;
+    struct Id *FuncIdList;
+    struct Characteristic *CharacteristicList;
 };
 
 /* table.c */
@@ -670,7 +672,7 @@ void SocketSetupFunc(Picoc *pc);
 /* graph.c */
 void SocketInit(Picoc *pc);
 // void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
-void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char *parent);
+void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char *parent);
 void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
 void DisplaySocket(Picoc *pc);
 
@@ -688,6 +690,12 @@ int CheckFuncOfInterest(const char *FuncName);
 void MergeSockets(Picoc *pc, struct Socket *oldSocketList);
 void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName);
 struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier);
+void AddId(Picoc *pc, char *identifier, int type);
+void DisplayIdList(struct Id *IdList);
+void AddCharacteristic(Picoc *pc, int type, int line);
+void UpdateDup(Picoc *pc, char *identifier, char *dup);
+char *GenerateDupListString(struct Socket *socket);
+void GenerateForCmpReport(Picoc *pc);
 
 /* socket states */
 enum SocketState
@@ -703,19 +711,35 @@ enum SocketState
     Writing             /* write(), send(), sendto() */
 };
 
+enum CharacteristicType
+{
+    Socket,
+    Fork,
+    Exec
+};
+
 /* structure of a socket node */
 struct Socket
 {
     char *Identifier;
     int FileDescriptor;                     /* file descriptor of the socket */
-    char *Type;                               /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) */
+    char *SocketType;                               /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) */
     struct SocketStateGraph *StateGraph;    /* the state graph of the socket (or are we just interested in the current state?) */
     struct SocketNFA *NFA;
     enum SocketState CurrentState;
     struct Source *SourceStack;
     int ParentFileDescriptor;
     char *ParentIdentifier;
+    int LineDeclared;
+    int *Dup2Arr;
     struct Socket *Next;                /* next socket in the list */
+};
+
+struct Characteristic
+{
+    enum CharacteristicType CharacteristicType;
+    int Line;
+    struct Characteristic *Next;
 };
 
 struct IgnoreLevel
@@ -724,6 +748,10 @@ struct IgnoreLevel
     struct IgnoreLevel *Next;
 };
 
-
+struct Id
+{
+    char *Identifier;
+    struct Id *Next;
+};
 
 #endif /* INTERPRETER_H */

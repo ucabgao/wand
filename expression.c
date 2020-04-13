@@ -1258,14 +1258,14 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
                 ProgramFail(Parser, "identifier not expected here");
 
             if (LexGetToken(Parser, NULL, FALSE) == TokenLeftSquareBracket || LexGetToken(Parser, NULL, FALSE) == TokenAssign) {
-                strcpy(Parser->pc->IdentifierAssignedTo,LexValue->Val->Identifier);                
+                strcpy(Parser->pc->IdentifierAssignedTo,LexValue->Val->Identifier); // assignment with pre-declared var
             }
                 
             if (LexGetToken(Parser, NULL, FALSE) == TokenOpenBracket)
             {
                 // printf("ZZZEP Function Call Identifier: %s\n", LexValue->Val->Identifier);
-                printf("IdentifierAssignedTo: %s | ", Parser->pc->IdentifierAssignedTo);
-                printf("Function Identifier: %s | Line: %d\n", LexValue->Val->Identifier, Parser->Line);
+                // printf("IdentifierAssignedTo: %s | ", Parser->pc->IdentifierAssignedTo);
+                // printf("Function Identifier: %s | Line: %d\n", LexValue->Val->Identifier, Parser->Line);
 
                 ExpressionParseFunctionCall(Parser, &StackTop, LexValue->Val->Identifier, Parser->Mode == RunModeRun && Precedence < IgnorePrecedence);
             }
@@ -1338,7 +1338,7 @@ int ExpressionParse(struct ParseState *Parser, struct Value **Result)
         { 
             /* it isn't a token from an expression */
             if (Token == TokenSemicolon) {
-                free(Parser->pc->IdentifierAssignedTo);
+                free(Parser->pc->IdentifierAssignedTo); // if end of statement, reset IdentifierAssignedTo
                 Parser->pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
             }
             ParserCopy(Parser, &PreState);
@@ -1477,7 +1477,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     struct Value *LexValue;
     char **ParamNameArray;
     
-    if (/*Parser->pc->Main == 1 && */CheckFuncOfInterest(FuncName)) {
+    if (Parser->pc->Main == 1 && /**/CheckFuncOfInterest(FuncName)) {
         sp = 1;
         // Parser->Mode = RunModeRun;
     }
@@ -1519,15 +1519,37 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         Parser->Mode = RunModeSkip;
     }
 
+    // if (CheckFuncOfInterest(FuncName)) {
+    //     ParamNameArray = (char **) malloc(5 * sizeof(char*));
+    //     if (CheckFuncOfInterest(FuncName)) {
+    //         for(int i = 0; i < 5; i++) {
+    //             ParamNameArray[i] = (char *) malloc(MAX_IDENTIFIER_SIZE * sizeof(char));
+    //         }   
+    //     }
+    // }
+
     /* parse arguments */
     ArgCount = 0;
     do {
         if (RunIt && ArgCount < FuncValue->Val->FuncDef.NumParams)
             ParamArray[ArgCount] = VariableAllocValueFromType(Parser->pc, Parser, FuncValue->Val->FuncDef.ParamType[ArgCount], FALSE, NULL, FALSE);
         
-        if (sp && LexGetToken(Parser, &LexValue, FALSE) == TokenIdentifier) {
-            printf("Print! %s\n", LexValue->Val->Identifier);          
-            strcpy(ParamNameArray[ArgCount], LexValue->Val->Identifier);
+        enum LexToken tempToken;
+        if (sp && /**/CheckFuncOfInterest(FuncName) && (
+            (tempToken = LexGetToken(Parser, &LexValue, FALSE)) == TokenIdentifier || 
+            (tempToken = LexGetToken(Parser, &LexValue, FALSE)) == TokenIntegerConstant
+            )) { //argument strings
+            // printf("Print! %s\n", LexValue->Val->Identifier);          
+            if (tempToken == TokenIdentifier) {
+                strcpy(ParamNameArray[ArgCount], LexValue->Val->Identifier);
+            } else if (tempToken == TokenIntegerConstant) {
+                char intToStr[50]; 
+                int num = LexValue->Val->Integer; 
+                sprintf(intToStr, "%d", num);
+                // printf("Int: %s\n", intToStr); 
+                strcpy(ParamNameArray[ArgCount], intToStr);
+            }
+
             // ParamNameArray[ArgCount] = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
 
         }
@@ -1547,7 +1569,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
                     if (!FuncValue->Val->FuncDef.VarArgs)
                         ProgramFail(Parser, "too many arguments to %s()", FuncName);
                 }
-            } else if (sp) {
+            } else if (sp /*&& CheckFuncOfInterest(FuncName)*/) {
                 ParamArray[ArgCount] = Param;
             }
 
@@ -1614,7 +1636,8 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
             VariableStackFramePop(Parser);
         }
         else {
-            FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
+            // printf("%s\n", FuncName);
+            // FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
             if (!strcmp(FuncName, "socket")) {
                 // AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, FuncLine, -1);
                 // AddSocket(Parser->pc, IdentifierAssignedTo, ParamArray[1]->Val->Integer, FuncLine, "");
@@ -1638,21 +1661,28 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         HeapPopStackFrame(Parser->pc);
     }
 
-    // if (sp) {
+    if (sp) {
         // if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
         if (!strcmp(FuncName, "socket")) {
             AddSocket(Parser->pc, IdentifierAssignedTo, ParamNameArray[1], FuncLine, "");
         } else if (!strcmp(FuncName, "accept")) {
             AddSocket(Parser->pc, IdentifierAssignedTo, "", FuncLine, ParamNameArray[0]);
+        } else if (!strcmp(FuncName, "dup2")) {
+            if (atoi(ParamNameArray[1]) <= 2) {
+                // printf("dup to %s: %s\n", ParamNameArray[0], ParamNameArray[1]);
+                UpdateDup(Parser->pc, ParamNameArray[0], ParamNameArray[1]);
+            }
+        } else if (!strcmp(FuncName, "fork")) {
+            AddCharacteristic(Parser->pc, Fork, FuncLine);
         } else if (CheckFuncOfInterest(FuncName)) {
-            printf("%s\n", ParamNameArray[0]);
+            // printf("%s\n", ParamNameArray[0]);
             // AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
             /*// UpdateSource(Parser->pc, ParamArray[0]->Val->Integer, FuncName); */
             UpdateCurrentState(Parser->pc, ParamNameArray[0], FuncName);
         }
         //     AddSocketNFA(Parser->pc, ParamArray[0]->Val->Integer, FuncLine, FuncName);
         // AddSocketNFA(Picoc *pc, int fd, enum SocketState src, enum SocketState dst, short int line) {
-    // }
+    }
 
     Parser->Mode = OldMode;
 }

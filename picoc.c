@@ -50,12 +50,19 @@ int main(int argc, char **argv)
             return pc.PicocExitValue;
         }
         
+            // (&pc)->Main = 1;
         for (; ParamCount < argc && strcmp(argv[ParamCount], "-") != 0; ParamCount++)
             PicocPlatformScanFile(&pc, argv[ParamCount]);
         
+        // DisplaySocket(&pc);
+        // printf("\nFuncId: ");
+        // DisplayIdList(pc.FuncIdList);
+        // printf("VarId: ");
+        // DisplayIdList(pc.VarIdList);
+        GenerateForCmpReport(&pc);
         if (!DontRunMain) {
-            (&pc)->Main = 1;
-            PicocCallMain(&pc, argc - ParamCount, &argv[ParamCount]);
+            // (&pc)->Main = 1;
+            // PicocCallMain(&pc, argc - ParamCount, &argv[ParamCount]);
         }
     }
     

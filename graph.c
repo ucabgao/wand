@@ -118,10 +118,13 @@ void SocketInit(Picoc *pc)
     pc->Level = 0;
     pc->PreviousToken = TokenNone;
     pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+    pc->VarIdList = NULL;
+    pc->FuncIdList = NULL;
+    pc->CharacteristicList = NULL;
 }
 
 // void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
-void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char* parent) {
+void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char* parent) {
     struct Socket *head = pc->SocketList;
     struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
     struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
@@ -138,7 +141,7 @@ void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char* pa
 
     newSocket->CurrentState = Initial;
 
-    if (strcmp(parent,"") && !strcmp(type,"")) { // parent is not "" and type is ""
+    if (strcmp(parent,"") && !strcmp(sockettype,"")) { // parent is not "" and type is ""
         newSocketStateGraph->State = Connected;
         newSource->State = Connected;
         newSocket->CurrentState = Connected;
@@ -153,8 +156,8 @@ void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char* pa
     // newSocket->FileDescriptor = fd;
     newSocket->Identifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
     strcpy(newSocket->Identifier, identifier);
-    newSocket->Type = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
-    strcpy(newSocket->Type, type);
+    newSocket->SocketType = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+    strcpy(newSocket->SocketType, sockettype);
     newSocket->StateGraph = newSocketStateGraph;
     newSocket->NFA = newSocketNFA;
     // newSocket->NFA = NULL;
@@ -165,6 +168,9 @@ void AddSocket(Picoc *pc, char *identifier, char *type, short int line, char* pa
     strcpy(newSocket->ParentIdentifier, parent);
 
     // newSocket->ParentFileDescriptor = parent;
+    newSocket->LineDeclared = line;
+    newSocket->Dup2Arr = (int *) calloc(3, sizeof(int));
+
     newSocket->Next = head;
 
     pc->SocketList = newSocket;
@@ -185,7 +191,7 @@ struct Socket *FindSocket(struct Socket *s, int fd) {
 
 
 int CheckFuncOfInterest(const char *FuncName) {
-    char * fn [] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto" };
+    char * fn [] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork"};
     int len = sizeof(fn)/sizeof(fn[0]);
     int i;
 
@@ -342,7 +348,7 @@ void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName
     struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
 
     if (!strcmp(FuncName, "bind")) {
-        if (!strcmp(s->Type, "SOCK_STREAM")) {
+        if (!strcmp(s->SocketType, "SOCK_STREAM")) {
             newSocketStateGraph->State = Binding;
         } else {
             newSocketStateGraph->State = AwaitConnection;
@@ -386,9 +392,9 @@ void DisplaySocket(Picoc *pc) {
     while (head != NULL) {
         // printf("Socket FD %d - ", head->FileDescriptor);
         printf("\nSocket ID %s - ", head->Identifier);
-        if (!strcmp(head->Type, "SOCK_STREAM")) {
+        if (!strcmp(head->SocketType, "SOCK_STREAM")) {
             printf("TCP: ");
-        } else if (!strcmp(head->Type, "SOCK_DGRAM")) {
+        } else if (!strcmp(head->SocketType, "SOCK_DGRAM")) {
             printf("UDP: ");
         }
 
@@ -415,11 +421,11 @@ void DisplayNFA(Picoc *pc) {
     while (head != NULL) {
         // printf("Socket FD %d - ", head->FileDescriptor);
         printf("Socket ID %s - ", head->Identifier);
-        if (!strcmp(head->Type, "SOCK_STREAM")) {
+        if (!strcmp(head->SocketType, "SOCK_STREAM")) {
             printf("TCP - ");
-        } else if (!strcmp(head->Type, "SOCK_DGRAM")) {
+        } else if (!strcmp(head->SocketType, "SOCK_DGRAM")) {
             printf("UDP - ");
-        } else if (!strcmp(head->Type, "")) {
+        } else if (!strcmp(head->SocketType, "")) {
             printf("Child of FD %d - ", head->ParentFileDescriptor);
         }
 
@@ -525,8 +531,12 @@ void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
     
     // newSource->State = FindState(FuncName);
     // newSource->Next = NULL;
-    if (socket)
-        socket->CurrentState = FindState(FuncName);
+    if (socket) {
+        enum SocketState state = FindState(FuncName);
+
+        if (state != -1)
+            socket->CurrentState = state;
+    }
     // socket->SourceStack = newSource;
     // while (source != NULL) {
     //     source->FindState(FuncName);
@@ -554,7 +564,7 @@ void MergeSockets(Picoc *pc, struct Socket *oldSocketList) {
     while(head != NULL) {
         // newSocket = 1;
         while(oldHead != NULL) {
-            if (head->Identifier == oldHead->Identifier) {
+            if (!strcmp(head->Identifier, oldHead->Identifier)) {
                 head->CurrentState = MergeStates(head->CurrentState, oldHead->CurrentState);
                 break;
             }
@@ -565,4 +575,141 @@ void MergeSockets(Picoc *pc, struct Socket *oldSocketList) {
         oldHead = oldSocketList;
         head = head->Next;
     }
+}
+
+
+void AddId(Picoc *pc, char *identifier, int type) {
+    struct Id *temp;
+    int unique = 1;
+
+    if (type == 0) {
+        temp = pc->VarIdList;
+    } else if (type == 1) {
+        temp = pc->FuncIdList;
+    }
+
+
+    // if (temp == NULL) {
+    //     unique = 1;
+    // } else {
+        while (temp != NULL) {
+            if (!strcmp(temp->Identifier, identifier)) {
+                unique = 0;
+                break;
+            }
+
+            temp = temp->Next;
+        }
+    // }
+
+    if (unique) {
+        struct Id *newId = (struct Id *) malloc(sizeof(struct Id));
+
+        newId->Identifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+        strcpy(newId->Identifier, identifier);
+
+
+        if (type == 0) {
+            newId->Next =  pc->VarIdList;
+            pc->VarIdList = newId;
+        } else if (type == 1) {
+            newId->Next =  pc->FuncIdList;
+            pc->FuncIdList = newId;
+        }
+    }
+}
+
+void DisplayIdList(struct Id *IdList) {
+    struct Id *temp = IdList;
+
+    while (temp != NULL) {
+        printf("%s ", temp->Identifier);
+
+        temp = temp->Next;
+    }
+
+    printf("\n");
+}
+
+void AddCharacteristic(Picoc *pc, int type, int line) {
+    // struct Characteristic *temp = pc->CharacteristicList;    
+    struct Characteristic *newCharacteristic = (struct Characteristic *) malloc(sizeof(struct Characteristic));
+
+    newCharacteristic->CharacteristicType = type;
+    newCharacteristic->Line = line;
+    newCharacteristic->Next = pc->CharacteristicList;
+
+    pc->CharacteristicList = newCharacteristic;
+}
+
+void UpdateDup(Picoc *pc, char *identifier, char *dup) {
+    struct Socket *head = pc->SocketList; 
+    struct Socket *socket = FindSocketByIdentifier(head, identifier);
+
+    int dupFD = atoi(dup);
+    socket->Dup2Arr[dupFD] += 1;
+}
+
+char *GenerateDupListString(struct Socket *socket) {
+    char *dupListStr = (char *)calloc(12, sizeof(char));
+    char *str = (char *)calloc(5, sizeof(char));
+
+    strcat(dupListStr, "[");
+
+    for(int i = 0; i < 3; i++) {
+        if (socket->Dup2Arr[i] > 0) {
+            sprintf(str, "%d, ", i);
+            strcat(dupListStr, str);
+        }
+    }
+
+    if (strlen(dupListStr) > 1)
+        dupListStr[strlen(dupListStr)-2] = '\0';
+    
+    strcat(dupListStr, "]");
+
+    return dupListStr;
+}
+
+void GenerateForCmpReport(Picoc *pc) {
+    struct Socket *socketHead = pc->SocketList;
+    struct Characteristic *characteristicHead = pc->CharacteristicList;
+    char stateStr[20];
+
+    printf("===ALL SOCKETS===\n");
+    while (socketHead != NULL) {
+        printf("%s:%s:%s:%s:%d\n",
+            socketHead->Identifier, socketHead->ParentIdentifier, 
+            GetStateNameString(socketHead->CurrentState, stateStr), GenerateDupListString(socketHead),
+            socketHead->LineDeclared);
+
+        socketHead = socketHead->Next;
+    }
+
+    printf("===MAY BE LISTENING SOCKETS===\n");
+    socketHead = pc->SocketList;
+    while (socketHead != NULL) {
+        if (socketHead->CurrentState == AwaitConnection)
+            printf("%s:%s:%s:%s:%d\n",
+                socketHead->Identifier, socketHead->ParentIdentifier, 
+                GetStateNameString(socketHead->CurrentState, stateStr), GenerateDupListString(socketHead),
+                socketHead->LineDeclared);
+
+        socketHead = socketHead->Next;
+    }
+
+    printf("===FORK ON LINE===\n");
+    while(characteristicHead != NULL) {
+        if (characteristicHead->CharacteristicType == Fork)
+            printf("%d\n", characteristicHead->Line);
+
+        characteristicHead = characteristicHead->Next;
+    }
+
+    printf("===END===");
+
+    // cause need exec info at the end as well
+    // need to remove the non-essential print statements
+
+
 }

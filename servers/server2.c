@@ -3,8 +3,8 @@
 #include <unistd.h> 
 #include <stdio.h> 
 #include <socket.h> 
-#include <stdlib.h> 
-#include <string.h>
+// #include <stdlib.h> 
+// #include <string.h>
 // #include <inet.h>
 
 // void bubble_sort(int[], int); 
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 	c = sizeof(struct sockaddr_in); 
 
 	// accept connection from an incoming client 
-	int i = 0;
+	i = 0;
 	while(1) {
 		client_sock[i] = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&c); 
 		i++;

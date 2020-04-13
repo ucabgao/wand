@@ -128,7 +128,7 @@ void PicocPlatformScanFile(Picoc *pc, const char *FileName)
         SourceStr[1] = '/'; 
     }
 
-    PicocParse(pc, FileName, SourceStr, strlen(SourceStr), FALSE, FALSE, TRUE, TRUE);
+    PicocParse(pc, FileName, SourceStr, strlen(SourceStr), TRUE, FALSE, TRUE, TRUE);
 }
 
 /* exit the program */

