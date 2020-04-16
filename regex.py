@@ -10,11 +10,11 @@ class Socket:
 		self.dup = list()
 		self.line = 0
 
+start_time = time.time()
+
 if len(sys.argv) < 2:
 	print("Provide file as second argument")
 	exit()
-
-# start_time = time.time()
 
 socket_list = []
 socket_dict = {}
@@ -138,9 +138,9 @@ print("===FORK ON LINE===")
 for s in fork_list:
 	print(s)
 
-
-# print("===GENERATED IN %s SECONDS===" % (time.time() - start_time))
-
 print("===END===")
+import time
+
+print("===GENERATED IN %.5f SECOND(S)===" % (time.time() - start_time))
 
 myfile.close()

@@ -1,0 +1,10 @@
+===ALL SOCKETS===
+newsockfd:sockfd:Connected:[]:70
+sockfd::AwaitConnection:[]:34
+===MAY BE LISTENING SOCKETS===
+sockfd::AwaitConnection:[]:34
+===FORK ON LINE===
+108
+===END===
+FuncId: main error readAndParseCmdLine 
+VarId: tok temp cmd i child_pid args prog n cli_addr serv_addr buffer clilen portno newsockfd sockfd argv argc msg  

@@ -478,6 +478,9 @@ struct Picoc_Struct
     struct Id *VarIdList;
     struct Id *FuncIdList;
     struct Characteristic *CharacteristicList;
+
+    struct timespec StartTime;
+    struct timespec EndTime;
 };
 
 /* table.c */
@@ -567,7 +570,7 @@ struct Value *VariableDefineButIgnoreIdentical(struct ParseState *Parser, char *
 int VariableDefined(Picoc *pc, const char *Ident);
 int VariableDefinedAndOutOfScope(Picoc *pc, const char *Ident);
 void VariableRealloc(struct ParseState *Parser, struct Value *FromValue, int NewSize);
-void VariableGet(Picoc *pc, struct ParseState *Parser, const char *Ident, struct Value **LVal);
+int VariableGet(Picoc *pc, struct ParseState *Parser, const char *Ident, struct Value **LVal);
 void VariableDefinePlatformVar(Picoc *pc, struct ParseState *Parser, char *Ident, struct ValueType *Typ, union AnyValue *FromValue, int IsWritable);
 void VariableStackFrameAdd(struct ParseState *Parser, const char *FuncName, int NumParams);
 void VariableStackFramePop(struct ParseState *Parser);

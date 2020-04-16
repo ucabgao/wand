@@ -86,6 +86,9 @@ void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
         newSocket->Identifier = head->Identifier;
         newSocket->CurrentState = head->CurrentState;
         newSocket->SourceStack = NULL;
+        newSocket->ParentIdentifier = head->ParentIdentifier;
+        newSocket->LineDeclared = head->LineDeclared;
+        newSocket->Dup2Arr = head->Dup2Arr;
         newSocket->Next = nSL;
         struct Source *sourceHead = head->SourceStack;
 
@@ -524,6 +527,9 @@ struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier) {
 }
 
 void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
+    if (CheckIfWriteFunc(FuncName) || CheckIfReadFunc(FuncName) || !strcmp("close", FuncName)) {
+        return;
+    }
     struct Socket *head = pc->SocketList; 
     struct Socket *socket = FindSocketByIdentifier(head, identifier);
     // struct Source *source = socket->SourceStack;

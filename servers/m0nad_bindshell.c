@@ -43,7 +43,8 @@ main (int argc, char ** argv)
   }
 
   port = atoi(argv[1]); 
-  sockfd = init_serv(&server, port);  
+
+  sockfd = init_serv(&server, port);
  
   while ((conex = accept(sockfd, NULL, NULL)) > 0) {
     if (!fork ()) {

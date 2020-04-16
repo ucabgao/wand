@@ -6,13 +6,17 @@ import subprocess
 import time
 import os
 import sys
+import ast
 from datetime import datetime
 from pathlib import Path
+
+timeoutInSeconds = 1                                      # Our timeout value.
+
 
 directory = "servers"
 files = ["arturgontijo_directshell.c","deadbits_bindshell.c",
 "m0nad_bindshell.c","server.c",
-# "server2.c",
+"server2.c",
 "utsav3_server.c"]
 labels= ["===ALL SOCKETS===","===MAY BE LISTENING SOCKETS===","===FORK ON LINE===","===END==="]
 output = ""
@@ -33,28 +37,50 @@ for file in files:
 		else:
 			count += 1
 
-
 	# start_time = time.time()
 	spPicoc = subprocess.Popen(["./picoc", directory+"/"+file], 
 	           stdout=subprocess.PIPE, 
 	           stderr=subprocess.STDOUT)
+
+	timeStarted = time.time()                                 # Save start time.
+
+	cmdTimer     =  "sleep "+str(timeoutInSeconds)            # Waiting for timeout...
+	cmdKill      =  "kill "+str(spPicoc.pid)+" 2>/dev/null"      # And killing process.
+	cmdTimeout   =  cmdTimer+" && "+cmdKill                   # Combine commands above.
+	procTimeout  =  subprocess.Popen(cmdTimeout,shell=True)   # Start timeout process.
+
+	stdoutPicoc,stderrPicoc = spPicoc.communicate()
+	timeDelta = time.time() - timeStarted                     # Get execution time.
+	print("Finished process in "+str(timeDelta)+" seconds.") 
+
 	# print("===GENERATED IN %s SECONDS===" % (time.time() - start_time))
 	# start_time = time.time()
 	spRegex = subprocess.Popen(["python3.7", "regex.py", directory+"/"+file], 
 	           stdout=subprocess.PIPE, 
 	           stderr=subprocess.STDOUT)
 	# print("===GENERATED IN %s SECONDS===" % (time.time() - start_time))
-	
-	stdoutPicoc,stderrPicoc = spPicoc.communicate()
+
+
+	timeStarted = time.time()                                 # Save start time.
+
+	cmdTimer     =  "sleep "+str(timeoutInSeconds)            # Waiting for timeout...
+	cmdKill      =  "kill "+str(spRegex.pid)+" 2>/dev/null"      # And killing process.
+	cmdTimeout   =  cmdTimer+" && "+cmdKill                   # Combine commands above.
+	procTimeout  =  subprocess.Popen(cmdTimeout,shell=True)   # Start timeout process.
+
 	stdoutRegex,stderrRegex = spRegex.communicate()
+	timeDelta = time.time() - timeStarted                     # Get execution time.
+	print("Finished process in "+str(timeDelta)+" seconds.") 
+	
+	# stdoutRegex,stderrRegex = spRegex.communicate()
 
 	with open(outputDir+"picoc", 'wb') as myfile:
 		myfile.write(stdoutPicoc)
-	myfile.close()
+		myfile.close()
 
 	with open(outputDir+"regex", 'wb') as myfile:
 		myfile.write(stdoutRegex)
-	myfile.close()
+		myfile.close()
 
 	with open(outputDir+"diff", "a") as f:
 		sys.stdout = f
@@ -67,8 +93,23 @@ for file in files:
 		for i in range(len(labels)):
 			print(labels[i])
 			if i+1 != len(labels):
-				picocSet = set(outputPicoc[outputPicoc.index(labels[i])+1:outputPicoc.index(labels[i+1])])
-				regexSet = set(outputRegex[outputRegex.index(labels[i])+1:outputRegex.index(labels[i+1])])
+				if(i == 0): # ===ALL SOCKETS===
+					picocSet = set()
+					for x in outputPicoc[outputPicoc.index(labels[i])+1:outputPicoc.index(labels[i+1])]:
+						dupPortionStr = x.split(":")[3]
+						dupPortionList = ast.literal_eval(dupPortionStr)
+						dupPortionList.sort()
+						picocSet.add(x.replace(dupPortionStr, str(dupPortionList)))
+
+					regexSet = set()
+					for x in outputRegex[outputRegex.index(labels[i])+1:outputRegex.index(labels[i+1])]:
+						dupPortionStr = x.split(":")[3]
+						dupPortionList = ast.literal_eval(dupPortionStr)
+						dupPortionList.sort()
+						regexSet.add(x.replace(dupPortionStr, str(dupPortionList)))
+				else:
+					picocSet = set(outputPicoc[outputPicoc.index(labels[i])+1:outputPicoc.index(labels[i+1])])
+					regexSet = set(outputRegex[outputRegex.index(labels[i])+1:outputRegex.index(labels[i+1])])
 
 				print("\t---Difference Picoc\\Regex---")
 				setDiff = picocSet.difference(regexSet)
@@ -88,6 +129,6 @@ for file in files:
 				
 			print()
 
-	f.close()
+		f.close()
 
-sys.stdout = orig_stdout
+	sys.stdout = orig_stdout

@@ -357,18 +357,23 @@ int VariableDefined(Picoc *pc, const char *Ident)
 }
 
 /* get the value of a variable. must be defined. Ident must be registered */
-void VariableGet(Picoc *pc, struct ParseState *Parser, const char *Ident, struct Value **LVal)
+int VariableGet(Picoc *pc, struct ParseState *Parser, const char *Ident, struct Value **LVal)
 {
     if (pc->TopStackFrame == NULL || !TableGet(&pc->TopStackFrame->LocalTable, Ident, LVal, NULL, NULL, NULL))
     {
         if (!TableGet(&pc->GlobalTable, Ident, LVal, NULL, NULL, NULL))
         {
-            if (VariableDefinedAndOutOfScope(pc, Ident))
+            if (VariableDefinedAndOutOfScope(pc, Ident)) {
+                return 0;
                 ProgramFail(Parser, "'%s' is out of scope", Ident);
-            else
+            } else {
+                return 0;
                 ProgramFail(Parser, "'%s' is undefined", Ident);
+            }
         }
     }
+
+    return 1;
 }
 
 /* define a global variable shared with a platform global. Ident will be registered */

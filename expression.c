@@ -1476,18 +1476,26 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     int sp = 0;
     struct Value *LexValue;
     char **ParamNameArray;
-    
+    // int x = 0;
     if (Parser->pc->Main == 1 && /**/CheckFuncOfInterest(FuncName)) {
         sp = 1;
         // Parser->Mode = RunModeRun;
     }
-    
+    if (!VariableGet(Parser->pc, Parser, FuncName, &FuncValue)) {
+        RunIt = 0;
+    }
     if (RunIt || sp)
     { 
         /* get the function definition */
-        VariableGet(Parser->pc, Parser, FuncName, &FuncValue);
-
-        
+        // x = VariableGet(Parser->pc, Parser, FuncName, &FuncValue);
+        // if (x == 0) {
+        //     RunIt = 0;
+        // }
+        // printf("%d\n", x);
+        // if (x==0) {
+        //     printf("failed");
+        // }
+        // if (x)
         if (FuncValue->Typ->Base == TypeMacro)
         {
             /* this is actually a macro, not a function */
@@ -1503,12 +1511,12 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         HeapPushStackFrame(Parser->pc);
         ParamArray = HeapAllocStack(Parser->pc, sizeof(struct Value *) * FuncValue->Val->FuncDef.NumParams);   
 
-        ParamNameArray = (char **) malloc(FuncValue->Val->FuncDef.NumParams * sizeof(char*));
-        if (CheckFuncOfInterest(FuncName)) {
-            for(int i = 0; i < FuncValue->Val->FuncDef.NumParams; i++) {
-                ParamNameArray[i] = (char *) malloc(MAX_IDENTIFIER_SIZE * sizeof(char));
-            }   
-        }
+        // ParamNameArray = (char **) malloc(FuncValue->Val->FuncDef.NumParams * sizeof(char*));
+        // if (CheckFuncOfInterest(FuncName)) {
+        //     for(int i = 0; i < FuncValue->Val->FuncDef.NumParams; i++) {
+        //         ParamNameArray[i] = (char *) malloc(MAX_IDENTIFIER_SIZE * sizeof(char));
+        //     }   
+        // }
 
         if (ParamArray == NULL)
             ProgramFail(Parser, "out of memory");
@@ -1519,14 +1527,14 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         Parser->Mode = RunModeSkip;
     }
 
-    // if (CheckFuncOfInterest(FuncName)) {
-    //     ParamNameArray = (char **) malloc(5 * sizeof(char*));
-    //     if (CheckFuncOfInterest(FuncName)) {
-    //         for(int i = 0; i < 5; i++) {
-    //             ParamNameArray[i] = (char *) malloc(MAX_IDENTIFIER_SIZE * sizeof(char));
-    //         }   
-    //     }
-    // }
+    if (CheckFuncOfInterest(FuncName)) {
+        ParamNameArray = (char **) malloc(5 * sizeof(char*));
+        if (CheckFuncOfInterest(FuncName)) {
+            for(int i = 0; i < 5; i++) {
+                ParamNameArray[i] = (char *) malloc(MAX_IDENTIFIER_SIZE * sizeof(char));
+            }   
+        }
+    }
 
     /* parse arguments */
     ArgCount = 0;
@@ -1535,7 +1543,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
             ParamArray[ArgCount] = VariableAllocValueFromType(Parser->pc, Parser, FuncValue->Val->FuncDef.ParamType[ArgCount], FALSE, NULL, FALSE);
         
         enum LexToken tempToken;
-        if (sp && /**/CheckFuncOfInterest(FuncName) && (
+        if (/*sp && /**/CheckFuncOfInterest(FuncName) && (
             (tempToken = LexGetToken(Parser, &LexValue, FALSE)) == TokenIdentifier || 
             (tempToken = LexGetToken(Parser, &LexValue, FALSE)) == TokenIntegerConstant
             )) { //argument strings
@@ -1566,8 +1574,8 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
                 }
                 else
                 {
-                    if (!FuncValue->Val->FuncDef.VarArgs)
-                        ProgramFail(Parser, "too many arguments to %s()", FuncName);
+                    // if (!FuncValue->Val->FuncDef.VarArgs)
+                    //     ProgramFail(Parser, "too many arguments to %s()", FuncName);
                 }
             } else if (sp /*&& CheckFuncOfInterest(FuncName)*/) {
                 ParamArray[ArgCount] = Param;
@@ -1595,10 +1603,13 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
     if (RunIt) 
     { 
         /* run the function */
-        if (ArgCount < FuncValue->Val->FuncDef.NumParams)
-            ProgramFail(Parser, "not enough arguments to '%s'", FuncName);
+        int err = 0;
+        if (ArgCount < FuncValue->Val->FuncDef.NumParams) {
+            err = 1;
+            // ProgramFail(Parser, "not enough arguments to '%s'", FuncName);
+        }
         
-        if (FuncValue->Val->FuncDef.Intrinsic == NULL)
+        if (FuncValue->Val->FuncDef.Intrinsic == NULL && !err)
         { 
             /* run a user-defined function */
             struct ParseState FuncParser;
@@ -1637,7 +1648,9 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         }
         else {
             // printf("%s\n", FuncName);
+
             // FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray, ArgCount);
+
             if (!strcmp(FuncName, "socket")) {
                 // AddSocket(Parser->pc, ReturnValue->Val->Integer, ParamArray[1]->Val->Integer, FuncLine, -1);
                 // AddSocket(Parser->pc, IdentifierAssignedTo, ParamArray[1]->Val->Integer, FuncLine, "");
@@ -1661,7 +1674,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         HeapPopStackFrame(Parser->pc);
     }
 
-    if (sp) {
+    if (1 && sp/**/) {
         // if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
         if (!strcmp(FuncName, "socket")) {
             AddSocket(Parser->pc, IdentifierAssignedTo, ParamNameArray[1], FuncLine, "");

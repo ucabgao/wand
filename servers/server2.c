@@ -13,7 +13,7 @@
 int main(int argc, char** argv) 
 { 
 	int socket_desc, c, read_size;
-	int client_sock[5];
+	int client_sock;
 	struct sockaddr_in server, client; 
 	int message[10], i; 
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 	// accept connection from an incoming client 
 	i = 0;
 	while(1) {
-		client_sock[i] = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&c); 
+		client_sock = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&c); 
 		i++;
 	}
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 	// Receive a message from client 
 	while ((read_size = read(client_sock, &message, 10 * sizeof(int), 0)) > 0) { 
 
-		// bubble_sort(message, 10); 
+		bubble_sort(message, 10); 
 
 		write(client_sock, &message, 10 * sizeof(int)); 
 	} 

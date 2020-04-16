@@ -1,0 +1,9 @@
+===ALL SOCKETS===
+sockfd::AwaitConnection:[]:34
+newsockfd:sockfd:Connected:[]:70
+===MAY BE LISTENING SOCKETS===
+sockfd::AwaitConnection:[]:34
+===FORK ON LINE===
+108
+===END===
+===GENERATED IN 0.005799293518066406 SECONDS===

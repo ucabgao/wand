@@ -488,6 +488,7 @@ void ParseFor(struct ParseState *Parser)
     else
         Condition = ExpressionParseInt(Parser);
 
+    Condition = TRUE;
     // for each socket, store the current source
     struct Socket *tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
     SocketCopy(Parser->pc, tempSocketList);
@@ -503,20 +504,21 @@ void ParseFor(struct ParseState *Parser)
     
     ParserCopyPos(&PreStatement, Parser);
     
-    int origCond = Condition;
-    for (int i = 0; i < 2; i++) {
+    // int origCond = Condition;
+    // for (int i = 0; i < 2; i++) {
 
-        ParserCopyPos(Parser, &PreStatement);
+        // ParserCopyPos(Parser, &PreStatement);
         
-        if(i == 0) {
-            Condition = FALSE;
-        } else {
-            Condition = origCond;
-        }
+        // if(i == 0) {
+        //     Condition = FALSE;
+        // } else {
+        //     Condition = origCond;
+        // }
+        // Condition = FALSE;
 
         if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk)
             ProgramFail(Parser, "statement expected");
-    }
+    // }
     
     if (Parser->Mode == RunModeContinue && OldMode == RunModeRun)
         Parser->Mode = RunModeRun;
@@ -534,6 +536,7 @@ void ParseFor(struct ParseState *Parser)
         else
             Condition = ExpressionParseInt(Parser);
         
+        Condition = FALSE;
         if (Condition)
         {
             ParserCopyPos(Parser, &PreStatement);
@@ -725,6 +728,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                 }
 
                 Condition = ExpressionParseInt(Parser);
+                Condition = TRUE;
                 
                 if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                     ProgramFail(Parser, "')' expected");
@@ -783,7 +787,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
         case TokenWhile:
             {
                 struct ParseState PreConditional;
-                struct Socket *tempSocketList;
+                struct Socket *tempSocketList = NULL;
                 enum RunMode PreMode = Parser->Mode;
                 int firstEntry = TRUE;
                 int onceMore = FALSE;
@@ -802,7 +806,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     ParserCopyPos(Parser, &PreConditional);
 
                     Condition = ExpressionParseInt(Parser);
-                    Condition = 0;
+                    Condition = TRUE;
 
                     // if (onceMore) { // loop once more
                     //     // while first loop can be false, it is possible that 2nd loop is true 
@@ -850,7 +854,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     //     Condition = 1;
                     // }
 
-                } while ((Parser->Mode == RunModeRun && Condition) || onceMore);
+                } while (((Parser->Mode == RunModeRun && Condition) || onceMore) && !firstEntry);
                 // SocketCombineSource(Parser->pc, tempSocketList);
                 MergeSockets(Parser->pc, tempSocketList);
                 
@@ -868,7 +872,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                 int firstEntry = TRUE;
                 int onceMore = FALSE;
 
-                struct Socket *tempSocketList;
+                struct Socket *tempSocketList = NULL;
 
                 if (Parser->pc->SocketList) {
                     tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
@@ -893,7 +897,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                         ProgramFail(Parser, "'(' expected");
                         
                     Condition = ExpressionParseInt(Parser);
-                    Condition = 0;
+                    Condition = FALSE;
 
                     // if (firstEntry && !Condition) { // if first loop and condition false
                     //     Parser->Mode = RunModeSkip; // set mode to skip - don't execute

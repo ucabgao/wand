@@ -15,7 +15,7 @@ void error(char *msg){
 }
 
 
-void main(int argc, char *argv[])
+void main(int argc, char **argv)
 {
     int sockfd, newsockfd, portno, clilen; //int variable that is used later
     char buffer[256]; //buffer of size created
@@ -116,7 +116,7 @@ void main(int argc, char *argv[])
   		} else{ //parent part
   			wait(child_pid);
   		}
-      void main();
+      main();
   	}
 
 }

