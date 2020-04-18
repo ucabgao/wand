@@ -91,7 +91,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
     // DisplaySocket(pc);
     // DisplayNFA(pc);
 
-        // DisplaySocket(pc);
+        DisplaySocket(pc);
         GenerateForCmpReport(pc);
         printf("\nFuncId: ");
         DisplayIdList(pc->FuncIdList);

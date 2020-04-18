@@ -1,0 +1,26 @@
+*****COMPARING deadbits_bindshell.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		new_sockfd:srv_sockfd:Connected:[0, 1, 2]:61
+		srv_sockfd::Initial:[]:37
+
+	---Difference Regex\Picoc---
+		srv_sockfd::AwaitConnection:[]:37
+		new_sockfd:srv_sockfd:MayBeReadingOrWriting:[0, 1, 2]:61
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		srv_sockfd::AwaitConnection:[]:37
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

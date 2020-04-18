@@ -1,0 +1,10 @@
+===ALL SOCKETS===
+fd::AwaitConnection:[]:25
+conex:sockfd:Connected:[0, 1, 2]:49
+===MAY BE LISTENING SOCKETS===
+fd::AwaitConnection:[]:25
+===FORK ON LINE===
+1
+50
+===END===
+===GENERATED IN 0.00337 SECOND(S)===

@@ -1,6 +1,7 @@
 import re
 import sys
 import time
+import enum
 
 class Socket:
 	def __init__(self):
@@ -9,6 +10,10 @@ class Socket:
 		self.state = "Initial"
 		self.dup = list()
 		self.line = 0
+
+class Characteristic(enum.Enum):
+    Fork = 1
+    Exec = 2
 
 start_time = time.time()
 
@@ -20,7 +25,7 @@ socket_list = []
 socket_dict = {}
 socket_state_dict = {}
 socket_dup_dict = {}
-fork_list = []
+characteristic_list = []
 
 listen_set = set()
 accept_set = set()
@@ -58,8 +63,15 @@ with open(sys.argv[1], 'r') as myfile:
 			socketObj.state = "Connected"
 			socketObj.line = lineNum
 			socket_dict[newSocket] = socketObj
-			if socket in socket_dict:
-				socket_dict[socket].state = "AwaitConnection"
+
+			if socket not in socket_dict:
+				socketObj = Socket()
+				socketObj.identifier = socket
+				socketObj.line = lineNum
+				socket_dict[socket] = socketObj
+
+			socket_dict[socket].state = "AwaitConnection"
+			# else:
 			# socket_state_dict[newSocket] = "connected"
 			
 			accept_set.add(socket)
@@ -67,23 +79,37 @@ with open(sys.argv[1], 'r') as myfile:
 			# if socket in socket_list:
 			# 	socket_state_dict[socket] = funcName
 
-		socketFuncMatches = re.finditer(r"((bind|listen)\s*\(\s*\w+)", line)
+		socketFuncMatches = re.finditer(r"((bind|listen|read|recv|recvfrom|write|send|sendto)\s*\(\s*\w+)", line)
 		# print(socketFuncMatches)
 		for match in socketFuncMatches:
 			# print(match)
 			funcName, socket = (match[0].replace(" ","").split("("))
 
-			if funcName == "bind" and socket in socket_dict:
-				socket_dict[socket].state = "AwaitConnection"
-				# socket_dict[socket].state = "Binding"
-				
+			if funcName in ["bind", "listen"]:
+				if socket not in socket_dict:
+					socketObj = Socket()
+					socketObj.identifier = socket
+					socketObj.line = lineNum
+					socket_dict[socket] = socketObj
 
-			if funcName == "listen":
-				listen_set.add(socket)
-
-				if socket in socket_dict:
+				if funcName == "bind" :
+					socket_dict[socket].state = "AwaitConnection"
+					# socket_dict[socket].state = "Binding"
+				elif funcName == "listen":
+					listen_set.add(socket)
 					socket_dict[socket].state = "AwaitConnection"
 					# socket_dict[socket].state = "Passive"
+
+			elif funcName in ["read", "recv", "recvfrom", "write", "send", "sendto"]:
+				if socket not in socket_dict:
+					socketObj = Socket()
+					socketObj.identifier = socket
+					socketObj.parent = "UNKNOWN"
+					socketObj.state = "Connected"
+					socketObj.line = lineNum
+					socket_dict[newSocket] = socketObj
+
+				socket_dict[socket].state = "MayBeReadingOrWriting"
 
 
 			# if socket in socket_list:
@@ -109,7 +135,12 @@ with open(sys.argv[1], 'r') as myfile:
 		forkFuncMatch = re.finditer(r"fork\s*\(", line)
 		for match in forkFuncMatch:
 			# fork_list.append("Line "+str(lineNum)+": "+line)
-			fork_list.append(lineNum)
+			characteristic_list.append((Characteristic.Fork,lineNum))
+
+		forkFuncMatch = re.finditer(r"(execl|execlp|execle|execv|execvp|execvpe)\s*\(", line)
+		for match in forkFuncMatch:
+			# fork_list.append("Line "+str(lineNum)+": "+line)
+			characteristic_list.append((Characteristic.Exec,lineNum))
 
 
 # print(myfile.read())
@@ -135,7 +166,11 @@ for s in socket_dict:
 
 # print(dup2_set)
 print("===FORK ON LINE===")
-for s in fork_list:
+for s in [y for (x,y) in characteristic_list if x == Characteristic.Fork]:
+	print(s)
+
+print("===EXEC ON LINE===")
+for s in [y for (x,y) in characteristic_list if x == Characteristic.Exec]:
 	print(s)
 
 print("===END===")

@@ -110,7 +110,8 @@ struct Value *ParseFunctionDefinition(struct ParseState *Parser, struct ValueTyp
                 FuncValue->Val->FuncDef.ParamType[ParamCount] = ParamType;
                 FuncValue->Val->FuncDef.ParamName[ParamCount] = ParamIdentifier;
 
-                if (Parser->pc->FuncIdList && !strcmp(Parser->pc->FuncIdList->Identifier, Identifier)) {
+                // if I want to include all variables declared then functions' arguments should be included
+                if (Parser->pc->FuncIdList && !strcmp(Parser->pc->FuncIdList->Identifier, Identifier)) { 
                     // printf("ZZZParse Function %s Param: %s\n", Identifier, ParamIdentifier);
                     AddId(Parser->pc, ParamIdentifier, 0);
                 }

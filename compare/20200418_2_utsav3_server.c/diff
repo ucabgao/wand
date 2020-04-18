@@ -1,0 +1,26 @@
+*****COMPARING utsav3_server.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		sockfd::Initial:[]:34
+		newsockfd:sockfd:Connected:[]:70
+
+	---Difference Regex\Picoc---
+		newsockfd:sockfd:MayBeReadingOrWriting:[]:70
+		sockfd::AwaitConnection:[]:34
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		sockfd::AwaitConnection:[]:34
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

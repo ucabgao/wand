@@ -1,9 +1,0 @@
-===ALL SOCKETS===
-scktd_client:scktd:Connected:[0, 1, 2]:28
-scktd::AwaitConnection:[]:15
-===MAY BE LISTENING SOCKETS===
-scktd::AwaitConnection:[]:15
-===FORK ON LINE===
-===END===
-FuncId: main 
-VarId: client server i scktd_client scktd argv argc 

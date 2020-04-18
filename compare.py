@@ -10,9 +10,6 @@ import ast
 from datetime import datetime
 from pathlib import Path
 
-timeoutInSeconds = 1                                      # Our timeout value.
-
-
 directory = "servers"
 files = ["arturgontijo_directshell.c","deadbits_bindshell.c",
 "m0nad_bindshell.c","server.c",
@@ -22,9 +19,9 @@ labels= ["===ALL SOCKETS===","===MAY BE LISTENING SOCKETS===","===FORK ON LINE==
 output = ""
 
 Path("./compare").mkdir(parents=True, exist_ok=True)
-orig_stdout = sys.stdout
 
 for file in files:
+	orig_stdout = sys.stdout
 	count = 1
 	outputDir = ""
 
@@ -37,42 +34,20 @@ for file in files:
 		else:
 			count += 1
 
+
 	# start_time = time.time()
 	spPicoc = subprocess.Popen(["./picoc", directory+"/"+file], 
 	           stdout=subprocess.PIPE, 
 	           stderr=subprocess.STDOUT)
-
-	timeStarted = time.time()                                 # Save start time.
-
-	cmdTimer     =  "sleep "+str(timeoutInSeconds)            # Waiting for timeout...
-	cmdKill      =  "kill "+str(spPicoc.pid)+" 2>/dev/null"      # And killing process.
-	cmdTimeout   =  cmdTimer+" && "+cmdKill                   # Combine commands above.
-	procTimeout  =  subprocess.Popen(cmdTimeout,shell=True)   # Start timeout process.
-
-	stdoutPicoc,stderrPicoc = spPicoc.communicate()
-	timeDelta = time.time() - timeStarted                     # Get execution time.
-	print("Finished process in "+str(timeDelta)+" seconds.") 
-
 	# print("===GENERATED IN %s SECONDS===" % (time.time() - start_time))
 	# start_time = time.time()
 	spRegex = subprocess.Popen(["python3.7", "regex.py", directory+"/"+file], 
 	           stdout=subprocess.PIPE, 
 	           stderr=subprocess.STDOUT)
 	# print("===GENERATED IN %s SECONDS===" % (time.time() - start_time))
-
-
-	timeStarted = time.time()                                 # Save start time.
-
-	cmdTimer     =  "sleep "+str(timeoutInSeconds)            # Waiting for timeout...
-	cmdKill      =  "kill "+str(spRegex.pid)+" 2>/dev/null"      # And killing process.
-	cmdTimeout   =  cmdTimer+" && "+cmdKill                   # Combine commands above.
-	procTimeout  =  subprocess.Popen(cmdTimeout,shell=True)   # Start timeout process.
-
-	stdoutRegex,stderrRegex = spRegex.communicate()
-	timeDelta = time.time() - timeStarted                     # Get execution time.
-	print("Finished process in "+str(timeDelta)+" seconds.") 
 	
-	# stdoutRegex,stderrRegex = spRegex.communicate()
+	stdoutPicoc,stderrPicoc = spPicoc.communicate()
+	stdoutRegex,stderrRegex = spRegex.communicate()
 
 	with open(outputDir+"picoc", 'wb') as myfile:
 		myfile.write(stdoutPicoc)
@@ -84,6 +59,7 @@ for file in files:
 
 	with open(outputDir+"diff", "a") as f:
 		sys.stdout = f
+		diff = 0
 		
 		print("*****COMPARING "+file+"*****")
 
@@ -115,6 +91,9 @@ for file in files:
 				setDiff = picocSet.difference(regexSet)
 				if not setDiff:
 					print("\t\tNIL")
+				else:
+					diff = 1
+
 				for x in picocSet.difference(regexSet):
 					print("\t\t"+x)
 
@@ -124,6 +103,9 @@ for file in files:
 				setDiff = regexSet.difference(picocSet)
 				if not setDiff:
 					print("\t\tNIL")
+				else:
+					diff = 1
+
 				for x in regexSet.difference(picocSet):
 					print("\t\t"+x)
 				
@@ -132,3 +114,6 @@ for file in files:
 		f.close()
 
 	sys.stdout = orig_stdout
+	
+	if diff:
+		print("Diff in %s" % file)

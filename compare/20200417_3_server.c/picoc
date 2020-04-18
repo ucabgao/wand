@@ -1,0 +1,58 @@
+Function Identifier: printf | Line: 7
+Function Identifier: printf | Line: 11
+Function Identifier: fork | Line: 12
+Function Identifier: printf | Line: 26
+Function Identifier: printhelloworld | Line: 27
+Function Identifier: x | Line: 28
+Function Identifier: socket | Line: 31
+Function Identifier: perror | Line: 34
+Function Identifier: exit | Line: 35
+Function Identifier: setsockopt | Line: 39
+Function Identifier: perror | Line: 42
+Function Identifier: exit | Line: 43
+Function Identifier: htons | Line: 47
+Function Identifier: bind | Line: 50
+Function Identifier: perror | Line: 52
+Function Identifier: exit | Line: 53
+Function Identifier: listen | Line: 64
+Function Identifier: perror | Line: 66
+Function Identifier: exit | Line: 67
+Function Identifier: read | Line: 75
+Function Identifier: send | Line: 77
+Function Identifier: strlen | Line: 77
+Function Identifier: printf | Line: 81
+Function Identifier: main | Line: 1
+Function Identifier: printf | Line: 26
+Function Identifier: printhelloworld | Line: 27
+Function Identifier: printf | Line: 7
+Function Identifier: x | Line: 28
+Function Identifier: printf | Line: 11
+Function Identifier: fork | Line: 12
+Function Identifier: socket | Line: 31
+Function Identifier: perror | Line: 34
+Function Identifier: exit | Line: 35
+Function Identifier: setsockopt | Line: 39
+Function Identifier: perror | Line: 42
+Function Identifier: exit | Line: 43
+Function Identifier: htons | Line: 47
+Function Identifier: bind | Line: 50
+Function Identifier: perror | Line: 52
+Function Identifier: exit | Line: 53
+Function Identifier: listen | Line: 64
+Function Identifier: perror | Line: 66
+Function Identifier: exit | Line: 67
+Function Identifier: read | Line: 75
+Function Identifier: send | Line: 77
+Function Identifier: strlen | Line: 77
+Function Identifier: printf | Line: 81
+===ALL SOCKETS===
+server_fd::AwaitConnection:[]:31
+===MAY BE LISTENING SOCKETS===
+server_fd::AwaitConnection:[]:31
+===FORK ON LINE===
+12
+===EXEC ON LINE===
+===END===
+FuncId: main x returnstring printhelloworld 
+VarId: server_fd hello buffer addrlen opt address valread new_socket server_fd2 
+===GENERATED IN 0.00265 SECOND(S)===

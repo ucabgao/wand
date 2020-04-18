@@ -676,7 +676,8 @@ void SocketSetupFunc(Picoc *pc);
 void SocketInit(Picoc *pc);
 // void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
 void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char *parent);
-void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
+// void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
+void AddSocketStateGraph(Picoc *pc, char *identifier, short int line, const char *FuncName);
 void DisplaySocket(Picoc *pc);
 
 void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName);
@@ -690,6 +691,9 @@ void SocketRemoveIgnoreLevel(Picoc *pc);
 int SocketCheckIgnoreLevel(Picoc *pc);
 void DisplayNFA(Picoc *pc);
 int CheckFuncOfInterest(const char *FuncName);
+int CheckIfWriteFunc(const char *FuncName);
+int CheckIfReadFunc(const char *FuncName);
+int CheckIfExecFunc(const char *FuncName);
 void MergeSockets(Picoc *pc, struct Socket *oldSocketList);
 void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName);
 struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier);
@@ -711,7 +715,8 @@ enum SocketState
     Closed,             /* close() */
     Connected,          /* initial state of child socket created by accept() */
     Reading,            /* read(), recv(), recvfrom() */
-    Writing             /* write(), send(), sendto() */
+    Writing,             /* write(), send(), sendto() */
+    MayBeReadingOrWriting
 };
 
 enum CharacteristicType

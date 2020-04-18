@@ -1,0 +1,26 @@
+*****COMPARING server2.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		socket_desc::Initial:[]:21
+		client_sock:socket_desc:Connected:[]:50
+
+	---Difference Regex\Picoc---
+		socket_desc::AwaitConnection:[]:21
+		client_sock:socket_desc:MayBeReadingOrWriting:[]:50
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		socket_desc::AwaitConnection:[]:21
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

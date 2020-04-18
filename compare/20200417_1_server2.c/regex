@@ -1,0 +1,9 @@
+===ALL SOCKETS===
+socket_desc::AwaitConnection:[]:21
+client_sock:socket_desc:Connected:[]:50
+===MAY BE LISTENING SOCKETS===
+socket_desc::AwaitConnection:[]:21
+===FORK ON LINE===
+1
+===END===
+===GENERATED IN 0.00363 SECOND(S)===

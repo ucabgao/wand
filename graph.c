@@ -1,6 +1,8 @@
 #include <sys/socket.h>
 #include "interpreter.h"
 
+const char * INTERESTEDFUNC[] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork", "execl", "execlp", "execle", "execv", "execvp", "execvpe"};
+
 /* structure of a socket state graph node*/
 struct SocketStateGraph
 {
@@ -192,15 +194,27 @@ struct Socket *FindSocket(struct Socket *s, int fd) {
     return NULL;
 }
 
+struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier) {
+    while(s != NULL) {
+        // if (s->FileDescriptor == fd) {
+        if (!strcmp(s->Identifier, identifier)) {
+
+            return s;
+        }
+        s = s->Next;
+    }
+
+    return NULL;
+}
 
 int CheckFuncOfInterest(const char *FuncName) {
-    char * fn [] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork"};
-    int len = sizeof(fn)/sizeof(fn[0]);
+    // char * fn [] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork", "execl", "execlp", "execle", "execv", "execvp", "execvpe"};
+    int len = sizeof(INTERESTEDFUNC)/sizeof(INTERESTEDFUNC[0]);
     int i;
 
     for(i = 0; i < len; ++i)
     {
-        if(!strcmp(fn[i], FuncName))
+        if(!strcmp(INTERESTEDFUNC[i], FuncName))
         {
             return TRUE;
         }
@@ -241,6 +255,22 @@ int CheckIfWriteFunc(const char *FuncName) {
     return FALSE;
 }
 
+int CheckIfExecFunc(const char *FuncName) {
+    char * fn [] = { "execl", "execlp", "execle", "execv", "execvp", "execvpe" };
+    int len = sizeof(fn)/sizeof(fn[0]);
+    int i;
+
+    for(i = 0; i < len; ++i)
+    {
+        if(!strcmp(fn[i], FuncName))
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
 enum SocketState FindState(const char *FuncName) {
     enum SocketState s = -1;
 
@@ -261,6 +291,22 @@ enum SocketState FindState(const char *FuncName) {
     return s;
 }
 
+char *GetStateNameString(enum SocketState state, char *stateStr) {
+    switch (state) {
+        case 0: strcpy(stateStr, ""); break;
+        case 1: strcpy(stateStr, "Initial"); break;
+        case 2: strcpy(stateStr, "Binding"); break;
+        case 3: strcpy(stateStr, "Passive"); break;
+        case 4: strcpy(stateStr, "AwaitConnection"); break;
+        case 5: strcpy(stateStr, "Closed"); break;
+        case 6: strcpy(stateStr, "Connected"); break;
+        case 7: strcpy(stateStr, "Reading"); break;
+        case 8: strcpy(stateStr, "Writing"); break;
+        case 9: strcpy(stateStr, "MayBeReadingOrWriting"); break;
+    }
+
+    return stateStr;
+}
 
 int NFAEdgeExists(struct SocketNFA *socketNFAHead, enum SocketState src, enum SocketState dst, int line) {
     struct SocketNFA *temp = socketNFAHead;
@@ -344,49 +390,37 @@ void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName) {
         UpdateSource(pc, fd, FuncName);
 }
 
-void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName) {
+// void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName) {
+void AddSocketStateGraph(Picoc *pc, char *identifier, short int line, const char *FuncName) {
     struct Socket *head = pc->SocketList;
-    struct Socket *s = FindSocket(head, fd);
-    struct SocketStateGraph *curSocketStateGraph = s->StateGraph;
-    struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
+    struct Socket *s = FindSocketByIdentifier(head, identifier);
 
-    if (!strcmp(FuncName, "bind")) {
-        if (!strcmp(s->SocketType, "SOCK_STREAM")) {
-            newSocketStateGraph->State = Binding;
+    if (s) {
+        struct SocketStateGraph *curSocketStateGraph = s->StateGraph;
+        struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
+
+        if (!strcmp(FuncName, "bind")) {
+            if (!strcmp(s->SocketType, "SOCK_STREAM")) {
+                newSocketStateGraph->State = Binding;
+            } else {
+                newSocketStateGraph->State = AwaitConnection;
+            }
         } else {
-            newSocketStateGraph->State = AwaitConnection;
+            newSocketStateGraph->State = FindState(FuncName);
         }
-    } else {
-        newSocketStateGraph->State = FindState(FuncName);
+        // else if (strcmp(FuncName, "listen") == 0) {
+        //     newSocketStateGraph->State = Passive;
+        // } else if (strcmp(FuncName, "accept") == 0) {
+        //     newSocketStateGraph->State = AwaitConnection;
+        // } else if (strcmp(FuncName, "close") == 0) {
+        //     newSocketStateGraph->State = Closed;
+        // }
+
+        newSocketStateGraph->Line = line;
+        newSocketStateGraph->Next = curSocketStateGraph;
+
+        s->StateGraph = newSocketStateGraph;
     }
-    // else if (strcmp(FuncName, "listen") == 0) {
-    //     newSocketStateGraph->State = Passive;
-    // } else if (strcmp(FuncName, "accept") == 0) {
-    //     newSocketStateGraph->State = AwaitConnection;
-    // } else if (strcmp(FuncName, "close") == 0) {
-    //     newSocketStateGraph->State = Closed;
-    // }
-
-    newSocketStateGraph->Line = line;
-    newSocketStateGraph->Next = curSocketStateGraph;
-
-    s->StateGraph = newSocketStateGraph;
-}
-
-char *GetStateNameString(enum SocketState state, char *stateStr) {
-    switch (state) {
-        case 0: strcpy(stateStr, ""); break;
-        case 1: strcpy(stateStr, "Initial"); break;
-        case 2: strcpy(stateStr, "Binding"); break;
-        case 3: strcpy(stateStr, "Passive"); break;
-        case 4: strcpy(stateStr, "AwaitConnection"); break;
-        case 5: strcpy(stateStr, "Closed"); break;
-        case 6: strcpy(stateStr, "Connected"); break;
-        case 7: strcpy(stateStr, "Reading"); break;
-        case 8: strcpy(stateStr, "Writing"); break;
-    }
-
-    return stateStr;
 }
 
 void DisplaySocket(Picoc *pc) {
@@ -512,48 +546,12 @@ void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList) {
     }
 }
 
-
-struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier) {
-    while(s != NULL) {
-        // if (s->FileDescriptor == fd) {
-        if (!strcmp(s->Identifier, identifier)) {
-
-            return s;
-        }
-        s = s->Next;
-    }
-
-    return NULL;
-}
-
-void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
-    if (CheckIfWriteFunc(FuncName) || CheckIfReadFunc(FuncName) || !strcmp("close", FuncName)) {
-        return;
-    }
-    struct Socket *head = pc->SocketList; 
-    struct Socket *socket = FindSocketByIdentifier(head, identifier);
-    // struct Source *source = socket->SourceStack;
-    // struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
-    
-    // newSource->State = FindState(FuncName);
-    // newSource->Next = NULL;
-    if (socket) {
-        enum SocketState state = FindState(FuncName);
-
-        if (state != -1)
-            socket->CurrentState = state;
-    }
-    // socket->SourceStack = newSource;
-    // while (source != NULL) {
-    //     source->FindState(FuncName);
-    // }
-}
-
-
 enum SocketState MergeStates(enum SocketState state1, enum SocketState state2) {
     enum SocketState state;
     if ((state1 >= 0x2 && state1 <= 0x4) || (state2 >= 0x2 && state2 <= 0x4)) {
         state = AwaitConnection;
+    } else if ((state1 >= 0x7 && state1 <= 0x8) || (state2 >= 0x7 && state2 <= 0x8)) {
+        state = MayBeReadingOrWriting;
     } else {
         state = state1;
     }
@@ -583,6 +581,29 @@ void MergeSockets(Picoc *pc, struct Socket *oldSocketList) {
     }
 }
 
+void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
+    if (/*CheckIfWriteFunc(FuncName) || CheckIfReadFunc(FuncName) || */!strcmp("close", FuncName)) {
+        return;
+    }
+    struct Socket *head = pc->SocketList; 
+    struct Socket *socket = FindSocketByIdentifier(head, identifier);
+    // struct Source *source = socket->SourceStack;
+    // struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
+    
+    // newSource->State = FindState(FuncName);
+    // newSource->Next = NULL;
+    if (socket) {
+        enum SocketState FuncState = FindState(FuncName);
+        enum SocketState SocketCurrentState = socket->CurrentState;
+
+        if (FuncState != -1)
+            socket->CurrentState = MergeStates(SocketCurrentState, FuncState);
+    }
+    // socket->SourceStack = newSource;
+    // while (source != NULL) {
+    //     source->FindState(FuncName);
+    // }
+}
 
 void AddId(Picoc *pc, char *identifier, int type) {
     struct Id *temp;
@@ -638,22 +659,37 @@ void DisplayIdList(struct Id *IdList) {
 }
 
 void AddCharacteristic(Picoc *pc, int type, int line) {
-    // struct Characteristic *temp = pc->CharacteristicList;    
-    struct Characteristic *newCharacteristic = (struct Characteristic *) malloc(sizeof(struct Characteristic));
+    struct Characteristic *temp = pc->CharacteristicList;
+    int distinct = 1;
 
-    newCharacteristic->CharacteristicType = type;
-    newCharacteristic->Line = line;
-    newCharacteristic->Next = pc->CharacteristicList;
+    while (temp != NULL) {
+        if (temp->CharacteristicType == type && temp->Line == line) {
+            distinct = 0;
+            break;
+        }
 
-    pc->CharacteristicList = newCharacteristic;
+        temp = temp->Next;
+    }
+
+    if (distinct) {
+        struct Characteristic *newCharacteristic = (struct Characteristic *) malloc(sizeof(struct Characteristic));
+
+        newCharacteristic->CharacteristicType = type;
+        newCharacteristic->Line = line;
+        newCharacteristic->Next = pc->CharacteristicList;
+
+        pc->CharacteristicList = newCharacteristic;
+    }
 }
 
 void UpdateDup(Picoc *pc, char *identifier, char *dup) {
     struct Socket *head = pc->SocketList; 
     struct Socket *socket = FindSocketByIdentifier(head, identifier);
 
-    int dupFD = atoi(dup);
-    socket->Dup2Arr[dupFD] += 1;
+    if (socket) {
+        int dupFD = atoi(dup);
+        socket->Dup2Arr[dupFD] += 1;
+    }
 }
 
 char *GenerateDupListString(struct Socket *socket) {
@@ -707,6 +743,15 @@ void GenerateForCmpReport(Picoc *pc) {
     printf("===FORK ON LINE===\n");
     while(characteristicHead != NULL) {
         if (characteristicHead->CharacteristicType == Fork)
+            printf("%d\n", characteristicHead->Line);
+
+        characteristicHead = characteristicHead->Next;
+    }
+
+    printf("===EXEC ON LINE===\n");
+    characteristicHead = pc->CharacteristicList;
+    while(characteristicHead != NULL) {
+        if (characteristicHead->CharacteristicType == Exec)
             printf("%d\n", characteristicHead->Line);
 
         characteristicHead = characteristicHead->Next;

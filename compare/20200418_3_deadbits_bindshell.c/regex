@@ -1,0 +1,12 @@
+===ALL SOCKETS===
+srv_sockfd::AwaitConnection:[]:37
+new_sockfd:srv_sockfd:MayBeReadingOrWriting:[2, 1, 0]:61
+===MAY BE LISTENING SOCKETS===
+srv_sockfd::AwaitConnection:[]:37
+===FORK ON LINE===
+35
+68
+===EXEC ON LINE===
+77
+===END===
+===GENERATED IN 0.00432 SECOND(S)===
