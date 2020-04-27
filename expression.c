@@ -1675,7 +1675,7 @@ void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionSta
         HeapPopStackFrame(Parser->pc);
     }
 
-    if (Parser->pc->Main/*1 && sp/**/) {
+    if (Parser->pc->Main &&/**/1/* && sp/**/) {
         // if (Parser->pc->SocketList && (strcmp(FuncName, "bind") == 0 || strcmp(FuncName, "listen") == 0 || strcmp(FuncName, "accept") == 0 || strcmp(FuncName, "close") == 0)) {
         if (!strcmp(FuncName, "socket")) {
             AddSocket(Parser->pc, IdentifierAssignedTo, ParamNameArray[1], FuncLine, "");

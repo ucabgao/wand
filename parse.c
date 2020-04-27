@@ -763,7 +763,8 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
 
                     // SocketRevertSource(Parser->pc, tempSocketList);
 
-                    if (ParseStatementMaybeRun(Parser, !Condition, TRUE) != ParseResultOk) // subsequent if block or finally else block
+                    // if (ParseStatementMaybeRun(Parser, !Condition, TRUE) != ParseResultOk) // subsequent if block or finally else block
+                    if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk) // subsequent if block or finally else block
                         ProgramFail(Parser, "statement expected");
     
                     // SocketCombineSource(Parser->pc, tempSocketList2);
@@ -875,10 +876,10 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
 
                 struct Socket *tempSocketList = NULL;
 
-                if (Parser->pc->SocketList) {
-                    tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-                    SocketCopy(Parser->pc, tempSocketList);
-                }
+                // if (Parser->pc->SocketList) {
+                //     tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
+                //     SocketCopy(Parser->pc, tempSocketList);
+                // }
 
                 ParserCopyPos(&PreStatement, Parser);
                 do
@@ -921,7 +922,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     
                 } while ((Condition && Parser->Mode == RunModeRun) || onceMore);           
                 
-                MergeSockets(Parser->pc, tempSocketList);
+                // MergeSockets(Parser->pc, tempSocketList);
 
                 if (Parser->Mode == RunModeBreak)
                     Parser->Mode = PreMode;

@@ -1,0 +1,11 @@
+===ALL SOCKETS===
+sockfd::MayBeListening:[]:34
+newsockfd:sockfd:MayBeReadingOrWriting:[]:70
+===MAY BE LISTENING SOCKETS===
+sockfd::MayBeListening:[]:34
+===FORK ON LINE===
+108
+===EXEC ON LINE===
+112
+===END===
+===GENERATED IN 0.00489 SECOND(S)===

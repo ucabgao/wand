@@ -710,12 +710,15 @@ enum SocketState
     None,
     Initial,            /* socket() */
     Binding,            /* bind() */
-    Passive,            /* listen() (only applicable to TCP) */
-    AwaitConnection,    /* accept() (only applicable to TCP) */
+    Listening,            /* listen() (only applicable to TCP) */
+    // AwaitConnection,    /* accept() (only applicable to TCP) */
     Closed,             /* close() */
     Connected,          /* initial state of child socket created by accept() */
     Reading,            /* read(), recv(), recvfrom() */
     Writing,             /* write(), send(), sendto() */
+    NotListening,
+    MayBeListening,
+    NotReadingOrWriting,
     MayBeReadingOrWriting
 };
 
@@ -738,7 +741,7 @@ struct Socket
     struct Source *SourceStack;
     int ParentFileDescriptor;
     char *ParentIdentifier;
-    int LineDeclared;
+    int Line;
     int *Dup2Arr;
     struct Socket *Next;                /* next socket in the list */
 };

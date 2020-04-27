@@ -89,7 +89,7 @@ void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
         newSocket->CurrentState = head->CurrentState;
         newSocket->SourceStack = NULL;
         newSocket->ParentIdentifier = head->ParentIdentifier;
-        newSocket->LineDeclared = head->LineDeclared;
+        newSocket->Line = head->Line;
         newSocket->Dup2Arr = head->Dup2Arr;
         newSocket->Next = nSL;
         struct Source *sourceHead = head->SourceStack;
@@ -136,7 +136,7 @@ void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, ch
     struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
     struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
 
-    newSocketStateGraph->State = Initial;
+    newSocketStateGraph->State = NotListening;
     newSocketStateGraph->Line = line;
     newSocketStateGraph->Next = NULL;
 
@@ -149,7 +149,7 @@ void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, ch
     if (strcmp(parent,"") && !strcmp(sockettype,"")) { // parent is not "" and type is ""
         newSocketStateGraph->State = Connected;
         newSource->State = Connected;
-        newSocket->CurrentState = Connected;
+        newSocket->CurrentState = NotReadingOrWriting;
     }
 
 
@@ -173,7 +173,7 @@ void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, ch
     strcpy(newSocket->ParentIdentifier, parent);
 
     // newSocket->ParentFileDescriptor = parent;
-    newSocket->LineDeclared = line;
+    newSocket->Line = line;
     newSocket->Dup2Arr = (int *) calloc(3, sizeof(int));
 
     newSocket->Next = head;
@@ -276,10 +276,10 @@ enum SocketState FindState(const char *FuncName) {
 
     if (!strcmp(FuncName, "bind")) {
         s = Binding;
-    } else if (!strcmp(FuncName, "listen")) {
-        s = Passive;
-    } else if (!strcmp(FuncName, "accept")) {
-        s = AwaitConnection;
+    } else if (!strcmp(FuncName, "listen") || !strcmp(FuncName, "accept")) {
+        s = Listening;
+    // } else if (!strcmp(FuncName, "accept")) {
+    //     s = AwaitConnection;
     } else if (!strcmp(FuncName, "close")) {
         s = Closed;
     } else if (CheckIfReadFunc(FuncName) /*!strcmp(FuncName, "read")*/) {
@@ -291,18 +291,37 @@ enum SocketState FindState(const char *FuncName) {
     return s;
 }
 
+enum SocketState StateAbstraction(enum SocketState state) {
+    enum SocketState abstractState = -1;
+
+    if (state == Initial) {
+        abstractState = NotListening;
+    } else if (state == Binding || state == Listening) {
+        abstractState = MayBeListening;
+    } else if (state == Connected) {
+        abstractState = NotReadingOrWriting;
+    } else if (state == Reading || state == Writing) {
+        abstractState = MayBeReadingOrWriting;
+    }
+
+    return abstractState;
+}
+
+
 char *GetStateNameString(enum SocketState state, char *stateStr) {
     switch (state) {
         case 0: strcpy(stateStr, ""); break;
         case 1: strcpy(stateStr, "Initial"); break;
         case 2: strcpy(stateStr, "Binding"); break;
-        case 3: strcpy(stateStr, "Passive"); break;
-        case 4: strcpy(stateStr, "AwaitConnection"); break;
-        case 5: strcpy(stateStr, "Closed"); break;
-        case 6: strcpy(stateStr, "Connected"); break;
-        case 7: strcpy(stateStr, "Reading"); break;
-        case 8: strcpy(stateStr, "Writing"); break;
-        case 9: strcpy(stateStr, "MayBeReadingOrWriting"); break;
+        case 3: strcpy(stateStr, "Listening"); break;
+        case 4: strcpy(stateStr, "Closed"); break;
+        case 5: strcpy(stateStr, "Connected"); break;
+        case 6: strcpy(stateStr, "Reading"); break;
+        case 7: strcpy(stateStr, "Writing"); break;
+        case 8: strcpy(stateStr, "NotListening"); break;
+        case 9: strcpy(stateStr, "MayBeListening"); break;
+        case 10: strcpy(stateStr, "NotReadingOrWriting"); break;
+        case 11: strcpy(stateStr, "MayBeReadingOrWriting"); break;
     }
 
     return stateStr;
@@ -403,7 +422,7 @@ void AddSocketStateGraph(Picoc *pc, char *identifier, short int line, const char
             if (!strcmp(s->SocketType, "SOCK_STREAM")) {
                 newSocketStateGraph->State = Binding;
             } else {
-                newSocketStateGraph->State = AwaitConnection;
+                newSocketStateGraph->State = Listening;
             }
         } else {
             newSocketStateGraph->State = FindState(FuncName);
@@ -548,9 +567,10 @@ void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList) {
 
 enum SocketState MergeStates(enum SocketState state1, enum SocketState state2) {
     enum SocketState state;
-    if ((state1 >= 0x2 && state1 <= 0x4) || (state2 >= 0x2 && state2 <= 0x4)) {
-        state = AwaitConnection;
-    } else if ((state1 >= 0x7 && state1 <= 0x8) || (state2 >= 0x7 && state2 <= 0x8)) {
+
+    if (state1 == MayBeListening || state2 == MayBeListening) {
+        state = MayBeListening;
+    } else if (state1 == MayBeReadingOrWriting || state2 == MayBeReadingOrWriting) {
         state = MayBeReadingOrWriting;
     } else {
         state = state1;
@@ -593,11 +613,12 @@ void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
     // newSource->State = FindState(FuncName);
     // newSource->Next = NULL;
     if (socket) {
-        enum SocketState FuncState = FindState(FuncName);
+        enum SocketState concreteState = FindState(FuncName);
+        enum SocketState abstractState = StateAbstraction(concreteState);
         enum SocketState SocketCurrentState = socket->CurrentState;
 
-        if (FuncState != -1)
-            socket->CurrentState = MergeStates(SocketCurrentState, FuncState);
+        if (abstractState != -1)
+            socket->CurrentState = MergeStates(SocketCurrentState, abstractState);
     }
     // socket->SourceStack = newSource;
     // while (source != NULL) {
@@ -723,7 +744,7 @@ void GenerateForCmpReport(Picoc *pc) {
         printf("%s:%s:%s:%s:%d\n",
             socketHead->Identifier, socketHead->ParentIdentifier, 
             GetStateNameString(socketHead->CurrentState, stateStr), GenerateDupListString(socketHead),
-            socketHead->LineDeclared);
+            socketHead->Line);
 
         socketHead = socketHead->Next;
     }
@@ -731,11 +752,11 @@ void GenerateForCmpReport(Picoc *pc) {
     printf("===MAY BE LISTENING SOCKETS===\n");
     socketHead = pc->SocketList;
     while (socketHead != NULL) {
-        if (socketHead->CurrentState == AwaitConnection)
+        if (socketHead->CurrentState == MayBeListening)
             printf("%s:%s:%s:%s:%d\n",
                 socketHead->Identifier, socketHead->ParentIdentifier, 
                 GetStateNameString(socketHead->CurrentState, stateStr), GenerateDupListString(socketHead),
-                socketHead->LineDeclared);
+                socketHead->Line);
 
         socketHead = socketHead->Next;
     }
