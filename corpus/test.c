@@ -4,7 +4,7 @@
 #include <socket.h> 
 #include <stdlib.h> 
 #include <string.h>
-#include "hello.h"
+#define PORT 8080
 // int x() {
 // 	printf("test");
 // 	return 1;
@@ -25,27 +25,39 @@
 
 int main() 
 { 
-	// int sfd[3];
-	int *fd;
-	// fd = NULL;
-	*fd = socket(AF_INET, SOCK_STREAM,0);
+	struct sockaddr_in address; // sockaddr_in is specific for inet
+	int addrlen = sizeof(address); 
+	int parentSocket;
+	int clientSocket[3];
+	
+	parentSocket = socket(AF_INET, SOCK_STREAM,0);
 
-	if (bind(*fd, (struct sockaddr *)&address, sizeof(address))<0) 
+	if (parentSocket == 0) 
+	{ 
+		perror("socket failed"); 
+		exit(EXIT_FAILURE); 
+	} 
+
+	address.sin_family = AF_INET; 
+	address.sin_addr.s_addr = INADDR_ANY; 
+	address.sin_port = htons( PORT ); 
+	
+	// Forcefully attaching socket to the port 8080 
+	if (bind(parentSocket, (struct sockaddr *)&address, sizeof(address))<0) 
 	{ 
 		perror("bind failed"); 
 		exit(EXIT_FAILURE); 
 	}
 
-	// sfd[0] = socket(AF_INET, SOCK_STREAM,0);
-	// dup2(sfd,0);
-	// dup2(sfd,1); // can I tell what the two arguments are? I want to know that the firs argument is a socketfd and the second argument is 0, 1 or 2
-	// dup2(sfd,2);
-	// do{
-	// x();
-	// } while(1);
-	// if (0)
-	// 	b();
-	// else
-	// 	a();
+	if (listen(parentSocket, 3) < 0) 
+	{ 
+		perror("listen"); 
+		exit(EXIT_FAILURE); 
+	} 
+
+	for (int i = 0; i < 3; i++) {
+		clientSocket[i] = accept(parentSocket, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+	}
+
 	return 0;
 } 
