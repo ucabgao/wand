@@ -1,0 +1,24 @@
+*****COMPARING bressan3_server.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

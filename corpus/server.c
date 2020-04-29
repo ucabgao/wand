@@ -57,8 +57,8 @@ int main()
 			listen(server_fd, 3);
 		} while (1);
 	} else {
-			// server_fd2 = socket(AF_INET, SOCK_STREAM, 0);
-			// listen(server_fd2, 3);
+			server_fd2 = socket(AF_INET, SOCK_STREAM, 0);
+			listen(server_fd2, 3);
 	}
 
 	if (listen(server_fd, 3) < 0) 

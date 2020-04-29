@@ -1,0 +1,24 @@
+*****COMPARING server_multiclient.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		sd:UNKNOWN:MayBeReadingOrWriting:[]:163
+
+	---Difference Regex\Picoc---
+		sd:UNKNOWN:MayBeReadingOrWriting:[]:164
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

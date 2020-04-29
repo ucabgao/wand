@@ -1,0 +1,24 @@
+*****COMPARING server_multiclient_array.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		clientSocket:parentSocket:MayBeReadingOrWriting:[]:44
+
+	---Difference Regex\Picoc---
+		clientSocket:UNKNOWN:MayBeReadingOrWriting:[]:50
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

@@ -1,0 +1,10 @@
+===ALL SOCKETS===
+master_socket::MayBeListening:[]:45
+new_socket:master_socket:MayBeReadingOrWriting:[]:121
+sd:UNKNOWN:MayBeReadingOrWriting:[]:162
+===MAY BE LISTENING SOCKETS===
+master_socket::MayBeListening:[]:45
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+===GENERATED IN 0.00615 SECOND(S)===

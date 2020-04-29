@@ -1,0 +1,9 @@
+===ALL SOCKETS===
+parentSocket::MayBeListening:[]:18
+clientSocket:UNKNOWN:MayBeReadingOrWriting:[]:50
+===MAY BE LISTENING SOCKETS===
+parentSocket::MayBeListening:[]:18
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+===GENERATED IN 0.00374 SECOND(S)===

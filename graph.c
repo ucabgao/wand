@@ -1,5 +1,6 @@
 #include <sys/socket.h>
 #include "interpreter.h"
+#include "cjson/cJSON.h"
 
 const char * INTERESTEDFUNC[] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork", "execl", "execlp", "execle", "execv", "execvp", "execvpe"};
 
@@ -784,4 +785,88 @@ void GenerateForCmpReport(Picoc *pc) {
     // need to remove the non-essential print statements
 
 
+}
+
+void generateSocketJson(cJSON *socket_array, struct Socket *socketHead, int type) {
+    cJSON *socket = NULL;
+    cJSON *dup = NULL;
+    cJSON *socket_attribute = NULL;
+    char stateStr[20];
+
+    while (socketHead != NULL) {
+        if (type || socketHead->CurrentState != MayBeListening) {
+            socket = cJSON_CreateObject();
+            cJSON_AddItemToArray(socket_array, socket);
+
+            socket_attribute = cJSON_CreateString(socketHead->Identifier);
+            cJSON_AddItemToObject(socket, "identifier", socket_attribute);
+
+            socket_attribute = cJSON_CreateString(socketHead->ParentIdentifier);
+            cJSON_AddItemToObject(socket, "parent", socket_attribute);
+
+            socket_attribute = cJSON_CreateString(GetStateNameString(socketHead->CurrentState, stateStr));
+            cJSON_AddItemToObject(socket, "state", socket_attribute);
+
+            socket_attribute = cJSON_CreateArray();
+            cJSON_AddItemToObject(socket, "dup", socket_attribute);
+
+            for(int i = 0; i < 3; i++) {
+                if (socketHead->Dup2Arr[i] > 0) {
+                    dup = cJSON_CreateNumber(i);
+                    cJSON_AddItemToArray(socket_attribute, dup);
+                }
+            }
+
+            socket_attribute = cJSON_CreateNumber(socketHead->Line);
+            cJSON_AddItemToObject(socket, "line", socket_attribute);
+        }
+        
+        socketHead = socketHead->Next;
+    }
+}
+
+void generateCharacteristicJson(cJSON *characteristic_array, struct Characteristic *characteristicHead, enum CharacteristicType type) {
+    cJSON *line = NULL;
+
+    while(characteristicHead != NULL) {
+        if (characteristicHead->CharacteristicType == type) {
+            line = cJSON_CreateNumber(characteristicHead->Line);
+            cJSON_AddItemToArray(characteristic_array, line);
+        }
+
+        characteristicHead = characteristicHead->Next;
+    }
+}
+
+char *create_monitor(Picoc *pc)
+{
+    char *string = NULL;
+    struct Socket *socketHead = pc->SocketList;
+    struct Characteristic *characteristicHead = pc->CharacteristicList;
+
+    cJSON *monitor = cJSON_CreateObject();
+    cJSON *all_sockets = cJSON_CreateArray();
+    cJSON *maybelistening_sockets = cJSON_CreateArray();
+    cJSON *fork_arr = cJSON_CreateArray();
+    cJSON *exec_arr = cJSON_CreateArray();
+
+    cJSON_AddItemToObject(monitor, "all_sockets", all_sockets);
+    cJSON_AddItemToObject(monitor, "maybelistening_sockets", maybelistening_sockets);
+    cJSON_AddItemToObject(monitor, "fork", fork_arr);
+    cJSON_AddItemToObject(monitor, "exec", exec_arr);
+    generateSocketJson(all_sockets, socketHead, 1); // all sockets
+    generateSocketJson(maybelistening_sockets, socketHead, 0); // may be listening sockets
+    generateCharacteristicJson(fork_arr, characteristicHead, Fork);
+    generateCharacteristicJson(exec_arr, characteristicHead, Exec);
+
+
+    string = cJSON_Print(monitor);
+    if (string == NULL)
+    {
+        fprintf(stderr, "Failed to print monitor.\n");
+    }
+
+end:
+    cJSON_Delete(monitor);
+    return string;
 }

@@ -1,27 +1,9 @@
-// Server side C/C++ program to demonstrate Socket programming 
 #include <unistd.h> 
 #include <stdio.h> 
 #include <socket.h> 
 #include <stdlib.h> 
 #include <string.h>
 #define PORT 8080
-// int x() {
-// 	printf("test");
-// 	return 1;
-// }
-
-// void c() {
-// 	printhelloworld();
-// 	fork();	
-// }
-
-// void b() {
-// 	c();
-// }
-
-// void a() {
-// 	b();
-// }
 
 int main() 
 { 
@@ -29,7 +11,10 @@ int main()
 	int addrlen = sizeof(address); 
 	int parentSocket;
 	int clientSocket[3];
-	
+	int valread; 
+	char buffer[1024] = {0}; 
+	char *hello = "Hello from server"; 
+
 	parentSocket = socket(AF_INET, SOCK_STREAM,0);
 
 	if (parentSocket == 0) 
@@ -57,6 +42,14 @@ int main()
 
 	for (int i = 0; i < 3; i++) {
 		clientSocket[i] = accept(parentSocket, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+		if (clientSocket[i]<0) 
+		{ 
+			perror("accept"); 
+			exit(EXIT_FAILURE); 
+		} 
+		valread = read( clientSocket[i] , buffer, 1024); 
+		// printf("%s\n",buffer ); 
+		// send(clientSocket[i] , hello , strlen(hello) , 0 );
 	}
 
 	return 0;

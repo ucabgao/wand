@@ -1,0 +1,24 @@
+*****COMPARING test.c*****
+===ALL SOCKETS===
+	---Difference Picoc\Regex---
+		clientSocket:parentSocket:NotReadingOrWriting:[]:59
+
+	---Difference Regex\Picoc---
+		NIL
+
+===MAY BE LISTENING SOCKETS===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===FORK ON LINE===
+	---Difference Picoc\Regex---
+		NIL
+
+	---Difference Regex\Picoc---
+		NIL
+
+===END===
+

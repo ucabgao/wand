@@ -97,6 +97,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
         DisplayIdList(pc->FuncIdList);
         printf("VarId: ");
         DisplayIdList(pc->VarIdList);
+        // printf("%s\n", create_monitor(pc));
 }
 #endif
 

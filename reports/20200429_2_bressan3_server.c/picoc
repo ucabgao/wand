@@ -1,0 +1,89 @@
+Function Identifier: socket | Line: 22
+Function Identifier: printf | Line: 25
+Function Identifier: exit | Line: 26
+Function Identifier: setsockopt | Line: 30
+Function Identifier: inet_addr | Line: 33
+Function Identifier: htons | Line: 34
+Function Identifier: bind | Line: 36
+Function Identifier: listen | Line: 39
+Function Identifier: printf | Line: 40
+Function Identifier: fdopen | Line: 42
+Function Identifier: dup | Line: 42
+Function Identifier: setbuf | Line: 43
+Function Identifier: memset | Line: 46
+Function Identifier: chdir | Line: 51
+Function Identifier: getenv | Line: 51
+Function Identifier: getcwd | Line: 52
+Function Identifier: accept | Line: 55
+Function Identifier: printf | Line: 56
+Function Identifier: fork | Line: 57
+Function Identifier: printf | Line: 57
+Function Identifier: getpid | Line: 59
+Function Identifier: dup2 | Line: 60
+Function Identifier: recv | Line: 65
+Function Identifier: strcpy | Line: 75
+Function Identifier: strlen | Line: 76
+Function Identifier: chdir | Line: 77
+Function Identifier: getcwd | Line: 78
+Function Identifier: printf | Line: 80
+Function Identifier: system | Line: 84
+Function Identifier: send | Line: 86
+Function Identifier: signal | Line: 86
+Function Identifier: close | Line: 88
+Function Identifier: exit | Line: 89
+Function Identifier: fclose | Line: 93
+Function Identifier: close | Line: 94
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 22
+Function Identifier: printf | Line: 25
+Function Identifier: exit | Line: 26
+Function Identifier: setsockopt | Line: 30
+Function Identifier: inet_addr | Line: 33
+Function Identifier: htons | Line: 34
+Function Identifier: bind | Line: 36
+Function Identifier: listen | Line: 39
+Function Identifier: printf | Line: 40
+Function Identifier: fdopen | Line: 42
+Function Identifier: dup | Line: 42
+Function Identifier: setbuf | Line: 43
+Function Identifier: memset | Line: 46
+Function Identifier: chdir | Line: 51
+Function Identifier: getenv | Line: 51
+Function Identifier: getcwd | Line: 52
+Function Identifier: accept | Line: 55
+Function Identifier: printf | Line: 56
+Function Identifier: fork | Line: 57
+Function Identifier: printf | Line: 57
+Function Identifier: getpid | Line: 59
+Function Identifier: dup2 | Line: 60
+Function Identifier: recv | Line: 65
+Function Identifier: strcpy | Line: 75
+Function Identifier: strlen | Line: 76
+Function Identifier: chdir | Line: 77
+Function Identifier: getcwd | Line: 78
+Function Identifier: printf | Line: 80
+Function Identifier: system | Line: 84
+Function Identifier: send | Line: 86
+Function Identifier: signal | Line: 86
+Function Identifier: close | Line: 88
+Function Identifier: exit | Line: 89
+Function Identifier: fclose | Line: 93
+Function Identifier: close | Line: 94
+
+Socket ID clientSocket - Closed (line 88) <- Writing (line 86) <- Reading (line 65) <- Connected (line 55) <- 
+Parent: serverSocket | Current State: MayBeReadingOrWriting
+
+Socket ID serverSocket - TCP: Closed (line 94) <- Listening (line 55) <- Listening (line 39) <- Binding (line 36) <- NotListening (line 22) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+clientSocket:serverSocket:MayBeReadingOrWriting:[2]:55
+serverSocket::MayBeListening:[]:22
+===MAY BE LISTENING SOCKETS===
+serverSocket::MayBeListening:[]:22
+===FORK ON LINE===
+57
+===EXEC ON LINE===
+===END===
+FuncId: main 
+VarId: filled readc clientSize clientMessage stream opt client server path temp pid clientSocket serverSocket argv argc 
+===GENERATED IN 0.00442 SECOND(S)===

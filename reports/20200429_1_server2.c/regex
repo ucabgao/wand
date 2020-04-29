@@ -1,0 +1,9 @@
+===ALL SOCKETS===
+socket_desc::MayBeListening:[]:21
+client_sock:socket_desc:MayBeReadingOrWriting:[]:50
+===MAY BE LISTENING SOCKETS===
+socket_desc::MayBeListening:[]:21
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+===GENERATED IN 0.00612 SECOND(S)===

@@ -1,0 +1,38 @@
+Function Identifier: socket | Line: 20
+Function Identifier: setsockopt | Line: 24
+Function Identifier: htons | Line: 28
+Function Identifier: bind | Line: 32
+Function Identifier: listen | Line: 35
+Function Identifier: accept | Line: 38
+Function Identifier: dup2 | Line: 41
+Function Identifier: dup2 | Line: 42
+Function Identifier: dup2 | Line: 43
+Function Identifier: execve | Line: 46
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 20
+Function Identifier: setsockopt | Line: 24
+Function Identifier: htons | Line: 28
+Function Identifier: bind | Line: 32
+Function Identifier: listen | Line: 35
+Function Identifier: accept | Line: 38
+Function Identifier: dup2 | Line: 41
+Function Identifier: dup2 | Line: 42
+Function Identifier: dup2 | Line: 43
+Function Identifier: execve | Line: 46
+
+Socket ID resultfd - Connected (line 38) <- 
+Parent: sockfd | Current State: NotReadingOrWriting
+
+Socket ID sockfd - TCP: Listening (line 38) <- Listening (line 35) <- Binding (line 32) <- NotListening (line 20) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+resultfd:sockfd:NotReadingOrWriting:[0, 1, 2]:38
+sockfd::MayBeListening:[]:20
+===MAY BE LISTENING SOCKETS===
+sockfd::MayBeListening:[]:20
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+FuncId: main 
+VarId: one my_addr port sockfd resultfd 
+===GENERATED IN 0.00173 SECOND(S)===

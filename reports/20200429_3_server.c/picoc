@@ -1,0 +1,82 @@
+Function Identifier: printf | Line: 10
+Function Identifier: fork | Line: 11
+Function Identifier: printf | Line: 25
+Function Identifier: printhelloworld | Line: 26
+Function Identifier: x | Line: 27
+Function Identifier: socket | Line: 30
+Function Identifier: perror | Line: 33
+Function Identifier: exit | Line: 34
+Function Identifier: setsockopt | Line: 38
+Function Identifier: perror | Line: 41
+Function Identifier: exit | Line: 42
+Function Identifier: htons | Line: 46
+Function Identifier: bind | Line: 49
+Function Identifier: perror | Line: 51
+Function Identifier: exit | Line: 52
+Function Identifier: listen | Line: 57
+Function Identifier: socket | Line: 60
+Function Identifier: listen | Line: 61
+Function Identifier: listen | Line: 64
+Function Identifier: perror | Line: 66
+Function Identifier: exit | Line: 67
+Function Identifier: accept | Line: 69
+Function Identifier: perror | Line: 72
+Function Identifier: exit | Line: 73
+Function Identifier: read | Line: 75
+Function Identifier: printf | Line: 76
+Function Identifier: send | Line: 77
+Function Identifier: strlen | Line: 77
+Function Identifier: printf | Line: 79
+Function Identifier: main | Line: 1
+Function Identifier: printf | Line: 25
+Function Identifier: printhelloworld | Line: 26
+Function Identifier: x | Line: 27
+Function Identifier: printf | Line: 10
+Function Identifier: fork | Line: 11
+Function Identifier: socket | Line: 30
+Function Identifier: perror | Line: 33
+Function Identifier: exit | Line: 34
+Function Identifier: setsockopt | Line: 38
+Function Identifier: perror | Line: 41
+Function Identifier: exit | Line: 42
+Function Identifier: htons | Line: 46
+Function Identifier: bind | Line: 49
+Function Identifier: perror | Line: 51
+Function Identifier: exit | Line: 52
+Function Identifier: listen | Line: 57
+Function Identifier: socket | Line: 60
+Function Identifier: listen | Line: 61
+Function Identifier: listen | Line: 64
+Function Identifier: perror | Line: 66
+Function Identifier: exit | Line: 67
+Function Identifier: accept | Line: 69
+Function Identifier: perror | Line: 72
+Function Identifier: exit | Line: 73
+Function Identifier: read | Line: 75
+Function Identifier: printf | Line: 76
+Function Identifier: send | Line: 77
+Function Identifier: strlen | Line: 77
+Function Identifier: printf | Line: 79
+
+Socket ID new_socket - Writing (line 77) <- Reading (line 75) <- Connected (line 69) <- 
+Parent: server_fd | Current State: MayBeReadingOrWriting
+
+Socket ID server_fd2 - TCP: Listening (line 61) <- NotListening (line 60) <- 
+Parent:  | Current State: MayBeListening
+
+Socket ID server_fd - TCP: Listening (line 69) <- Listening (line 64) <- Listening (line 57) <- Binding (line 49) <- NotListening (line 30) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+new_socket:server_fd:MayBeReadingOrWriting:[]:69
+server_fd2::MayBeListening:[]:60
+server_fd::MayBeListening:[]:30
+===MAY BE LISTENING SOCKETS===
+server_fd2::MayBeListening:[]:60
+server_fd::MayBeListening:[]:30
+===FORK ON LINE===
+11
+===EXEC ON LINE===
+===END===
+FuncId: main x 
+VarId: server_fd hello buffer addrlen opt address valread new_socket server_fd2 
+===GENERATED IN 0.00193 SECOND(S)===

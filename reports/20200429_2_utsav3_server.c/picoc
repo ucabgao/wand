@@ -1,0 +1,100 @@
+Function Identifier: perror | Line: 12
+Function Identifier: printf | Line: 13
+Function Identifier: exit | Line: 14
+Function Identifier: fprintf | Line: 29
+Function Identifier: socket | Line: 34
+Function Identifier: error | Line: 37
+Function Identifier: bzero | Line: 43
+Function Identifier: atoi | Line: 46
+Function Identifier: htons | Line: 52
+Function Identifier: bind | Line: 54
+Function Identifier: error | Line: 56
+Function Identifier: listen | Line: 60
+Function Identifier: sleep | Line: 68
+Function Identifier: accept | Line: 70
+Function Identifier: error | Line: 75
+Function Identifier: bzero | Line: 77
+Function Identifier: read | Line: 79
+Function Identifier: error | Line: 83
+Function Identifier: printf | Line: 87
+Function Identifier: write | Line: 89
+Function Identifier: error | Line: 93
+Function Identifier: strcpy | Line: 98
+Function Identifier: readAndParseCmdLine | Line: 107
+Function Identifier: fork | Line: 108
+Function Identifier: printf | Line: 111
+Function Identifier: execvp | Line: 112
+Function Identifier: printf | Line: 113
+Function Identifier: printf | Line: 115
+Function Identifier: wait | Line: 117
+Function Identifier: main | Line: 119
+Function Identifier: strcmp | Line: 139
+Function Identifier: strtok | Line: 142
+Function Identifier: printf | Line: 149
+Function Identifier: strtok | Line: 151
+Function Identifier: main | Line: 1
+Function Identifier: fprintf | Line: 29
+Function Identifier: socket | Line: 34
+Function Identifier: error | Line: 37
+Function Identifier: perror | Line: 12
+Function Identifier: printf | Line: 13
+Function Identifier: exit | Line: 14
+Function Identifier: bzero | Line: 43
+Function Identifier: atoi | Line: 46
+Function Identifier: htons | Line: 52
+Function Identifier: bind | Line: 54
+Function Identifier: error | Line: 56
+Function Identifier: perror | Line: 12
+Function Identifier: printf | Line: 13
+Function Identifier: exit | Line: 14
+Function Identifier: listen | Line: 60
+Function Identifier: sleep | Line: 68
+Function Identifier: accept | Line: 70
+Function Identifier: error | Line: 75
+Function Identifier: perror | Line: 12
+Function Identifier: printf | Line: 13
+Function Identifier: exit | Line: 14
+Function Identifier: bzero | Line: 77
+Function Identifier: read | Line: 79
+Function Identifier: error | Line: 83
+Function Identifier: perror | Line: 12
+Function Identifier: printf | Line: 13
+Function Identifier: exit | Line: 14
+Function Identifier: printf | Line: 87
+Function Identifier: write | Line: 89
+Function Identifier: error | Line: 93
+Function Identifier: perror | Line: 12
+Function Identifier: printf | Line: 13
+Function Identifier: exit | Line: 14
+Function Identifier: strcpy | Line: 98
+Function Identifier: readAndParseCmdLine | Line: 107
+Function Identifier: strcmp | Line: 139
+Function Identifier: strtok | Line: 142
+Function Identifier: printf | Line: 149
+Function Identifier: strtok | Line: 151
+Function Identifier: fork | Line: 108
+Function Identifier: printf | Line: 111
+Function Identifier: execvp | Line: 112
+Function Identifier: printf | Line: 113
+Function Identifier: printf | Line: 115
+Function Identifier: wait | Line: 117
+Function Identifier: main | Line: 119
+
+Socket ID newsockfd - Writing (line 89) <- Reading (line 79) <- Connected (line 70) <- 
+Parent: sockfd | Current State: MayBeReadingOrWriting
+
+Socket ID sockfd - TCP: Listening (line 70) <- Listening (line 60) <- Binding (line 54) <- NotListening (line 34) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+newsockfd:sockfd:MayBeReadingOrWriting:[]:70
+sockfd::MayBeListening:[]:34
+===MAY BE LISTENING SOCKETS===
+sockfd::MayBeListening:[]:34
+===FORK ON LINE===
+108
+===EXEC ON LINE===
+112
+===END===
+FuncId: main error readAndParseCmdLine 
+VarId: tok temp cmd i child_pid args prog n cli_addr serv_addr buffer clilen portno newsockfd sockfd argv argc msg  
+===GENERATED IN 0.00279 SECOND(S)===

@@ -1,0 +1,345 @@
+ZZZEP Identifier: TRUE
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: socket
+Function Identifier: socket | Line: 45
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: SOCK_STREAM
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 47
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 48
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: setsockopt
+Function Identifier: setsockopt | Line: 53
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: SOL_SOCKET
+ZZZEP Identifier: SO_REUSEADDR
+ZZZEP Identifier: opt
+ZZZEP Identifier: opt
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 56
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 57
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: address
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: address
+ZZZEP Identifier: INADDR_ANY
+ZZZEP Identifier: address
+ZZZEP Identifier: htons
+Function Identifier: htons | Line: 63
+ZZZEP Identifier: PORT
+ZZZEP Identifier: bind
+Function Identifier: bind | Line: 66
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: address
+ZZZEP Identifier: address
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 68
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 69
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 71
+ZZZEP Identifier: PORT
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 74
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 76
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 77
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: address
+ZZZEP Identifier: puts
+Function Identifier: puts | Line: 82
+ZZZEP Identifier: TRUE
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: sd
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: accept
+Function Identifier: accept | Line: 121
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: address
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 124
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 125
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 129
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: inet_ntoa
+Function Identifier: inet_ntoa | Line: 129
+ZZZEP Identifier: address
+ZZZEP Identifier: ntohs
+Function Identifier: ntohs | Line: 130
+ZZZEP Identifier: address
+ZZZEP Identifier: send
+Function Identifier: send | Line: 133
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: message
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 133
+ZZZEP Identifier: message
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 133
+ZZZEP Identifier: message
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 135
+ZZZEP Identifier: puts
+Function Identifier: puts | Line: 138
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 147
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: sd
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: valread
+ZZZEP Identifier: read
+Function Identifier: read | Line: 163
+ZZZEP Identifier: sd
+ZZZEP Identifier: buffer
+ZZZEP Identifier: getpeername
+Function Identifier: getpeername | Line: 166
+ZZZEP Identifier: sd
+ZZZEP Identifier: address
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 168
+ZZZEP Identifier: inet_ntoa
+Function Identifier: inet_ntoa | Line: 169
+ZZZEP Identifier: address
+ZZZEP Identifier: ntohs
+Function Identifier: ntohs | Line: 169
+ZZZEP Identifier: address
+ZZZEP Identifier: close
+Function Identifier: close | Line: 172
+ZZZEP Identifier: sd
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: buffer
+ZZZEP Identifier: valread
+ZZZEP Identifier: send
+Function Identifier: send | Line: 182
+ZZZEP Identifier: sd
+ZZZEP Identifier: buffer
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 182
+ZZZEP Identifier: buffer
+ZZZEP Identifier: __exit_value
+ZZZEP Identifier: main
+Function Identifier: main | Line: 1
+ZZZEP Identifier: __argc
+ZZZEP Identifier: __argv
+ZZZEP Identifier: TRUE
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: socket
+Function Identifier: socket | Line: 45
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: SOCK_STREAM
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 47
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 48
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: setsockopt
+Function Identifier: setsockopt | Line: 53
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: SOL_SOCKET
+ZZZEP Identifier: SO_REUSEADDR
+ZZZEP Identifier: opt
+ZZZEP Identifier: opt
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 56
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 57
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: address
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: address
+ZZZEP Identifier: INADDR_ANY
+ZZZEP Identifier: address
+ZZZEP Identifier: htons
+Function Identifier: htons | Line: 63
+ZZZEP Identifier: PORT
+ZZZEP Identifier: bind
+Function Identifier: bind | Line: 66
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: address
+ZZZEP Identifier: address
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 68
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 69
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 71
+ZZZEP Identifier: PORT
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 74
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 76
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 77
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: address
+ZZZEP Identifier: puts
+Function Identifier: puts | Line: 82
+ZZZEP Identifier: TRUE
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: sd
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: accept
+Function Identifier: accept | Line: 121
+ZZZEP Identifier: master_socket
+ZZZEP Identifier: address
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 124
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 125
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 129
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: inet_ntoa
+Function Identifier: inet_ntoa | Line: 129
+ZZZEP Identifier: address
+ZZZEP Identifier: ntohs
+Function Identifier: ntohs | Line: 130
+ZZZEP Identifier: address
+ZZZEP Identifier: send
+Function Identifier: send | Line: 133
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: message
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 133
+ZZZEP Identifier: message
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 133
+ZZZEP Identifier: message
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 135
+ZZZEP Identifier: puts
+Function Identifier: puts | Line: 138
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 147
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+ZZZEP Identifier: i
+ZZZEP Identifier: sd
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: valread
+ZZZEP Identifier: read
+Function Identifier: read | Line: 163
+ZZZEP Identifier: sd
+ZZZEP Identifier: buffer
+ZZZEP Identifier: getpeername
+Function Identifier: getpeername | Line: 166
+ZZZEP Identifier: sd
+ZZZEP Identifier: address
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 168
+ZZZEP Identifier: inet_ntoa
+Function Identifier: inet_ntoa | Line: 169
+ZZZEP Identifier: address
+ZZZEP Identifier: ntohs
+Function Identifier: ntohs | Line: 169
+ZZZEP Identifier: address
+ZZZEP Identifier: close
+Function Identifier: close | Line: 172
+ZZZEP Identifier: sd
+ZZZEP Identifier: client_socket
+ZZZEP Identifier: i
+ZZZEP Identifier: buffer
+ZZZEP Identifier: valread
+ZZZEP Identifier: send
+Function Identifier: send | Line: 182
+ZZZEP Identifier: sd
+ZZZEP Identifier: buffer
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 182
+ZZZEP Identifier: buffer
+ZZZEP Identifier: i
+ZZZEP Identifier: i
+ZZZEP Identifier: max_clients
+
+Socket ID sd - Writing (line 182) <- Closed (line 172) <- Reading (line 163) <- Connected (line 163) <- 
+Parent: UNKNOWN | Current State: MayBeReadingOrWriting
+
+Socket ID new_socket - Writing (line 133) <- Connected (line 121) <- 
+Parent: master_socket | Current State: MayBeReadingOrWriting
+
+Socket ID master_socket - TCP: Listening (line 121) <- Listening (line 74) <- Binding (line 66) <- NotListening (line 45) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+sd:UNKNOWN:MayBeReadingOrWriting:[]:163
+new_socket:master_socket:MayBeReadingOrWriting:[]:121
+master_socket::MayBeListening:[]:45
+===MAY BE LISTENING SOCKETS===
+master_socket::MayBeListening:[]:45
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+FuncId: main 
+VarId: message buffer address max_sd sd valread i activity max_clients client_socket new_socket addrlen master_socket opt argv argc 
+===GENERATED IN 0.00242 SECOND(S)===

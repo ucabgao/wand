@@ -1,0 +1,12 @@
+===ALL SOCKETS===
+server_fd::MayBeListening:[]:30
+server_fd2::MayBeListening:[]:60
+new_socket:server_fd:MayBeReadingOrWriting:[]:69
+===MAY BE LISTENING SOCKETS===
+server_fd::MayBeListening:[]:30
+server_fd2::MayBeListening:[]:60
+===FORK ON LINE===
+11
+===EXEC ON LINE===
+===END===
+===GENERATED IN 0.00484 SECOND(S)===

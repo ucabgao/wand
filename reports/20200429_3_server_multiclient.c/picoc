@@ -1,0 +1,92 @@
+Function Identifier: socket | Line: 45
+Function Identifier: perror | Line: 47
+Function Identifier: exit | Line: 48
+Function Identifier: setsockopt | Line: 53
+Function Identifier: perror | Line: 56
+Function Identifier: exit | Line: 57
+Function Identifier: htons | Line: 63
+Function Identifier: bind | Line: 66
+Function Identifier: perror | Line: 68
+Function Identifier: exit | Line: 69
+Function Identifier: printf | Line: 71
+Function Identifier: listen | Line: 74
+Function Identifier: perror | Line: 76
+Function Identifier: exit | Line: 77
+Function Identifier: puts | Line: 82
+Function Identifier: accept | Line: 121
+Function Identifier: perror | Line: 124
+Function Identifier: exit | Line: 125
+Function Identifier: printf | Line: 129
+Function Identifier: inet_ntoa | Line: 129
+Function Identifier: ntohs | Line: 129
+Function Identifier: send | Line: 132
+Function Identifier: strlen | Line: 132
+Function Identifier: strlen | Line: 132
+Function Identifier: perror | Line: 134
+Function Identifier: puts | Line: 137
+Function Identifier: printf | Line: 146
+Function Identifier: read | Line: 162
+Function Identifier: getpeername | Line: 165
+Function Identifier: printf | Line: 167
+Function Identifier: inet_ntoa | Line: 168
+Function Identifier: ntohs | Line: 168
+Function Identifier: close | Line: 171
+Function Identifier: send | Line: 181
+Function Identifier: strlen | Line: 181
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 45
+Function Identifier: perror | Line: 47
+Function Identifier: exit | Line: 48
+Function Identifier: setsockopt | Line: 53
+Function Identifier: perror | Line: 56
+Function Identifier: exit | Line: 57
+Function Identifier: htons | Line: 63
+Function Identifier: bind | Line: 66
+Function Identifier: perror | Line: 68
+Function Identifier: exit | Line: 69
+Function Identifier: printf | Line: 71
+Function Identifier: listen | Line: 74
+Function Identifier: perror | Line: 76
+Function Identifier: exit | Line: 77
+Function Identifier: puts | Line: 82
+Function Identifier: accept | Line: 121
+Function Identifier: perror | Line: 124
+Function Identifier: exit | Line: 125
+Function Identifier: printf | Line: 129
+Function Identifier: inet_ntoa | Line: 129
+Function Identifier: ntohs | Line: 129
+Function Identifier: send | Line: 132
+Function Identifier: strlen | Line: 132
+Function Identifier: strlen | Line: 132
+Function Identifier: perror | Line: 134
+Function Identifier: puts | Line: 137
+Function Identifier: printf | Line: 146
+Function Identifier: read | Line: 162
+Function Identifier: getpeername | Line: 165
+Function Identifier: printf | Line: 167
+Function Identifier: inet_ntoa | Line: 168
+Function Identifier: ntohs | Line: 168
+Function Identifier: close | Line: 171
+Function Identifier: send | Line: 181
+Function Identifier: strlen | Line: 181
+
+Socket ID sd - Writing (line 181) <- Closed (line 171) <- Reading (line 162) <- Connected (line 162) <- 
+Parent: UNKNOWN | Current State: MayBeReadingOrWriting
+
+Socket ID new_socket - Writing (line 132) <- Connected (line 121) <- 
+Parent: master_socket | Current State: MayBeReadingOrWriting
+
+Socket ID master_socket - TCP: Listening (line 121) <- Listening (line 74) <- Binding (line 66) <- NotListening (line 45) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+sd:UNKNOWN:MayBeReadingOrWriting:[]:162
+new_socket:master_socket:MayBeReadingOrWriting:[]:121
+master_socket::MayBeListening:[]:45
+===MAY BE LISTENING SOCKETS===
+master_socket::MayBeListening:[]:45
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+FuncId: main 
+VarId: message buffer address max_sd sd valread i activity max_clients client_socket new_socket addrlen master_socket opt argv argc 
+===GENERATED IN 0.00203 SECOND(S)===

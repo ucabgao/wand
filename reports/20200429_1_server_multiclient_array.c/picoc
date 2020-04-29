@@ -1,0 +1,46 @@
+Function Identifier: socket | Line: 18
+Function Identifier: perror | Line: 22
+Function Identifier: exit | Line: 23
+Function Identifier: htons | Line: 28
+Function Identifier: bind | Line: 31
+Function Identifier: perror | Line: 33
+Function Identifier: exit | Line: 34
+Function Identifier: listen | Line: 37
+Function Identifier: perror | Line: 39
+Function Identifier: exit | Line: 40
+Function Identifier: accept | Line: 44
+Function Identifier: perror | Line: 47
+Function Identifier: exit | Line: 48
+Function Identifier: read | Line: 50
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 18
+Function Identifier: perror | Line: 22
+Function Identifier: exit | Line: 23
+Function Identifier: htons | Line: 28
+Function Identifier: bind | Line: 31
+Function Identifier: perror | Line: 33
+Function Identifier: exit | Line: 34
+Function Identifier: listen | Line: 37
+Function Identifier: perror | Line: 39
+Function Identifier: exit | Line: 40
+Function Identifier: accept | Line: 44
+Function Identifier: perror | Line: 47
+Function Identifier: exit | Line: 48
+Function Identifier: read | Line: 50
+
+Socket ID clientSocket - Reading (line 50) <- Connected (line 44) <- 
+Parent: parentSocket | Current State: MayBeReadingOrWriting
+
+Socket ID parentSocket - TCP: Listening (line 44) <- Listening (line 37) <- Binding (line 31) <- NotListening (line 18) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+clientSocket:parentSocket:MayBeReadingOrWriting:[]:44
+parentSocket::MayBeListening:[]:18
+===MAY BE LISTENING SOCKETS===
+parentSocket::MayBeListening:[]:18
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+FuncId: main 
+VarId: i hello buffer valread clientSocket parentSocket addrlen address 
+===GENERATED IN 0.00190 SECOND(S)===

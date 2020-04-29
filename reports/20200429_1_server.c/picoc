@@ -1,0 +1,205 @@
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 10
+ZZZEP Identifier: fork
+Function Identifier: fork | Line: 11
+ZZZEP Identifier: address
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 25
+ZZZEP Identifier: printhelloworld
+Function Identifier: printhelloworld | Line: 26
+ZZZEP Identifier: x
+Function Identifier: x | Line: 27
+ZZZEP Identifier: socket
+Function Identifier: socket | Line: 30
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: SOCK_STREAM
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 33
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 34
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: setsockopt
+Function Identifier: setsockopt | Line: 38
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: SOL_SOCKET
+ZZZEP Identifier: SO_REUSEADDR
+ZZZEP Identifier: SO_REUSEPORT
+ZZZEP Identifier: opt
+ZZZEP Identifier: opt
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 41
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 42
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: address
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: address
+ZZZEP Identifier: INADDR_ANY
+ZZZEP Identifier: address
+ZZZEP Identifier: htons
+Function Identifier: htons | Line: 46
+ZZZEP Identifier: PORT
+ZZZEP Identifier: bind
+Function Identifier: bind | Line: 49
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: address
+ZZZEP Identifier: address
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 51
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 52
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 57
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 64
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 66
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 67
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: accept
+Function Identifier: accept | Line: 69
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: address
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 72
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 73
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: valread
+ZZZEP Identifier: read
+Function Identifier: read | Line: 75
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: buffer
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 76
+ZZZEP Identifier: buffer
+ZZZEP Identifier: send
+Function Identifier: send | Line: 77
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: hello
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 77
+ZZZEP Identifier: hello
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 79
+ZZZEP Identifier: __exit_value
+ZZZEP Identifier: main
+Function Identifier: main | Line: 1
+ZZZEP Identifier: address
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 25
+ZZZEP Identifier: printhelloworld
+Function Identifier: printhelloworld | Line: 26
+ZZZEP Identifier: x
+Function Identifier: x | Line: 27
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 10
+ZZZEP Identifier: fork
+Function Identifier: fork | Line: 11
+ZZZEP Identifier: socket
+Function Identifier: socket | Line: 30
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: SOCK_STREAM
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 33
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 34
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: setsockopt
+Function Identifier: setsockopt | Line: 38
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: SOL_SOCKET
+ZZZEP Identifier: SO_REUSEADDR
+ZZZEP Identifier: SO_REUSEPORT
+ZZZEP Identifier: opt
+ZZZEP Identifier: opt
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 41
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 42
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: address
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: address
+ZZZEP Identifier: INADDR_ANY
+ZZZEP Identifier: address
+ZZZEP Identifier: htons
+Function Identifier: htons | Line: 46
+ZZZEP Identifier: PORT
+ZZZEP Identifier: bind
+Function Identifier: bind | Line: 49
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: address
+ZZZEP Identifier: address
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 51
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 52
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 57
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 64
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 66
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 67
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: accept
+Function Identifier: accept | Line: 69
+ZZZEP Identifier: server_fd
+ZZZEP Identifier: address
+ZZZEP Identifier: addrlen
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: perror
+Function Identifier: perror | Line: 72
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 73
+ZZZEP Identifier: EXIT_FAILURE
+ZZZEP Identifier: valread
+ZZZEP Identifier: read
+Function Identifier: read | Line: 75
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: buffer
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 76
+ZZZEP Identifier: buffer
+ZZZEP Identifier: send
+Function Identifier: send | Line: 77
+ZZZEP Identifier: new_socket
+ZZZEP Identifier: hello
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 77
+ZZZEP Identifier: hello
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 79
+
+Socket ID new_socket - Writing (line 77) <- Reading (line 75) <- Connected (line 69) <- 
+Parent: server_fd | Current State: MayBeReadingOrWriting
+
+Socket ID server_fd - TCP: Listening (line 69) <- Listening (line 64) <- Listening (line 57) <- Binding (line 49) <- NotListening (line 30) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+new_socket:server_fd:MayBeReadingOrWriting:[]:69
+server_fd::MayBeListening:[]:30
+===MAY BE LISTENING SOCKETS===
+server_fd::MayBeListening:[]:30
+===FORK ON LINE===
+11
+===EXEC ON LINE===
+===END===
+FuncId: main x 
+VarId: server_fd hello buffer addrlen opt address valread new_socket server_fd2 
+===GENERATED IN 0.00241 SECOND(S)===

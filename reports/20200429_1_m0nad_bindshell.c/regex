@@ -1,0 +1,12 @@
+===ALL SOCKETS===
+fd::MayBeListening:[]:25
+conex:sockfd:NotReadingOrWriting:[0, 1, 2]:49
+sockfd::MayBeListening:[]:49
+===MAY BE LISTENING SOCKETS===
+fd::MayBeListening:[]:25
+sockfd::MayBeListening:[]:49
+===FORK ON LINE===
+50
+===EXEC ON LINE===
+===END===
+===GENERATED IN 0.00492 SECOND(S)===

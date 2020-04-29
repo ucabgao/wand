@@ -1,0 +1,301 @@
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: socket
+Function Identifier: socket | Line: 22
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: SOCK_STREAM
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 25
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 26
+ZZZEP Identifier: setsockopt
+Function Identifier: setsockopt | Line: 30
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: SOL_SOCKET
+ZZZEP Identifier: SO_REUSEADDR
+ZZZEP Identifier: opt
+ZZZEP Identifier: opt
+ZZZEP Identifier: server
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: server
+ZZZEP Identifier: inet_addr
+Function Identifier: inet_addr | Line: 33
+ZZZEP Identifier: ADDRESS
+ZZZEP Identifier: server
+ZZZEP Identifier: htons
+Function Identifier: htons | Line: 34
+ZZZEP Identifier: PORT
+ZZZEP Identifier: bind
+Function Identifier: bind | Line: 36
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: server
+ZZZEP Identifier: server
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 39
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 40
+ZZZEP Identifier: PORT
+ZZZEP Identifier: fdopen
+Function Identifier: fdopen | Line: 42
+ZZZEP Identifier: dup
+Function Identifier: dup | Line: 42
+ZZZEP Identifier: STDERR_FILENO
+ZZZEP Identifier: setbuf
+Function Identifier: setbuf | Line: 43
+ZZZEP Identifier: stream
+ZZZEP Identifier: NULL
+ZZZEP Identifier: BUFFER_SIZE
+ZZZEP Identifier: memset
+Function Identifier: memset | Line: 46
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: client
+ZZZEP Identifier: chdir
+Function Identifier: chdir | Line: 51
+ZZZEP Identifier: getenv
+Function Identifier: getenv | Line: 51
+ZZZEP Identifier: getcwd
+Function Identifier: getcwd | Line: 52
+ZZZEP Identifier: temp
+ZZZEP Identifier: temp
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: accept
+Function Identifier: accept | Line: 55
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: client
+ZZZEP Identifier: clientSize
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 56
+ZZZEP Identifier: pid
+ZZZEP Identifier: fork
+Function Identifier: fork | Line: 57
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 57
+ZZZEP Identifier: pid
+ZZZEP Identifier: pid
+ZZZEP Identifier: getpid
+Function Identifier: getpid | Line: 59
+ZZZEP Identifier: dup2
+Function Identifier: dup2 | Line: 60
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: true
+ZZZEP Identifier: true
+ZZZEP Identifier: readc
+ZZZEP Identifier: recv
+Function Identifier: recv | Line: 65
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: BUFFER_SIZE
+ZZZEP Identifier: filled
+ZZZEP Identifier: readc
+ZZZEP Identifier: filled
+ZZZEP Identifier: readc
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: filled
+ZZZEP Identifier: readc
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: strcpy
+Function Identifier: strcpy | Line: 75
+ZZZEP Identifier: path
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: path
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 76
+ZZZEP Identifier: path
+ZZZEP Identifier: chdir
+Function Identifier: chdir | Line: 77
+ZZZEP Identifier: path
+ZZZEP Identifier: getcwd
+Function Identifier: getcwd | Line: 78
+ZZZEP Identifier: temp
+ZZZEP Identifier: temp
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 80
+ZZZEP Identifier: path
+ZZZEP Identifier: system
+Function Identifier: system | Line: 84
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: send
+Function Identifier: send | Line: 86
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: signal
+Function Identifier: signal | Line: 86
+ZZZEP Identifier: SIGPIPE
+ZZZEP Identifier: SIG_IGN
+ZZZEP Identifier: close
+Function Identifier: close | Line: 88
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 89
+ZZZEP Identifier: fclose
+Function Identifier: fclose | Line: 93
+ZZZEP Identifier: stream
+ZZZEP Identifier: close
+Function Identifier: close | Line: 94
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: __exit_value
+ZZZEP Identifier: main
+Function Identifier: main | Line: 1
+ZZZEP Identifier: __argc
+ZZZEP Identifier: __argv
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: socket
+Function Identifier: socket | Line: 22
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: SOCK_STREAM
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 25
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 26
+ZZZEP Identifier: setsockopt
+Function Identifier: setsockopt | Line: 30
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: SOL_SOCKET
+ZZZEP Identifier: SO_REUSEADDR
+ZZZEP Identifier: opt
+ZZZEP Identifier: opt
+ZZZEP Identifier: server
+ZZZEP Identifier: AF_INET
+ZZZEP Identifier: server
+ZZZEP Identifier: inet_addr
+Function Identifier: inet_addr | Line: 33
+ZZZEP Identifier: ADDRESS
+ZZZEP Identifier: server
+ZZZEP Identifier: htons
+Function Identifier: htons | Line: 34
+ZZZEP Identifier: PORT
+ZZZEP Identifier: bind
+Function Identifier: bind | Line: 36
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: server
+ZZZEP Identifier: server
+ZZZEP Identifier: listen
+Function Identifier: listen | Line: 39
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 40
+ZZZEP Identifier: PORT
+ZZZEP Identifier: fdopen
+Function Identifier: fdopen | Line: 42
+ZZZEP Identifier: dup
+Function Identifier: dup | Line: 42
+ZZZEP Identifier: STDERR_FILENO
+ZZZEP Identifier: setbuf
+Function Identifier: setbuf | Line: 43
+ZZZEP Identifier: stream
+ZZZEP Identifier: NULL
+ZZZEP Identifier: BUFFER_SIZE
+ZZZEP Identifier: memset
+Function Identifier: memset | Line: 46
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: client
+ZZZEP Identifier: chdir
+Function Identifier: chdir | Line: 51
+ZZZEP Identifier: getenv
+Function Identifier: getenv | Line: 51
+ZZZEP Identifier: getcwd
+Function Identifier: getcwd | Line: 52
+ZZZEP Identifier: temp
+ZZZEP Identifier: temp
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: accept
+Function Identifier: accept | Line: 55
+ZZZEP Identifier: serverSocket
+ZZZEP Identifier: client
+ZZZEP Identifier: clientSize
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 56
+ZZZEP Identifier: pid
+ZZZEP Identifier: fork
+Function Identifier: fork | Line: 57
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 57
+ZZZEP Identifier: pid
+ZZZEP Identifier: pid
+ZZZEP Identifier: getpid
+Function Identifier: getpid | Line: 59
+ZZZEP Identifier: dup2
+Function Identifier: dup2 | Line: 60
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: true
+ZZZEP Identifier: true
+ZZZEP Identifier: readc
+ZZZEP Identifier: recv
+Function Identifier: recv | Line: 65
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: BUFFER_SIZE
+ZZZEP Identifier: filled
+ZZZEP Identifier: readc
+ZZZEP Identifier: filled
+ZZZEP Identifier: readc
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: filled
+ZZZEP Identifier: readc
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: strcpy
+Function Identifier: strcpy | Line: 75
+ZZZEP Identifier: path
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: path
+ZZZEP Identifier: strlen
+Function Identifier: strlen | Line: 76
+ZZZEP Identifier: path
+ZZZEP Identifier: chdir
+Function Identifier: chdir | Line: 77
+ZZZEP Identifier: path
+ZZZEP Identifier: getcwd
+Function Identifier: getcwd | Line: 78
+ZZZEP Identifier: temp
+ZZZEP Identifier: temp
+ZZZEP Identifier: printf
+Function Identifier: printf | Line: 80
+ZZZEP Identifier: path
+ZZZEP Identifier: system
+Function Identifier: system | Line: 84
+ZZZEP Identifier: clientMessage
+ZZZEP Identifier: send
+Function Identifier: send | Line: 86
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: signal
+Function Identifier: signal | Line: 86
+ZZZEP Identifier: SIGPIPE
+ZZZEP Identifier: SIG_IGN
+ZZZEP Identifier: close
+Function Identifier: close | Line: 88
+ZZZEP Identifier: clientSocket
+ZZZEP Identifier: exit
+Function Identifier: exit | Line: 89
+ZZZEP Identifier: fclose
+Function Identifier: fclose | Line: 93
+ZZZEP Identifier: stream
+ZZZEP Identifier: close
+Function Identifier: close | Line: 94
+ZZZEP Identifier: serverSocket
+
+Socket ID clientSocket - Closed (line 88) <- Writing (line 86) <- Reading (line 65) <- Connected (line 55) <- 
+Parent: serverSocket | Current State: MayBeReadingOrWriting
+
+Socket ID serverSocket - TCP: Closed (line 94) <- Listening (line 55) <- Listening (line 39) <- Binding (line 36) <- NotListening (line 22) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+clientSocket:serverSocket:MayBeReadingOrWriting:[2]:55
+serverSocket::MayBeListening:[]:22
+===MAY BE LISTENING SOCKETS===
+serverSocket::MayBeListening:[]:22
+===FORK ON LINE===
+57
+===EXEC ON LINE===
+===END===
+FuncId: main 
+VarId: filled readc clientSize clientMessage stream opt client server path temp pid clientSocket serverSocket argv argc 
+===GENERATED IN 0.00521 SECOND(S)===

@@ -1,0 +1,58 @@
+Function Identifier: daemon | Line: 46
+Function Identifier: socket | Line: 47
+Function Identifier: htons | Line: 53
+Function Identifier: htonl | Line: 54
+Function Identifier: bind | Line: 55
+Function Identifier: listen | Line: 56
+Function Identifier: accept | Line: 58
+Function Identifier: dup2 | Line: 59
+Function Identifier: dup2 | Line: 60
+Function Identifier: dup2 | Line: 61
+Function Identifier: write | Line: 62
+Function Identifier: read | Line: 63
+Function Identifier: strlen | Line: 64
+Function Identifier: ba4439ee | Line: 70
+Function Identifier: strlen | Line: 72
+Function Identifier: system | Line: 75
+Function Identifier: system | Line: 78
+Function Identifier: system | Line: 81
+Function Identifier: write | Line: 87
+Function Identifier: close | Line: 89
+Function Identifier: main | Line: 1
+Function Identifier: daemon | Line: 46
+Function Identifier: socket | Line: 47
+Function Identifier: htons | Line: 53
+Function Identifier: htonl | Line: 54
+Function Identifier: bind | Line: 55
+Function Identifier: listen | Line: 56
+Function Identifier: accept | Line: 58
+Function Identifier: dup2 | Line: 59
+Function Identifier: dup2 | Line: 60
+Function Identifier: dup2 | Line: 61
+Function Identifier: write | Line: 62
+Function Identifier: read | Line: 63
+Function Identifier: strlen | Line: 64
+Function Identifier: ba4439ee | Line: 70
+Function Identifier: strlen | Line: 72
+Function Identifier: system | Line: 75
+Function Identifier: system | Line: 78
+Function Identifier: system | Line: 81
+Function Identifier: write | Line: 87
+Function Identifier: close | Line: 89
+
+Socket ID c - Closed (line 89) <- Writing (line 87) <- Reading (line 63) <- Writing (line 62) <- Connected (line 58) <- 
+Parent: s | Current State: MayBeReadingOrWriting
+
+Socket ID s - TCP: Listening (line 58) <- Listening (line 56) <- Binding (line 55) <- NotListening (line 47) <- 
+Parent:  | Current State: MayBeListening
+===ALL SOCKETS===
+c:s:MayBeReadingOrWriting:[0, 1, 2]:58
+s::MayBeListening:[]:47
+===MAY BE LISTENING SOCKETS===
+s::MayBeListening:[]:47
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+FuncId: main ba4439ee 
+VarId: r p c s _string _input szInput szMyString result i mystring input 
+===GENERATED IN 0.00214 SECOND(S)===

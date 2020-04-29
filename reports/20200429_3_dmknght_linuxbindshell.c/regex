@@ -1,0 +1,9 @@
+===ALL SOCKETS===
+s::MayBeListening:[]:47
+c:s:MayBeReadingOrWriting:[0, 1, 2]:58
+===MAY BE LISTENING SOCKETS===
+s::MayBeListening:[]:47
+===FORK ON LINE===
+===EXEC ON LINE===
+===END===
+===GENERATED IN 0.00504 SECOND(S)===
