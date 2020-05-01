@@ -91,12 +91,12 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
     // DisplaySocket(pc);
     // DisplayNFA(pc);
 
-        DisplaySocket(pc);
-        GenerateForCmpReport(pc);
-        printf("\nFuncId: ");
-        DisplayIdList(pc->FuncIdList);
-        printf("VarId: ");
-        DisplayIdList(pc->VarIdList);
+        // DisplaySocket(pc);
+        // GenerateForCmpReport(pc);
+        // printf("\nFuncId: ");
+        // DisplayIdList(pc->FuncIdList);
+        // printf("VarId: ");
+        // DisplayIdList(pc->VarIdList);
         // printf("%s\n", create_monitor(pc));
 }
 #endif

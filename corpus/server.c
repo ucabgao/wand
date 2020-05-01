@@ -6,11 +6,6 @@
 #include <string.h>
 #define PORT 8080 
 
-void x() {
-	printf("in x");
-	fork();
-}
-
 int main() 
 { 
 	// int server_fd;
@@ -21,10 +16,7 @@ int main()
 	int opt = 1; 
 	int addrlen = sizeof(address); 
 	char buffer[1024] = {0}; 
-	char *hello = "Hello from server"; 
-	printf("Testing\n");
-	printhelloworld();
-	x();
+	char *hello = "Hello from server";
 
 	// Creating socket file descriptor
 	int server_fd = socket(AF_INET, SOCK_STREAM, 0);

@@ -2,6 +2,7 @@ import re
 import sys
 import time
 import enum
+import json
 
 class Socket:
 	def __init__(self):
@@ -14,6 +15,34 @@ class Socket:
 class Characteristic(enum.Enum):
     Fork = 1
     Exec = 2
+
+def output_json():
+	jsonDict = {"all_sockets":[], "maybelistening_sockets":[], "fork":[], "exec":[],
+				"var_id":[], "func_id":[], "analysis_time":0}
+
+	for s in socket_dict:
+		socket = socket_dict[s]
+
+		# all sockets
+		jsonDict["all_sockets"].append(socket.__dict__)
+
+		# maybelistening sockets
+		if socket.state == "MayBeListening":
+			jsonDict["maybelistening_sockets"].append(socket.__dict__)
+
+	# fork
+	for s in [y for (x,y) in characteristic_list if x == Characteristic.Fork]:
+		jsonDict["fork"].append(s)
+
+	# exec
+	for s in [y for (x,y) in characteristic_list if x == Characteristic.Exec]:
+		jsonDict["exec"].append(s)
+
+	# analysis time
+	jsonDict["analysis_time"] = time.time() - start_time
+	print(json.dumps(jsonDict, indent=8))
+
+
 
 start_time = time.time()
 
@@ -144,38 +173,8 @@ with open(sys.argv[1], 'r') as myfile:
 
 
 # print(myfile.read())
-
-print("===ALL SOCKETS===")
-# print("Socket List:")
-for s in socket_dict:
-	socket = socket_dict[s]
-	print("%s:%s:%s:%s:%d" % (socket.identifier,socket.parent,socket.state,str(socket.dup),socket.line))
-# print(socket_dict)
-# print("Socket State Dict:")
-# print(socket_state_dict)
-# print("Socket Dup Dict:")
-# print(socket_dup_dict)
-print("===MAY BE LISTENING SOCKETS===")
-# for s in listen_set.intersection(accept_set):
-# 	socket = socket_dict[s]
-# 	print("%s:%s:%s:%s:%d" % (socket.identifier,socket.parent,socket.state,str(socket.dup),socket.line))
-for s in socket_dict:
-	socket = socket_dict[s]
-	if socket.state == "MayBeListening":
-		print("%s:%s:%s:%s:%d" % (socket.identifier,socket.parent,socket.state,str(socket.dup),socket.line))
-
-# print(dup2_set)
-print("===FORK ON LINE===")
-for s in [y for (x,y) in characteristic_list if x == Characteristic.Fork]:
-	print(s)
-
-print("===EXEC ON LINE===")
-for s in [y for (x,y) in characteristic_list if x == Characteristic.Exec]:
-	print(s)
-
-print("===END===")
-import time
-
-print("===GENERATED IN %.5f SECOND(S)===" % (time.time() - start_time))
+	print("===JSON OUTPUT===")
+	output_json();
+	print("===END===")
 
 myfile.close()

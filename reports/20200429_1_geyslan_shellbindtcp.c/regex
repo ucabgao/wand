@@ -1,9 +1,0 @@
-===ALL SOCKETS===
-sockfd::MayBeListening:[]:20
-resultfd:sockfd:NotReadingOrWriting:[2, 1, 0]:38
-===MAY BE LISTENING SOCKETS===
-sockfd::MayBeListening:[]:20
-===FORK ON LINE===
-===EXEC ON LINE===
-===END===
-===GENERATED IN 0.00469 SECOND(S)===

@@ -1,0 +1,90 @@
+Function Identifier: socket | Line: 22
+Function Identifier: perror | Line: 25
+Function Identifier: exit | Line: 26
+Function Identifier: setsockopt | Line: 30
+Function Identifier: perror | Line: 33
+Function Identifier: exit | Line: 34
+Function Identifier: htons | Line: 38
+Function Identifier: bind | Line: 41
+Function Identifier: perror | Line: 43
+Function Identifier: exit | Line: 44
+Function Identifier: listen | Line: 49
+Function Identifier: socket | Line: 52
+Function Identifier: listen | Line: 53
+Function Identifier: listen | Line: 56
+Function Identifier: perror | Line: 58
+Function Identifier: exit | Line: 59
+Function Identifier: accept | Line: 61
+Function Identifier: perror | Line: 64
+Function Identifier: exit | Line: 65
+Function Identifier: read | Line: 67
+Function Identifier: printf | Line: 68
+Function Identifier: send | Line: 69
+Function Identifier: strlen | Line: 69
+Function Identifier: printf | Line: 71
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 22
+Function Identifier: perror | Line: 25
+Function Identifier: exit | Line: 26
+Function Identifier: setsockopt | Line: 30
+Function Identifier: perror | Line: 33
+Function Identifier: exit | Line: 34
+Function Identifier: htons | Line: 38
+Function Identifier: bind | Line: 41
+Function Identifier: perror | Line: 43
+Function Identifier: exit | Line: 44
+Function Identifier: listen | Line: 49
+Function Identifier: socket | Line: 52
+Function Identifier: listen | Line: 53
+Function Identifier: listen | Line: 56
+Function Identifier: perror | Line: 58
+Function Identifier: exit | Line: 59
+Function Identifier: accept | Line: 61
+Function Identifier: perror | Line: 64
+Function Identifier: exit | Line: 65
+Function Identifier: read | Line: 67
+Function Identifier: printf | Line: 68
+Function Identifier: send | Line: 69
+Function Identifier: strlen | Line: 69
+Function Identifier: printf | Line: 71
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"new_socket",
+			"parent":	"server_fd",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[],
+			"line":	61
+		}, {
+			"identifier":	"server_fd2",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	52
+		}, {
+			"identifier":	"server_fd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	22
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"server_fd2",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	52
+		}, {
+			"identifier":	"server_fd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	22
+		}],
+	"fork":	[],
+	"exec":	[],
+	"var_id":	["server_fd", "hello", "buffer", "addrlen", "opt", "address", "valread", "new_socket", "server_fd2"],
+	"func_id":	["main"],
+	"analysis_time":	0.001681856
+}
+===END===

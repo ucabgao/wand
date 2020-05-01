@@ -18,7 +18,6 @@
 
 #include "interpreter.h"
 
-
 #if defined(UNIX_HOST) || defined(WIN32)
 #include <setjmp.h>
 
@@ -45,5 +44,7 @@ void PicocPlatformScanFile(Picoc *pc, const char *FileName); /* platform_unix.c 
 
 /* include.c */
 void PicocIncludeAllSystemHeaders(Picoc *pc);
+
+char *create_monitor(Picoc *pc);
 
 #endif /* PICOC_H */

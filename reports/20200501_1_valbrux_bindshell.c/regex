@@ -1,0 +1,43 @@
+===JSON OUTPUT===
+{
+        "all_sockets": [
+                {
+                        "identifier": "sockfd",
+                        "parent": "",
+                        "state": "MayBeListening",
+                        "dup": [],
+                        "line": 42
+                },
+                {
+                        "identifier": "new_sockfd",
+                        "parent": "sockfd",
+                        "state": "MayBeReadingOrWriting",
+                        "dup": [
+                                2,
+                                1,
+                                0
+                        ],
+                        "line": 64
+                }
+        ],
+        "maybelistening_sockets": [
+                {
+                        "identifier": "sockfd",
+                        "parent": "",
+                        "state": "MayBeListening",
+                        "dup": [],
+                        "line": 42
+                }
+        ],
+        "fork": [
+                62,
+                70
+        ],
+        "exec": [
+                75
+        ],
+        "var_id": [],
+        "func_id": [],
+        "analysis_time": 0.004140615463256836
+}
+===END===

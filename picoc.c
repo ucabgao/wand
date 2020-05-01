@@ -12,7 +12,7 @@
 #include <string.h>
 #include <time.h>
 
-#define BILLION  1000000000.0
+// #define BILLION  1000000000.0
 #define PICOC_STACK_SIZE (128*1024)              /* space for the the stack */
 
 int main(int argc, char **argv)
@@ -72,10 +72,12 @@ int main(int argc, char **argv)
     PicocCleanup(&pc);
 
     clock_gettime(CLOCK_REALTIME, &(pc.EndTime));
-    double time_spent = (pc.EndTime.tv_sec - pc.StartTime.tv_sec) +
-                        (pc.EndTime.tv_nsec - pc.StartTime.tv_nsec) / BILLION;
+    // double time_spent = (pc.EndTime.tv_sec - pc.StartTime.tv_sec) +
+    //                     (pc.EndTime.tv_nsec - pc.StartTime.tv_nsec) / BILLION;
     
-    printf("===GENERATED IN %.5f SECOND(S)===\n", time_spent);
+    // printf("===GENERATED IN %.5f SECOND(S)===\n", time_spent);
+
+    printf("===JSON OUTPUT===\n%s\n===END===\n", create_monitor(&pc));
     return pc.PicocExitValue;
 }
 #else
