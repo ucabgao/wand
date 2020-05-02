@@ -1,0 +1,51 @@
+===JSON OUTPUT===
+{
+"all_sockets":
+	[
+		{
+		"identifier":"fd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":25
+		},
+		{
+		"identifier":"sockfd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":49
+		},
+		{
+		"identifier":"conex",
+		"parent":"sockfd",
+		"state":"NotReadingOrWriting",
+		"dup":[0,1,2],
+		"line":49
+		}
+	],
+"maybelistening_sockets":
+	[
+
+		{
+		"identifier":"fd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":25
+		},
+		{
+		"identifier":"sockfd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":49
+		}
+	],
+"fork":[50],
+"exec":[],
+"var_id":["msg","name","port","fd","argc","argv","sockfd","conex","sh","server"],
+"func_id":["error","init_serv","main"],
+"analysis_time":0
+}
+===END===

@@ -3,8 +3,6 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <socket.h>
-// #include <sys/types.h>
-// #include <netinet/in.h>
 
 int main()
 {

@@ -1,0 +1,50 @@
+===JSON OUTPUT===
+{
+"all_sockets":
+	[
+		{
+		"identifier":"server_fd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":22
+		},
+		{
+		"identifier":"server_fd2",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":52
+		},
+		{
+		"identifier":"new_socket",
+		"parent":"server_fd",
+		"state":"MayBeReadingOrWriting",
+		"dup":[],
+		"line":	61
+		}
+	],
+"maybelistening_sockets":
+	[
+		{
+		"identifier":"server_fd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":22
+		},
+		{
+		"identifier":"server_fd2",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":52
+		}
+	],
+"fork":[],
+"exec":[],
+"var_id":["server_fd2","new_socket","valread","address","opt","addrlen","buffer","hello","server_fd"],
+"func_id":["main"],
+"analysis_time":0
+}
+===END===

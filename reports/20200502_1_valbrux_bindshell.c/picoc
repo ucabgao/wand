@@ -1,0 +1,82 @@
+Function Identifier: socket | Line: 42
+Function Identifier: perror | Line: 43
+Function Identifier: setsockopt | Line: 44
+Function Identifier: perror | Line: 45
+Function Identifier: htons | Line: 49
+Function Identifier: memset | Line: 51
+Function Identifier: bind | Line: 54
+Function Identifier: perror | Line: 55
+Function Identifier: listen | Line: 57
+Function Identifier: perror | Line: 58
+Function Identifier: printf | Line: 61
+Function Identifier: fork | Line: 62
+Function Identifier: accept | Line: 64
+Function Identifier: perror | Line: 66
+Function Identifier: send | Line: 67
+Function Identifier: read | Line: 68
+Function Identifier: strncmp | Line: 69
+Function Identifier: fork | Line: 70
+Function Identifier: send | Line: 71
+Function Identifier: dup2 | Line: 72
+Function Identifier: dup2 | Line: 73
+Function Identifier: dup2 | Line: 74
+Function Identifier: execl | Line: 75
+Function Identifier: send | Line: 80
+Function Identifier: close | Line: 86
+Function Identifier: close | Line: 87
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 42
+Function Identifier: perror | Line: 43
+Function Identifier: setsockopt | Line: 44
+Function Identifier: perror | Line: 45
+Function Identifier: htons | Line: 49
+Function Identifier: memset | Line: 51
+Function Identifier: bind | Line: 54
+Function Identifier: perror | Line: 55
+Function Identifier: listen | Line: 57
+Function Identifier: perror | Line: 58
+Function Identifier: printf | Line: 61
+Function Identifier: fork | Line: 62
+Function Identifier: accept | Line: 64
+Function Identifier: perror | Line: 66
+Function Identifier: send | Line: 67
+Function Identifier: read | Line: 68
+Function Identifier: strncmp | Line: 69
+Function Identifier: fork | Line: 70
+Function Identifier: send | Line: 71
+Function Identifier: dup2 | Line: 72
+Function Identifier: dup2 | Line: 73
+Function Identifier: dup2 | Line: 74
+Function Identifier: execl | Line: 75
+Function Identifier: send | Line: 80
+Function Identifier: close | Line: 86
+Function Identifier: close | Line: 87
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"new_sockfd",
+			"parent":	"sockfd",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[0, 1, 2],
+			"line":	64
+		}, {
+			"identifier":	"sockfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	42
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"sockfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	42
+		}],
+	"fork":	[70, 62],
+	"exec":	[75],
+	"var_id":	["sin_size", "client_addr", "host_addr", "buffer", "yes", "new_sockfd", "sockfd", "argv", "argc"],
+	"func_id":	["main"],
+	"analysis_time":	0.003328946
+}
+===END===

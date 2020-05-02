@@ -1,13 +1,8 @@
 // Server code in C to sort the array 
-// #include <arpa/inet.h> 
+
 #include <unistd.h> 
 #include <stdio.h> 
 #include <socket.h> 
-// #include <stdlib.h> 
-// #include <string.h>
-// #include <inet.h>
-
-// void bubble_sort(int[], int); 
 
 // Driver code 
 int main(int argc, char** argv) 

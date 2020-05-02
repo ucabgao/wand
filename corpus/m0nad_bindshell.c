@@ -17,7 +17,7 @@ int
 init_serv(struct sockaddr_in * name, unsigned int port)
 {
   int fd;
-  //memset ((char *) name,0, sizeof (*name));
+  
   name->sin_family = AF_INET;
   name->sin_port = htons(port);
   name->sin_addr.s_addr = htonl(INADDR_ANY);

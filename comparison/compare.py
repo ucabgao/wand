@@ -16,8 +16,9 @@ directory = "../corpus"
 # files = ["deadbits_bindshell.c"]
 # files = ["server_multiclient_array.c"]
 files = ["arturgontijo_directshell.c","bressan3_server.c","deadbits_bindshell.c","dmknght_linuxbind.c",
-"geyslan_shellbindtcp.c","m0nad_bindshell.c","server.c","server_multiclient.c","server_multiclient_array.c",
-"server2.c","utsav3_server.c","valbrux_bindshell.c"]
+"fakhrizulkifli_n00bshell.c","geyslan_shellbindtcp.c","m0nad_bindshell.c",
+"server.c","server_multiclient.c","server_multiclient_array.c","server2.c",
+"utsav3_server.c","valbrux_bindshell.c"]
 labels = ["===JSON OUTPUT===","===END==="]
 # labels= ["===ALL SOCKETS===","===MAY BE LISTENING SOCKETS===","===FORK ON LINE===","===END==="]
 output = ""

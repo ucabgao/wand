@@ -1,0 +1,43 @@
+===JSON OUTPUT===
+{
+"all_sockets":
+	[
+		{
+		"identifier":"master_socket",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":32
+		},
+		{
+		"identifier":"new_socket",
+		"parent":"master_socket",
+		"state":"MayBeReadingOrWriting",
+		"dup":[],
+		"line":80
+		},
+		{
+		"identifier":"sd",
+		"parent":"UNKNOWN",
+		"state":"MayBeReadingOrWriting",
+		"dup":[],
+		"line":116
+		}
+	],
+"maybelistening_sockets":
+	[
+		{
+		"identifier":"master_socket",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":32
+		}
+	],
+"fork":[],
+"exec":[],
+"var_id":["argc","argv","opt","master_socket","addrlen","new_socket","client_socket","max_clients","activity","i","valread","sd","max_sd","address","buffer","message"],
+"func_id":["main"],
+"analysis_time":0
+}
+===END===

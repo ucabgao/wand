@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <socket.h>
-// #include <netinet/in.h>
-// #include <arpa/inet.h>
 
 //Listening port
 #define PORT 1234

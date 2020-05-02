@@ -1,0 +1,36 @@
+===JSON OUTPUT===
+{
+"all_sockets":
+	[
+		{
+		"identifier":"sockfd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":34
+		},
+		{
+		"identifier":"newsockfd",
+		"parent":"sockfd",
+		"state":"MayBeReadingOrWriting",
+		"dup":[],
+		"line":70
+		}
+	],
+"maybelistening_sockets":
+	[
+		{
+		"identifier":"sockfd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":34
+		}
+	],
+"fork":[108],
+"exec":[112],
+"var_id":["","msg","argc","argv","sockfd","newsockfd","portno","clilen","buffer","serv_addr","cli_addr","n","prog","args","child_pid","i","cmd","temp","tok"],
+"func_id":["readAndParseCmdLine","error","main"],
+"analysis_time":0
+}
+===END===

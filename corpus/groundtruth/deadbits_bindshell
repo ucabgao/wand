@@ -1,0 +1,36 @@
+===JSON OUTPUT===
+{
+"all_sockets":
+	[
+		{
+		"identifier":"srv_sockfd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":30
+		},
+		{
+		"identifier":"new_sockfd",
+		"parent":"srv_sockfd",
+		"state":"MayBeReadingOrWriting",
+		"dup":[2,1,0],
+		"line":54
+		}
+	],
+"maybelistening_sockets":
+	[
+		{
+		"identifier":"srv_sockfd",
+		"parent":"",
+		"state":"MayBeListening",
+		"dup":[],
+		"line":30
+		}
+	],
+"fork":[28,61],
+"exec":[70],
+"var_id":["argc","argv","msg","srv_sockfd","new_sockfd","new_addrlen","srv_addr","new_addr"],
+"func_id":["main"],
+"analysis_time":0
+}
+===END===
