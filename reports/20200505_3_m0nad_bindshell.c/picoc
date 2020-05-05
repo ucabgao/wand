@@ -1,0 +1,86 @@
+Function Identifier: perror | Line: 12
+Function Identifier: exit | Line: 13
+Function Identifier: htons | Line: 22
+Function Identifier: htonl | Line: 23
+Function Identifier: socket | Line: 25
+Function Identifier: error | Line: 26
+Function Identifier: bind | Line: 27
+Function Identifier: error | Line: 28
+Function Identifier: listen | Line: 29
+Function Identifier: error | Line: 30
+Function Identifier: printf | Line: 41
+Function Identifier: exit | Line: 42
+Function Identifier: atoi | Line: 45
+Function Identifier: init_serv | Line: 47
+Function Identifier: accept | Line: 49
+Function Identifier: fork | Line: 50
+Function Identifier: dup2 | Line: 51
+Function Identifier: dup2 | Line: 51
+Function Identifier: dup2 | Line: 51
+Function Identifier: execve | Line: 52
+Function Identifier: main | Line: 1
+Function Identifier: printf | Line: 41
+Function Identifier: exit | Line: 42
+Function Identifier: atoi | Line: 45
+Function Identifier: init_serv | Line: 47
+Function Identifier: htons | Line: 22
+Function Identifier: htonl | Line: 23
+Function Identifier: socket | Line: 25
+Function Identifier: error | Line: 26
+Function Identifier: perror | Line: 12
+Function Identifier: exit | Line: 13
+Function Identifier: bind | Line: 27
+Function Identifier: error | Line: 28
+Function Identifier: perror | Line: 12
+Function Identifier: exit | Line: 13
+Function Identifier: listen | Line: 29
+Function Identifier: error | Line: 30
+Function Identifier: perror | Line: 12
+Function Identifier: exit | Line: 13
+Function Identifier: accept | Line: 49
+Function Identifier: fork | Line: 50
+Function Identifier: dup2 | Line: 51
+Function Identifier: dup2 | Line: 51
+Function Identifier: dup2 | Line: 51
+Function Identifier: execve | Line: 52
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"conex",
+			"parent":	"sockfd",
+			"state":	"NotReadingOrWriting",
+			"dup":	[0, 1, 2],
+			"line":	49
+		}, {
+			"identifier":	"sockfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	49
+		}, {
+			"identifier":	"fd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	25
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"sockfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	49
+		}, {
+			"identifier":	"fd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	25
+		}],
+	"fork":	[50],
+	"exec":	[],
+	"var_id":	["server", "sh", "conex", "sockfd", "argv", "argc", "fd", "port", "name", "msg"],
+	"func_id":	["main", "init_serv", "error"],
+	"analysis_time":	0.003472068
+}
+===END===

@@ -1,0 +1,78 @@
+Function Identifier: memset | Line: 47
+Function Identifier: printf | Line: 50
+Function Identifier: exit | Line: 51
+Function Identifier: socket | Line: 54
+Function Identifier: perror | Line: 55
+Function Identifier: exit | Line: 56
+Function Identifier: htonl | Line: 60
+Function Identifier: htons | Line: 61
+Function Identifier: atoi | Line: 61
+Function Identifier: bind | Line: 63
+Function Identifier: perror | Line: 64
+Function Identifier: exit | Line: 65
+Function Identifier: listen | Line: 68
+Function Identifier: perror | Line: 69
+Function Identifier: accept | Line: 74
+Function Identifier: perror | Line: 75
+Function Identifier: exit | Line: 76
+Function Identifier: fork | Line: 79
+Function Identifier: send | Line: 80
+Function Identifier: dup2 | Line: 81
+Function Identifier: dup2 | Line: 82
+Function Identifier: execl | Line: 83
+Function Identifier: close | Line: 84
+Function Identifier: close | Line: 86
+Function Identifier: main | Line: 1
+Function Identifier: memset | Line: 47
+Function Identifier: printf | Line: 50
+Function Identifier: exit | Line: 51
+Function Identifier: socket | Line: 54
+Function Identifier: perror | Line: 55
+Function Identifier: exit | Line: 56
+Function Identifier: htonl | Line: 60
+Function Identifier: htons | Line: 61
+Function Identifier: atoi | Line: 61
+Function Identifier: bind | Line: 63
+Function Identifier: perror | Line: 64
+Function Identifier: exit | Line: 65
+Function Identifier: listen | Line: 68
+Function Identifier: perror | Line: 69
+Function Identifier: accept | Line: 74
+Function Identifier: perror | Line: 75
+Function Identifier: exit | Line: 76
+Function Identifier: fork | Line: 79
+Function Identifier: send | Line: 80
+Function Identifier: dup2 | Line: 81
+Function Identifier: dup2 | Line: 82
+Function Identifier: execl | Line: 83
+Function Identifier: close | Line: 84
+Function Identifier: close | Line: 86
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"connfd",
+			"parent":	"tcpfd",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[0, 1],
+			"line":	74
+		}, {
+			"identifier":	"tcpfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	54
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"tcpfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	54
+		}],
+	"fork":	[79],
+	"exec":	[83],
+	"var_id":	["serv_addr", "connfd", "tcpfd", "v", "c"],
+	"func_id":	["main"],
+	"analysis_time":	0.003698495
+}
+===END===

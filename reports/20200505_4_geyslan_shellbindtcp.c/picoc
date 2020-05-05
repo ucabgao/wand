@@ -1,0 +1,50 @@
+Function Identifier: socket | Line: 18
+Function Identifier: setsockopt | Line: 22
+Function Identifier: htons | Line: 26
+Function Identifier: bind | Line: 30
+Function Identifier: listen | Line: 33
+Function Identifier: accept | Line: 36
+Function Identifier: dup2 | Line: 39
+Function Identifier: dup2 | Line: 40
+Function Identifier: dup2 | Line: 41
+Function Identifier: execve | Line: 44
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 18
+Function Identifier: setsockopt | Line: 22
+Function Identifier: htons | Line: 26
+Function Identifier: bind | Line: 30
+Function Identifier: listen | Line: 33
+Function Identifier: accept | Line: 36
+Function Identifier: dup2 | Line: 39
+Function Identifier: dup2 | Line: 40
+Function Identifier: dup2 | Line: 41
+Function Identifier: execve | Line: 44
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"resultfd",
+			"parent":	"sockfd",
+			"state":	"NotReadingOrWriting",
+			"dup":	[0, 1, 2],
+			"line":	36
+		}, {
+			"identifier":	"sockfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	18
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"sockfd",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	18
+		}],
+	"fork":	[],
+	"exec":	[],
+	"var_id":	["one", "my_addr", "port", "sockfd", "resultfd"],
+	"func_id":	["main"],
+	"analysis_time":	0.001575364
+}
+===END===

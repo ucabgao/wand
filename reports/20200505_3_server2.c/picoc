@@ -1,0 +1,64 @@
+Function Identifier: socket | Line: 16
+Function Identifier: printf | Line: 18
+Function Identifier: puts | Line: 20
+Function Identifier: htons | Line: 25
+Function Identifier: bind | Line: 28
+Function Identifier: perror | Line: 31
+Function Identifier: puts | Line: 34
+Function Identifier: listen | Line: 37
+Function Identifier: puts | Line: 39
+Function Identifier: accept | Line: 45
+Function Identifier: perror | Line: 50
+Function Identifier: puts | Line: 54
+Function Identifier: read | Line: 57
+Function Identifier: bubble_sort | Line: 59
+Function Identifier: write | Line: 61
+Function Identifier: puts | Line: 65
+Function Identifier: perror | Line: 68
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 16
+Function Identifier: printf | Line: 18
+Function Identifier: puts | Line: 20
+Function Identifier: htons | Line: 25
+Function Identifier: bind | Line: 28
+Function Identifier: perror | Line: 31
+Function Identifier: puts | Line: 34
+Function Identifier: listen | Line: 37
+Function Identifier: puts | Line: 39
+Function Identifier: accept | Line: 45
+Function Identifier: perror | Line: 50
+Function Identifier: puts | Line: 54
+Function Identifier: read | Line: 57
+Function Identifier: bubble_sort | Line: 59
+Function Identifier: write | Line: 61
+Function Identifier: puts | Line: 65
+Function Identifier: perror | Line: 68
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"client_sock",
+			"parent":	"socket_desc",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[],
+			"line":	45
+		}, {
+			"identifier":	"socket_desc",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	16
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"socket_desc",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	16
+		}],
+	"fork":	[],
+	"exec":	[],
+	"var_id":	["t", "d", "n", "list", "i", "message", "client", "server", "client_sock", "read_size", "c", "socket_desc", "argv", "argc"],
+	"func_id":	["bubble_sort", "main"],
+	"analysis_time":	0.002117509
+}
+===END===

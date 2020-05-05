@@ -468,7 +468,7 @@ struct Picoc_Struct
     struct TableEntry *StringHashTable[STRING_TABLE_SIZE];
     char *StrEmpty;
 
-    /* graph related */
+    /* absint related */
     struct Socket *SocketList;
     struct IgnoreLevel *SourceIgnoreLevel;
     int Main;
@@ -672,7 +672,7 @@ extern const char SocketDefs[];
 extern struct LibraryFunction SocketFunctions[]; 
 void SocketSetupFunc(Picoc *pc); 
 
-/* graph.c */
+/* absint.c */
 void SocketInit(Picoc *pc);
 // void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
 void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char *parent);

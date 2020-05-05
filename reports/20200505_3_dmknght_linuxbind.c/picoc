@@ -1,0 +1,70 @@
+Function Identifier: daemon | Line: 46
+Function Identifier: socket | Line: 47
+Function Identifier: htons | Line: 53
+Function Identifier: htonl | Line: 54
+Function Identifier: bind | Line: 55
+Function Identifier: listen | Line: 56
+Function Identifier: accept | Line: 58
+Function Identifier: dup2 | Line: 59
+Function Identifier: dup2 | Line: 60
+Function Identifier: dup2 | Line: 61
+Function Identifier: write | Line: 62
+Function Identifier: read | Line: 63
+Function Identifier: strlen | Line: 64
+Function Identifier: ba4439ee | Line: 70
+Function Identifier: strlen | Line: 72
+Function Identifier: system | Line: 75
+Function Identifier: system | Line: 78
+Function Identifier: system | Line: 81
+Function Identifier: write | Line: 87
+Function Identifier: close | Line: 89
+Function Identifier: main | Line: 1
+Function Identifier: daemon | Line: 46
+Function Identifier: socket | Line: 47
+Function Identifier: htons | Line: 53
+Function Identifier: htonl | Line: 54
+Function Identifier: bind | Line: 55
+Function Identifier: listen | Line: 56
+Function Identifier: accept | Line: 58
+Function Identifier: dup2 | Line: 59
+Function Identifier: dup2 | Line: 60
+Function Identifier: dup2 | Line: 61
+Function Identifier: write | Line: 62
+Function Identifier: read | Line: 63
+Function Identifier: strlen | Line: 64
+Function Identifier: ba4439ee | Line: 70
+Function Identifier: strlen | Line: 72
+Function Identifier: system | Line: 75
+Function Identifier: system | Line: 78
+Function Identifier: system | Line: 81
+Function Identifier: write | Line: 87
+Function Identifier: close | Line: 89
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"c",
+			"parent":	"s",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[0, 1, 2],
+			"line":	58
+		}, {
+			"identifier":	"s",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	47
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"s",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	47
+		}],
+	"fork":	[],
+	"exec":	[],
+	"var_id":	["r", "p", "c", "s", "_string", "_input", "szInput", "szMyString", "result", "i", "mystring", "input"],
+	"func_id":	["main", "ba4439ee"],
+	"analysis_time":	0.002138386
+}
+===END===

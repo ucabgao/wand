@@ -1,0 +1,100 @@
+Function Identifier: socket | Line: 21
+Function Identifier: printf | Line: 24
+Function Identifier: exit | Line: 25
+Function Identifier: setsockopt | Line: 29
+Function Identifier: inet_addr | Line: 32
+Function Identifier: htons | Line: 33
+Function Identifier: bind | Line: 35
+Function Identifier: listen | Line: 38
+Function Identifier: printf | Line: 39
+Function Identifier: fdopen | Line: 41
+Function Identifier: dup | Line: 41
+Function Identifier: setbuf | Line: 42
+Function Identifier: memset | Line: 45
+Function Identifier: chdir | Line: 50
+Function Identifier: getenv | Line: 50
+Function Identifier: getcwd | Line: 51
+Function Identifier: accept | Line: 54
+Function Identifier: printf | Line: 55
+Function Identifier: fork | Line: 56
+Function Identifier: printf | Line: 56
+Function Identifier: getpid | Line: 58
+Function Identifier: dup2 | Line: 59
+Function Identifier: recv | Line: 64
+Function Identifier: strcpy | Line: 74
+Function Identifier: strlen | Line: 75
+Function Identifier: chdir | Line: 76
+Function Identifier: getcwd | Line: 77
+Function Identifier: printf | Line: 79
+Function Identifier: system | Line: 83
+Function Identifier: send | Line: 85
+Function Identifier: signal | Line: 85
+Function Identifier: close | Line: 87
+Function Identifier: exit | Line: 88
+Function Identifier: fclose | Line: 92
+Function Identifier: close | Line: 93
+Function Identifier: main | Line: 1
+Function Identifier: socket | Line: 21
+Function Identifier: printf | Line: 24
+Function Identifier: exit | Line: 25
+Function Identifier: setsockopt | Line: 29
+Function Identifier: inet_addr | Line: 32
+Function Identifier: htons | Line: 33
+Function Identifier: bind | Line: 35
+Function Identifier: listen | Line: 38
+Function Identifier: printf | Line: 39
+Function Identifier: fdopen | Line: 41
+Function Identifier: dup | Line: 41
+Function Identifier: setbuf | Line: 42
+Function Identifier: memset | Line: 45
+Function Identifier: chdir | Line: 50
+Function Identifier: getenv | Line: 50
+Function Identifier: getcwd | Line: 51
+Function Identifier: accept | Line: 54
+Function Identifier: printf | Line: 55
+Function Identifier: fork | Line: 56
+Function Identifier: printf | Line: 56
+Function Identifier: getpid | Line: 58
+Function Identifier: dup2 | Line: 59
+Function Identifier: recv | Line: 64
+Function Identifier: strcpy | Line: 74
+Function Identifier: strlen | Line: 75
+Function Identifier: chdir | Line: 76
+Function Identifier: getcwd | Line: 77
+Function Identifier: printf | Line: 79
+Function Identifier: system | Line: 83
+Function Identifier: send | Line: 85
+Function Identifier: signal | Line: 85
+Function Identifier: close | Line: 87
+Function Identifier: exit | Line: 88
+Function Identifier: fclose | Line: 92
+Function Identifier: close | Line: 93
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"clientSocket",
+			"parent":	"serverSocket",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[2],
+			"line":	54
+		}, {
+			"identifier":	"serverSocket",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	21
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"serverSocket",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	21
+		}],
+	"fork":	[56],
+	"exec":	[],
+	"var_id":	["filled", "readc", "clientSize", "clientMessage", "stream", "opt", "client", "server", "path", "temp", "pid", "clientSocket", "serverSocket", "argv", "argc"],
+	"func_id":	["main"],
+	"analysis_time":	0.008568104
+}
+===END===

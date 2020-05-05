@@ -8,7 +8,7 @@ SRCS	= picoc.c table.c lex.c parse.c expression.c heap.c type.c \
 	platform/platform_unix.c platform/library_unix.c \
 	cstdlib/stdio.c cstdlib/math.c cstdlib/string.c cstdlib/stdlib.c \
 	cstdlib/time.c cstdlib/errno.c cstdlib/ctype.c cstdlib/stdbool.c \
-	cstdlib/unistd.c cstdlib/socket.c graph.c cjson/cjson.c
+	cstdlib/unistd.c cstdlib/socket.c absint.c cjson/cjson.c
 OBJS	:= $(SRCS:%.c=%.o)
 
 all: $(TARGET)
@@ -24,7 +24,7 @@ clean:
 
 count:
 	@echo "Core:"
-	@cat picoc.h interpreter.h picoc.c table.c lex.c parse.c expression.c platform.c heap.c type.c variable.c include.c debug.c graph.c cjson/cjson.c| grep -v '^[ 	]*/\*' | grep -v '^[ 	]*$$' | wc
+	@cat picoc.h interpreter.h picoc.c table.c lex.c parse.c expression.c platform.c heap.c type.c variable.c include.c debug.c absint.c cjson/cjson.c| grep -v '^[ 	]*/\*' | grep -v '^[ 	]*$$' | wc
 	@echo ""
 	@echo "Everything:"
 	@cat $(SRCS) *.h */*.h | wc
@@ -55,5 +55,5 @@ cstdlib/ctype.o: cstdlib/ctype.c interpreter.h platform.h
 cstdlib/stdbool.o: cstdlib/stdbool.c interpreter.h platform.h
 cstdlib/unistd.o: cstdlib/unistd.c interpreter.h platform.h
 cstdlib/socket.o: cstdlib/socket.c interpreter.h platform.h
-graph.o: graph.c interpreter.h platform.h
+absint.o: absint.c interpreter.h platform.h
 cjson/cjson.o: cjson/cjson.c interpreter.h platform.h
