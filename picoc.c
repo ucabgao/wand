@@ -12,7 +12,6 @@
 #include <string.h>
 #include <time.h>
 
-// #define BILLION  1000000000.0
 #define PICOC_STACK_SIZE (128*1024)              /* space for the the stack */
 
 int main(int argc, char **argv)
@@ -31,6 +30,8 @@ int main(int argc, char **argv)
     }
     
     PicocInitialise(&pc, StackSize);
+
+    // get analysis start time
     clock_gettime(CLOCK_REALTIME, &(pc.StartTime));
     
     if (strcmp(argv[ParamCount], "-s") == 0 || strcmp(argv[ParamCount], "-m") == 0)
@@ -53,16 +54,9 @@ int main(int argc, char **argv)
             return pc.PicocExitValue;
         }
         
-            // (&pc)->Main = 1;
         for (; ParamCount < argc && strcmp(argv[ParamCount], "-") != 0; ParamCount++)
             PicocPlatformScanFile(&pc, argv[ParamCount]);
         
-        // DisplaySocket(&pc);
-        // printf("\nFuncId: ");
-        // DisplayIdList(pc.FuncIdList);
-        // printf("VarId: ");
-        // DisplayIdList(pc.VarIdList);
-        // GenerateForCmpReport(&pc);
         if (!DontRunMain) {
             (&pc)->Main = 1;
             PicocCallMain(&pc, argc - ParamCount, &argv[ParamCount]);
@@ -71,13 +65,12 @@ int main(int argc, char **argv)
     
     PicocCleanup(&pc);
 
+    // get analysis end time
     clock_gettime(CLOCK_REALTIME, &(pc.EndTime));
-    // double time_spent = (pc.EndTime.tv_sec - pc.StartTime.tv_sec) +
-    //                     (pc.EndTime.tv_nsec - pc.StartTime.tv_nsec) / BILLION;
-    
-    // printf("===GENERATED IN %.5f SECOND(S)===\n", time_spent);
 
+    // print output
     printf("===JSON OUTPUT===\n%s\n===END===\n", create_monitor(&pc));
+
     return pc.PicocExitValue;
 }
 #else
