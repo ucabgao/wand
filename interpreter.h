@@ -674,35 +674,19 @@ void SocketSetupFunc(Picoc *pc);
 
 /* absint.c */
 void AbsIntInit(Picoc *pc);
-// void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
 void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char *parent);
-// void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);
-void AddSocketStateGraph(Picoc *pc, char *identifier, short int line, const char *FuncName);
 void DisplaySocket(Picoc *pc);
-
-void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName);
-void SocketCopy(Picoc *pc, struct Socket *newSocketList);
-void UpdateSource(Picoc *pc, int fd, const char *FuncName);
-void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName);
-void SocketRevertSource(Picoc *pc, struct Socket *oldSocketList);
-void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList);
-void SocketAddIgnoreLevel(Picoc *pc);
-void SocketRemoveIgnoreLevel(Picoc *pc);
-int SocketCheckIgnoreLevel(Picoc *pc);
-void DisplayNFA(Picoc *pc);
 int CheckFuncOfInterest(const char *FuncName);
 int CheckIfWriteFunc(const char *FuncName);
 int CheckIfReadFunc(const char *FuncName);
 int CheckIfExecFunc(const char *FuncName);
-void MergeSockets(Picoc *pc, struct Socket *oldSocketList);
 void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName);
-struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier);
 void AddId(Picoc *pc, char *identifier, int type);
 void DisplayIdList(struct Id *IdList);
 void AddCharacteristic(Picoc *pc, int type, int line);
 void UpdateDup(Picoc *pc, char *identifier, char *dup);
 char *GenerateDupListString(struct Socket *socket);
-void GenerateForCmpReport(Picoc *pc);
+char *GenerateOutputJson(Picoc *pc);
 
 /* socket states */
 enum SocketState
@@ -710,21 +694,21 @@ enum SocketState
     None,
     Initial,            /* socket() */
     Binding,            /* bind() */
-    Listening,            /* listen() (only applicable to TCP) */
-    // AwaitConnection,    /* accept() (only applicable to TCP) */
+    Listening,          /* listen() (only applicable to TCP) */
     Closed,             /* close() */
     Connected,          /* initial state of child socket created by accept() */
     Reading,            /* read(), recv(), recvfrom() */
-    Writing,             /* write(), send(), sendto() */
+    Writing,            /* write(), send(), sendto() */
     NotListening,
     MayBeListening,
     NotReadingOrWriting,
     MayBeReadingOrWriting
 };
 
+/* characteristic types */
 enum CharacteristicType
 {
-    Socket,
+    Socket,     /* Not used, could be used in the future */
     Fork,
     Exec
 };
@@ -732,20 +716,17 @@ enum CharacteristicType
 /* structure of a socket node */
 struct Socket
 {
-    char *Identifier;
+    char *Identifier;                       /* socket identifier */
     int FileDescriptor;                     /* file descriptor of the socket */
-    char *SocketType;                               /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) */
-    struct SocketStateGraph *StateGraph;    /* the state graph of the socket (or are we just interested in the current state?) */
-    struct SocketNFA *NFA;
-    enum SocketState CurrentState;
-    struct Source *SourceStack;
-    int ParentFileDescriptor;
-    char *ParentIdentifier;
-    int Line;
-    int *Dup2Arr;
-    struct Socket *Next;                /* next socket in the list */
+    char *SocketType;                       /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) [Not used]*/
+    enum SocketState CurrentState;          /* current abstract state */
+    char *ParentIdentifier;                 /* socket parent identifier - empty string if parent socket*/
+    int Line;                               /* line in which socket is declared in or first identified */
+    int *Dup2Arr;                           /* dup2 fd array */
+    struct Socket *Next;                    /* next socket in the list */
 };
 
+/* structure of characteristic list */
 struct Characteristic
 {
     enum CharacteristicType CharacteristicType;
@@ -753,12 +734,7 @@ struct Characteristic
     struct Characteristic *Next;
 };
 
-struct IgnoreLevel
-{
-    int Level;
-    struct IgnoreLevel *Next;
-};
-
+/* structure of identifier list */
 struct Id
 {
     char *Identifier;
