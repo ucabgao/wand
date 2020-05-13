@@ -14,30 +14,6 @@ void SocketInit(Picoc *pc)
     pc->CharacteristicList = NULL;
 }
 
-// create copy of socket list
-void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
-    struct Socket *head = pc->SocketList;
-    struct Socket *nSL = NULL;
-
-    while (head != NULL) {
-        struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
-        newSocket->FileDescriptor = head->FileDescriptor;
-        newSocket->Identifier = head->Identifier;
-        newSocket->CurrentState = head->CurrentState;
-        newSocket->SourceStack = NULL;
-        newSocket->ParentIdentifier = head->ParentIdentifier;
-        newSocket->Line = head->Line;
-        newSocket->Dup2Arr = head->Dup2Arr;
-        newSocket->Next = nSL;
-
-        nSL = newSocket;
-        
-        head = head->Next;
-    }
-    if (nSL != NULL)
-        *newSocketList = *nSL;
-}
-
 // add socket to socket list
 void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char* parent) {
     struct Socket *head = pc->SocketList;
