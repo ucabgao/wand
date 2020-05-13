@@ -110,9 +110,9 @@ struct Value *ParseFunctionDefinition(struct ParseState *Parser, struct ValueTyp
                 FuncValue->Val->FuncDef.ParamType[ParamCount] = ParamType;
                 FuncValue->Val->FuncDef.ParamName[ParamCount] = ParamIdentifier;
 
-                // if I want to include all variables declared then functions' arguments should be included
+                // to include all variables declared, functions' arguments should be included
                 if (Parser->pc->FuncIdList && !strcmp(Parser->pc->FuncIdList->Identifier, Identifier)) { 
-                    // printf("ZZZParse Function %s Param: %s\n", Identifier, ParamIdentifier);
+                    // printf("***Parse Function %s Param: %s\n", Identifier, ParamIdentifier);
                     AddId(Parser->pc, ParamIdentifier, 0);
                 }
             }
@@ -125,7 +125,7 @@ struct Value *ParseFunctionDefinition(struct ParseState *Parser, struct ValueTyp
     
     if (FuncValue->Val->FuncDef.NumParams != 0 && Token != TokenCloseBracket && Token != TokenComma && Token != TokenEllipsis)
         ProgramFail(&ParamParser, "bad parameter");
-    // printf("ZZZParse Function Definition: %s\n", Identifier);
+
     if (strcmp(Identifier, "main") == 0)
     {
         /* make sure it's int main() */
@@ -308,14 +308,10 @@ void ParseDeclarationAssignment(struct ParseState *Parser, struct Value *NewVari
         if (!ExpressionParse(Parser, &CValue)) 
             ProgramFail(Parser, "expression expected");
             
-                        // printf("ZZZPDA: %d\n", CValue->Typ->Base);
         if (Parser->Mode == RunModeRun && DoAssignment)
         {
-                        // printf("PDA: %d\n", CValue->Typ->Base);
             ExpressionAssign(Parser, NewVariable, CValue, FALSE, NULL, 0, FALSE);
             VariableStackPop(Parser, CValue);
-                        // printf("PDA: %d\n", NewVariable->Typ->Base);
-                        // printf("PDA: %d\n", CValue->Typ->Base);
         }
     }
 }
@@ -335,9 +331,7 @@ int ParseDeclaration(struct ParseState *Parser, enum LexToken Token)
     do
     {
         TypeParseIdentPart(Parser, BasicType, &Typ, &Identifier);
-        // printf("ZZZParseDeclaration: Identifier==%s, Type==%x\n", Identifier, Typ->Base);
-        // printf("Variable Identifier: %s | Line: %d\n", Identifier, Parser->Line);
-        // printf("%d\n",  Typ->Base == TypePointer);
+
         if ((Token != TokenVoidType && Token != TokenStructType && Token != TokenUnionType && Token != TokenEnumType) && Identifier == pc->StrEmpty)
             ProgramFail(Parser, "identifier expected");
             
@@ -346,14 +340,16 @@ int ParseDeclaration(struct ParseState *Parser, enum LexToken Token)
             /* handle function definitions */
             if (LexGetToken(Parser, NULL, FALSE) == TokenOpenBracket)
             {
-                // printf("ZZZParseFunctionDeclaration: Identifier==%s\n", Identifier);
+                // add function identifier to list of declared functions
+                // printf("***Function Declaration: Identifier==%s | Line: %d\n", Identifier, Parser->Line);
                 AddId(Parser->pc, Identifier, 1);
                 ParseFunctionDefinition(Parser, Typ, Identifier);
                 return FALSE;
             }
             else
             {
-                // printf("Variable Identifier: %s | Line: %d\n", Identifier, Parser->Line);
+                // add variable identifier to list of declared variables
+                // printf("***Variable Declaration: %s | Line: %d\n", Identifier, Parser->Line);
                 AddId(Parser->pc, Identifier, 0);
 
                 if (Typ == &pc->VoidType && Identifier != pc->StrEmpty)
@@ -364,14 +360,13 @@ int ParseDeclaration(struct ParseState *Parser, enum LexToken Token)
                 
                 if (LexGetToken(Parser, NULL, FALSE) == TokenAssign)
                 {
+                    // declare and assign in the same statement
+                    // printf("***Assignment Identifier2: %s\n", Identifier); 
                     strcpy(Parser->pc->IdentifierAssignedTo,Identifier);
-                    // printf("ZZZAssignmentIdentifier2: %s\n", Identifier); // declare and assign in the same statement
+
                     /* we're assigning an initial value */
                     LexGetToken(Parser, NULL, TRUE);
                     ParseDeclarationAssignment(Parser, NewVariable, !IsStatic || FirstVisit);
-                    // if (Token == TokenIntType)
-                    // else if (Token == TokenCharType)
-                    //     printf("PD: %c\n", *NewVariable);
                 }
             }
         }
@@ -489,7 +484,9 @@ void ParseFor(struct ParseState *Parser)
     else
         Condition = ExpressionParseInt(Parser);
 
+    // set condition to be always true, so that it will run at least once
     Condition = TRUE;
+
     // for each socket, store the current source
     struct Socket *tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
     SocketCopy(Parser->pc, tempSocketList);
@@ -504,23 +501,10 @@ void ParseFor(struct ParseState *Parser)
         ProgramFail(Parser, "')' expected");
     
     ParserCopyPos(&PreStatement, Parser);
-    
-    // int origCond = Condition;
-    // for (int i = 0; i < 2; i++) {
 
-        // ParserCopyPos(Parser, &PreStatement);
-        
-        // if(i == 0) {
-        //     Condition = FALSE;
-        // } else {
-        //     Condition = origCond;
-        // }
-        // Condition = FALSE;
+    if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk)
+        ProgramFail(Parser, "statement expected");
 
-        if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk)
-            ProgramFail(Parser, "statement expected");
-    // }
-    
     if (Parser->Mode == RunModeContinue && OldMode == RunModeRun)
         Parser->Mode = RunModeRun;
         
@@ -537,7 +521,9 @@ void ParseFor(struct ParseState *Parser)
         else
             Condition = ExpressionParseInt(Parser);
         
+        // set condition to be always false, so that it does not run again
         Condition = FALSE;
+
         if (Condition)
         {
             ParserCopyPos(Parser, &PreStatement);
@@ -548,7 +534,8 @@ void ParseFor(struct ParseState *Parser)
         }
     }
 
-    SocketCombineSource(Parser->pc, tempSocketList);
+    // combine before and after for loop socket list
+    MergeSockets(Parser->pc, tempSocketList);
     
     if (Parser->Mode == RunModeBreak && OldMode == RunModeRun)
         Parser->Mode = RunModeRun;
@@ -627,14 +614,12 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
     ParserCopy(&PreState, Parser);
     Token = LexGetToken(Parser, &LexerValue, TRUE);
 
-    // printf("ZZZParse Token: %x\n", Token);
     switch (Token)
     {
         case TokenEOF:
             return ParseResultEOF;
             
         case TokenIdentifier:
-            // printf("ZZZParse Statement Identifier: %s\n", LexerValue->Val->Identifier);
             /* might be a typedef-typed variable declaration or it might be an expression */
             if (VariableDefined(Parser->pc, LexerValue->Val->Identifier))
             {
@@ -666,12 +651,10 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     if (NextToken == TokenAssign && !VariableDefinedAndOutOfScope(Parser->pc, LexerValue->Val->Identifier))
                     {
 
-                            printf("AssignmentIdentifier3: %s\n", Identifier);
                         if (Parser->Mode == RunModeRun)
                         {
                             struct Value *CValue;
                             char* Identifier = LexerValue->Val->Identifier;
-                            printf("AssignmentIdentifier1: %s\n", Identifier);
 
                             LexGetToken(Parser, NULL, TRUE);
                             if (!ExpressionParse(Parser, &CValue))
@@ -706,18 +689,13 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             break;
             
         case TokenLeftBrace:
-            Parser->pc->PreviousToken = Token;
             ParseBlock(Parser, FALSE, TRUE);
             CheckTrailingSemicolon = FALSE;
             break;
             
         case TokenIf:
             {
-                enum LexToken PreviousToken = Parser->pc->PreviousToken;
                 struct Socket *tempSocketList = NULL;
-
-                if (PreviousToken != TokenElse)
-                    Parser->pc->Level++;
 
                 if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
                     ProgramFail(Parser, "'(' expected");
@@ -729,59 +707,28 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                 }
 
                 Condition = ExpressionParseInt(Parser);
+
+                // set condition to be always true, so that it will run at least once
                 Condition = TRUE;
                 
                 if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                     ProgramFail(Parser, "')' expected");
 
-                if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk) // parse if block
+                // parse the if block
+                if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk) 
                     ProgramFail(Parser, "statement expected");
-
-                // struct Socket *tempSocketList2 = (struct Socket *) malloc(sizeof(struct Socket));
-                // SocketCopy(Parser->pc, tempSocketList2);
-
-                // SocketRevertSource(Parser->pc, tempSocketList);
                 
                 if (LexGetToken(Parser, NULL, FALSE) == TokenElse)
-                {   // if there is else but no if, then the states for this will replace current source
+                {   
                     LexGetToken(Parser, NULL, TRUE);
-                    // int ignoreOrigSrc = 0;
-                    // Parser->pc->PreviousToken = TokenElse;
 
-                    if (LexGetToken(Parser, NULL, FALSE) == TokenIf) {
-                        Parser->pc->PreviousToken = TokenElse;
-                        // Parser->pc->level--;
-                    } else { // if you have an else (not else-if) in an if-else-if statement
-                        // ignoreOrigSrc = 1;
-                        if (SocketCheckIgnoreLevel(Parser->pc)) // check if the level is already in the ignore level list
-                            SocketAddIgnoreLevel(Parser->pc); // if it is not, add the level to ignore the source combination
-                    }
-                    // }
-
-                    // struct Socket *tempSocketList2 = (struct Socket *) malloc(sizeof(struct Socket));
-                    // SocketCopy(Parser->pc, tempSocketList2);
-
-                    // SocketRevertSource(Parser->pc, tempSocketList);
-
-                    // if (ParseStatementMaybeRun(Parser, !Condition, TRUE) != ParseResultOk) // subsequent if block or finally else block
-                    if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk) // subsequent if block or finally else block
+                    // parse subsequent if block or finally else block
+                    if (ParseStatementMaybeRun(Parser, Condition, TRUE) != ParseResultOk) 
                         ProgramFail(Parser, "statement expected");
-    
-                    // SocketCombineSource(Parser->pc, tempSocketList2);
-                    // if (!ignoreOrigSrc)
-                    //     Parser->pc->level--;
                 }
 
-                // if (SocketCheckIgnoreLevel(Parser->pc)) { // if the level is not to be ignored
-                //     SocketCombineSource(Parser->pc, tempSocketList); // combine the source
-                // }
-
-                // if (PreviousToken != TokenElse) {
-                //     SocketRemoveIgnoreLevel(Parser->pc);
-                //     Parser->pc->Level--;
-                // }
+                // combine before and after if/else block socket list
                 MergeSockets(Parser->pc, tempSocketList);
-
 
                 CheckTrailingSemicolon = FALSE;
                 break;
@@ -789,14 +736,16 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
         case TokenWhile:
             {
                 struct ParseState PreConditional;
-                struct Socket *tempSocketList = NULL;
                 enum RunMode PreMode = Parser->Mode;
                 int firstEntry = TRUE;
                 int onceMore = FALSE;
 
+                struct Socket *tempSocketList = NULL;
+
                 if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
                     ProgramFail(Parser, "'(' expected");
 
+                // for each socket, store the current source
                 if (Parser->pc->SocketList) {
                     tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
                     SocketCopy(Parser->pc, tempSocketList);
@@ -808,34 +757,9 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     ParserCopyPos(Parser, &PreConditional);
 
                     Condition = ExpressionParseInt(Parser);
+
+                    // set condition to be always true, so that it will run at least once
                     Condition = TRUE;
-
-                    // if (onceMore) { // loop once more
-                    //     // while first loop can be false, it is possible that 2nd loop is true 
-                    //     // (i.e. first loop - (bind() == -1) == false, 2nd loop can == true)
-                    //     // therefore need to explicit set condition as false
-                    //     Condition = FALSE; 
-                    //     onceMore = FALSE;
-                    //     Parser->Mode = PreMode;
-                    // }
-
-                    // if (firstEntry && !Condition) { // if first loop and condition false
-                    //     Parser->Mode = RunModeSkip; // set mode to skip - don't execute
-                    //     Condition = TRUE; // set condition as true so that it won't affect 2nd loop
-                    //     onceMore = TRUE;
-                    // }
-
-                    // // if (!Condition && !onceMore) {
-                    // //     Parser->Mode = RunModeSkip;
-                    // //     Condition = 1;
-                    // //     onceMore = 1;
-                    // // }
-
-                    // // for each socket, store the current source
-                    // if (firstEntry) {
-                    //     tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-                    //     SocketCopy(Parser->pc, tempSocketList);
-                    // }
 
                     if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                         ProgramFail(Parser, "')' expected");
@@ -846,18 +770,9 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                     if (Parser->Mode == RunModeContinue)
                         Parser->Mode = PreMode;
 
-                    // if (onceMore)
-
-                    // if (firstEntry)
-                    //     firstEntry = FALSE;
-
-                    // if (!Condition && !onceMore) {
-                    //     onceMore = 1;
-                    //     Condition = 1;
-                    // }
-
                 } while (((Parser->Mode == RunModeRun && Condition) || onceMore) && !firstEntry);
-                // SocketCombineSource(Parser->pc, tempSocketList);
+
+                // combine before and after while loop socket list
                 MergeSockets(Parser->pc, tempSocketList);
                 
                 if (Parser->Mode == RunModeBreak)
@@ -871,15 +786,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             {
                 struct ParseState PreStatement;
                 enum RunMode PreMode = Parser->Mode;
-                int firstEntry = TRUE;
                 int onceMore = FALSE;
-
-                struct Socket *tempSocketList = NULL;
-
-                // if (Parser->pc->SocketList) {
-                //     tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-                //     SocketCopy(Parser->pc, tempSocketList);
-                // }
 
                 ParserCopyPos(&PreStatement, Parser);
                 do
@@ -899,31 +806,16 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                         ProgramFail(Parser, "'(' expected");
                         
                     Condition = ExpressionParseInt(Parser);
-                    Condition = FALSE;
 
-                    // if (firstEntry && !Condition) { // if first loop and condition false
-                    //     Parser->Mode = RunModeSkip; // set mode to skip - don't execute
-                    //     // Condition = 1; // set condition as true so that it won't affect 2nd loop
-                    //     onceMore = TRUE;
-                    // }
+                    // set condition to be always false, so that it does not run again
+                    Condition = FALSE;
 
                     if (LexGetToken(Parser, NULL, TRUE) != TokenCloseBracket)
                         ProgramFail(Parser, "')' expected");
 
-
-                    // if (!firstEntry && onceMore) {
-                    //     Parser->Mode = PreMode;
-                    //     Condition = FALSE;
-                    //     onceMore = FALSE;
-                    // }
-
-                    // if (firstEntry)
-                    //     firstEntry = FALSE;
                     
                 } while ((Condition && Parser->Mode == RunModeRun) || onceMore);           
                 
-                // MergeSockets(Parser->pc, tempSocketList);
-
                 if (Parser->Mode == RunModeBreak)
                     Parser->Mode = PreMode;
             }
@@ -1114,7 +1006,7 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
         if (LexGetToken(Parser, NULL, TRUE) != TokenSemicolon)
             ProgramFail(Parser, "';' expected");
     }
-    // Parser->pc->PreviousToken = Token;
+
     return ParseResultOk;
 }
 
@@ -1147,8 +1039,6 @@ void PicocParse(Picoc *pc, const char *FileName, const char *Source, int SourceL
     
     /* do the parsing */
     LexInitParser(&Parser, pc, Source, Tokens, RegFileName, RunIt, EnableDebugger);
-
-    // (&Parser)->Mode = RunModeSkip;
 
     do {
         Ok = ParseStatement(&Parser, TRUE);
