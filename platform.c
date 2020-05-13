@@ -72,6 +72,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
         VariableDefinePlatformVar(pc, NULL, "__argv", pc->CharPtrPtrType, (union AnyValue *)&argv, FALSE);
     }
 
+    // change the first TRUE to FALSE to deactivate execution
     if (FuncValue->Val->FuncDef.ReturnType == &pc->VoidType)
     {
         if (FuncValue->Val->FuncDef.NumParams == 0)
@@ -88,16 +89,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
         else
             PicocParse(pc, "startup", CALL_MAIN_WITH_ARGS_RETURN_INT, strlen(CALL_MAIN_WITH_ARGS_RETURN_INT), TRUE, TRUE, FALSE, TRUE);
     }
-    // DisplaySocket(pc);
-    // DisplayNFA(pc);
 
-        // DisplaySocket(pc);
-        // GenerateForCmpReport(pc);
-        // printf("\nFuncId: ");
-        // DisplayIdList(pc->FuncIdList);
-        // printf("VarId: ");
-        // DisplayIdList(pc->VarIdList);
-        // printf("%s\n", create_monitor(pc));
 }
 #endif
 
