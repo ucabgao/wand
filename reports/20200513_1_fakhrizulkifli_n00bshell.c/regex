@@ -1,0 +1,41 @@
+===JSON OUTPUT===
+{
+        "all_sockets": [
+                {
+                        "identifier": "tcpfd",
+                        "parent": "",
+                        "state": "MayBeListening",
+                        "dup": [],
+                        "line": 54
+                },
+                {
+                        "identifier": "connfd",
+                        "parent": "tcpfd",
+                        "state": "MayBeReadingOrWriting",
+                        "dup": [
+                                0,
+                                1
+                        ],
+                        "line": 74
+                }
+        ],
+        "maybelistening_sockets": [
+                {
+                        "identifier": "tcpfd",
+                        "parent": "",
+                        "state": "MayBeListening",
+                        "dup": [],
+                        "line": 54
+                }
+        ],
+        "fork": [
+                79
+        ],
+        "exec": [
+                83
+        ],
+        "var_id": [],
+        "func_id": [],
+        "analysis_time": 0.005087852478027344
+}
+===END===

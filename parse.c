@@ -487,11 +487,7 @@ void ParseFor(struct ParseState *Parser)
     // set condition to be always true, so that it will run at least once
     Condition = TRUE;
 
-    // for each socket, store the current source
-    struct Socket *tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-    SocketCopy(Parser->pc, tempSocketList);
-
-    if (LexGetToken(Parser, NULL, TRUE) != TokenSemicolon)
+   if (LexGetToken(Parser, NULL, TRUE) != TokenSemicolon)
         ProgramFail(Parser, "';' expected");
     
     ParserCopyPos(&PreIncrement, Parser);
@@ -534,9 +530,6 @@ void ParseFor(struct ParseState *Parser)
         }
     }
 
-    // combine before and after for loop socket list
-    MergeSockets(Parser->pc, tempSocketList);
-    
     if (Parser->Mode == RunModeBreak && OldMode == RunModeRun)
         Parser->Mode = RunModeRun;
 
@@ -695,17 +688,9 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             
         case TokenIf:
             {
-                struct Socket *tempSocketList = NULL;
-
                 if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
                     ProgramFail(Parser, "'(' expected");
-                    
-                // for each socket, store the current source
-                if (Parser->pc->SocketList) {
-                    tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-                    SocketCopy(Parser->pc, tempSocketList);
-                }
-
+                   
                 Condition = ExpressionParseInt(Parser);
 
                 // set condition to be always true, so that it will run at least once
@@ -727,9 +712,6 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                         ProgramFail(Parser, "statement expected");
                 }
 
-                // combine before and after if/else block socket list
-                MergeSockets(Parser->pc, tempSocketList);
-
                 CheckTrailingSemicolon = FALSE;
                 break;
             }
@@ -739,17 +721,9 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
                 enum RunMode PreMode = Parser->Mode;
                 int firstEntry = TRUE;
                 int onceMore = FALSE;
-
-                struct Socket *tempSocketList = NULL;
-
+                
                 if (LexGetToken(Parser, NULL, TRUE) != TokenOpenBracket)
                     ProgramFail(Parser, "'(' expected");
-
-                // for each socket, store the current source
-                if (Parser->pc->SocketList) {
-                    tempSocketList = (struct Socket *) malloc(sizeof(struct Socket));
-                    SocketCopy(Parser->pc, tempSocketList);
-                }
 
                 ParserCopyPos(&PreConditional, Parser);
                 do
@@ -772,9 +746,6 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
 
                 } while (((Parser->Mode == RunModeRun && Condition) || onceMore) && !firstEntry);
 
-                // combine before and after while loop socket list
-                MergeSockets(Parser->pc, tempSocketList);
-                
                 if (Parser->Mode == RunModeBreak)
                     Parser->Mode = PreMode;
 

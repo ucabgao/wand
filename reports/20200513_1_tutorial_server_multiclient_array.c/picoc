@@ -1,0 +1,29 @@
+===JSON OUTPUT===
+{
+	"all_sockets":	[{
+			"identifier":	"clientSocket",
+			"parent":	"parentSocket",
+			"state":	"MayBeReadingOrWriting",
+			"dup":	[],
+			"line":	44
+		}, {
+			"identifier":	"parentSocket",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	18
+		}],
+	"maybelistening_sockets":	[{
+			"identifier":	"parentSocket",
+			"parent":	"",
+			"state":	"MayBeListening",
+			"dup":	[],
+			"line":	18
+		}],
+	"fork":	[],
+	"exec":	[],
+	"var_id":	["i", "hello", "buffer", "valread", "clientSocket", "parentSocket", "addrlen", "address"],
+	"func_id":	["main"],
+	"analysis_time":	0.001693708
+}
+===END===
