@@ -4,6 +4,7 @@ import time
 import enum
 import json
 
+
 class Socket:
 	def __init__(self):
 		self.identifier = ""
@@ -12,9 +13,11 @@ class Socket:
 		self.dup = list()
 		self.line = 0
 
+
 class Characteristic(enum.Enum):
     Fork = 1
     Exec = 2
+
 
 def output_json():
 	jsonDict = {"all_sockets":[], "maybelistening_sockets":[], "fork":[], "exec":[],
@@ -40,8 +43,9 @@ def output_json():
 
 	# analysis time
 	jsonDict["analysis_time"] = time.time() - start_time
-	print(json.dumps(jsonDict, indent=8))
 
+	# print json string
+	print(json.dumps(jsonDict, indent=8))
 
 
 start_time = time.time()
@@ -50,42 +54,38 @@ if len(sys.argv) < 2:
 	print("Provide file as second argument")
 	exit()
 
-socket_list = []
 socket_dict = {}
-socket_state_dict = {}
-socket_dup_dict = {}
 characteristic_list = []
-
-listen_set = set()
-accept_set = set()
-dup2_set = set()
-
 lineNum = 0;
 
-# with open('picoc/arturgontijo_directshell.c', 'r') as myfile:
 with open(sys.argv[1], 'r') as myfile:
-	# data = myfile.read().splitlines()
 	for line in myfile:
 		lineNum+=1
 		line = line.strip()
-		# print(p.match(line))
+
+		# if it is a comment
 		if line.startswith("//"):
 			continue
 
+		# identifying packet sockets
 		socketParentMatches = re.finditer(r"\w+\s*=\s*socket\s*\(", line)
 		for match in socketParentMatches:
+			# get identifier of assignment statement
 			socket = match[0].replace(" ","").split("=")[0]
 
+			# create socket object to store parent socket's info and add to socket dictionary
 			socketObj = Socket()
 			socketObj.identifier = socket
 			socketObj.line = lineNum
 			socket_dict[socket] = socketObj
-			# socket_state_dict[socket] = "initial"
 
+		# identifying child sockets
 		socketChildMatches = re.finditer(r"\w+\s*=\s*accept\s*\(\s*\w+", line)
 		for match in socketChildMatches:
+			# get child identifier, function name and parent identifier
 			newSocket, funcName, socket = (re.split("=|\(", match[0].replace(" ","")))
 			
+			# create socket object to store child socket's info and add to socket dictionary
 			socketObj = Socket()
 			socketObj.identifier = newSocket
 			socketObj.parent = socket
@@ -93,27 +93,23 @@ with open(sys.argv[1], 'r') as myfile:
 			socketObj.line = lineNum
 			socket_dict[newSocket] = socketObj
 
+			# if the parent socket was not seen before, create socket object and add to socket dictionary
 			if socket not in socket_dict:
 				socketObj = Socket()
 				socketObj.identifier = socket
 				socketObj.line = lineNum
 				socket_dict[socket] = socketObj
 
+			# change parent socket state to MayBeListening
 			socket_dict[socket].state = "MayBeListening"
-			# else:
-			# socket_state_dict[newSocket] = "connected"
-			
-			accept_set.add(socket)
 
-			# if socket in socket_list:
-			# 	socket_state_dict[socket] = funcName
-
+		# identifying socket functions to change states
 		socketFuncMatches = re.finditer(r"((bind|listen|read|recv|recvfrom|write|send|sendto)\s*\(\s*\w+)", line)
-		# print(socketFuncMatches)
 		for match in socketFuncMatches:
-			# print(match)
+			# get function name and identifier of socket affected
 			funcName, socket = (match[0].replace(" ","").split("("))
 
+			# functions pertaining to parent sockets
 			if funcName in ["bind", "listen"]:
 				if socket not in socket_dict:
 					socketObj = Socket()
@@ -121,15 +117,12 @@ with open(sys.argv[1], 'r') as myfile:
 					socketObj.line = lineNum
 					socket_dict[socket] = socketObj
 
-				if funcName == "bind" :
+				if funcName == "bind" or funcName == "listen":
 					socket_dict[socket].state = "MayBeListening"
-					# socket_dict[socket].state = "Binding"
-				elif funcName == "listen":
-					listen_set.add(socket)
-					socket_dict[socket].state = "MayBeListening"
-					# socket_dict[socket].state = "Passive"
 
+			# functions pertaining to child sockets
 			elif funcName in ["read", "recv", "recvfrom", "write", "send", "sendto"]:
+				# if child socket not seen before, parent is UNKNOWN
 				if socket not in socket_dict:
 					socketObj = Socket()
 					socketObj.identifier = socket
@@ -140,39 +133,28 @@ with open(sys.argv[1], 'r') as myfile:
 
 				socket_dict[socket].state = "MayBeReadingOrWriting"
 
-
-			# if socket in socket_list:
-			# 	socket_state_dict[socket] = funcName
-
+		# identifying dup2 functions
 		dupFuncMatch = re.finditer(r"dup2\s*\(\s*\w+\s*,\s*\w\s*\)", line)
 		for match in dupFuncMatch:
+			# get socket identifier and fd
 			funcName, socket, assignedFD = (re.split("\(|,", match[0].replace(" ","")[:-1]))
-
-			# print(socket)
 			assignedFD = int(assignedFD)
 
+			# only interested in 0, 1, 2
 			if assignedFD in range(3) and socket in socket_dict:
-				# if socket in socket_dup_dict:
-				# 	socket_dup_dict[socket].append(assignedFD)
-				# else:
-				# 	socket_dup_dict[socket] = []
-				# 	socket_dup_dict[socket].append(assignedFD)
 				socket_dict[socket].dup.append(assignedFD)
 
-				dup2_set.add(socket)
-
+		# identifying fork functions
 		forkFuncMatch = re.finditer(r"fork\s*\(", line)
 		for match in forkFuncMatch:
-			# fork_list.append("Line "+str(lineNum)+": "+line)
 			characteristic_list.append((Characteristic.Fork,lineNum))
 
-		forkFuncMatch = re.finditer(r"(execl|execlp|execle|execv|execvp|execvpe)\s*\(", line)
-		for match in forkFuncMatch:
-			# fork_list.append("Line "+str(lineNum)+": "+line)
+		# identifying exec functions
+		execFuncMatch = re.finditer(r"(execl|execlp|execle|execv|execvp|execvpe)\s*\(", line)
+		for match in execFuncMatch:
 			characteristic_list.append((Characteristic.Exec,lineNum))
 
 
-# print(myfile.read())
 	print("===JSON OUTPUT===")
 	output_json();
 	print("===END===")
