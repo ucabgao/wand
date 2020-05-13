@@ -470,10 +470,7 @@ struct Picoc_Struct
 
     /* absint related */
     struct Socket *SocketList;
-    struct IgnoreLevel *SourceIgnoreLevel;
     int Main;
-    int Level;
-    enum LexToken PreviousToken;
     char *IdentifierAssignedTo;
     struct Id *VarIdList;
     struct Id *FuncIdList;
