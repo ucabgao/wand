@@ -336,7 +336,7 @@ char *GenerateDupListString(struct Socket *socket) {
 }
 
 // convert socket information to json
-void generateSocketJson(cJSON *socket_array, struct Socket *socketHead, int type) {
+void GenerateSocketJson(cJSON *socket_array, struct Socket *socketHead, int type) {
     cJSON *socket = NULL;
     cJSON *dup = NULL;
     cJSON *socket_attribute = NULL;
@@ -375,7 +375,7 @@ void generateSocketJson(cJSON *socket_array, struct Socket *socketHead, int type
 }
 
 // convert characteristic information to json
-void generateCharacteristicJson(cJSON *characteristic_array, struct Characteristic *characteristicHead, enum CharacteristicType type) {
+void GenerateCharacteristicJson(cJSON *characteristic_array, struct Characteristic *characteristicHead, enum CharacteristicType type) {
     cJSON *line = NULL;
 
     while(characteristicHead != NULL) {
@@ -389,7 +389,7 @@ void generateCharacteristicJson(cJSON *characteristic_array, struct Characterist
 }
 
 // convert identifier list information to json
-void generateIdJson(cJSON *id_array, struct Id *idHead) {
+void GenerateIdJson(cJSON *id_array, struct Id *idHead) {
     cJSON *identifier = NULL;
 
     while (idHead != NULL) {
@@ -401,7 +401,7 @@ void generateIdJson(cJSON *id_array, struct Id *idHead) {
 }
 
 // generate the output in json format
-char *generateOutputJson(Picoc *pc)
+char *GenerateOutputJson(Picoc *pc)
 {
     char *string = NULL;
     struct Socket *socketHead = pc->SocketList;
@@ -430,12 +430,12 @@ char *generateOutputJson(Picoc *pc)
     cJSON_AddItemToObject(monitor, "func_id", funcid_arr);
     cJSON_AddItemToObject(monitor, "analysis_time", analysis_time);
 
-    generateSocketJson(all_sockets, socketHead, 1); // all sockets
-    generateSocketJson(maybelistening_sockets, socketHead, 0); // may be listening sockets
-    generateCharacteristicJson(fork_arr, characteristicHead, Fork);
-    generateCharacteristicJson(exec_arr, characteristicHead, Exec);
-    generateIdJson(varid_arr, varidHead);
-    generateIdJson(funcid_arr, funcidHead);
+    GenerateSocketJson(all_sockets, socketHead, 1); // all sockets
+    GenerateSocketJson(maybelistening_sockets, socketHead, 0); // may be listening sockets
+    GenerateCharacteristicJson(fork_arr, characteristicHead, Fork);
+    GenerateCharacteristicJson(exec_arr, characteristicHead, Exec);
+    GenerateIdJson(varid_arr, varidHead);
+    GenerateIdJson(funcid_arr, funcidHead);
 
     string = cJSON_Print(monitor);
     if (string == NULL)
