@@ -4,82 +4,18 @@
 
 const char * INTERESTEDFUNC[] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork", "execl", "execlp", "execle", "execv", "execvp", "execvpe"};
 
-/* structure of a socket state graph node*/
-struct SocketStateGraph
+// initialise absint related
+void SocketInit(Picoc *pc)
 {
-    enum SocketState State;         /* state of the socket */
-    short int Line;                  /* line number of the function call */
-    struct SocketStateGraph *Next;  /* next (actually previous) node in the graph) */
-};
-
-struct SocketNFA
-{
-    enum SocketState SourceState;         /* state of the socket */
-    enum SocketState DestState;         /* state of the socket */
-    short int Line;                  /* line number of the function call */
-    struct SocketNFA *Next;  /* next (actually previous) node in the graph) */
-};
-
-
-struct Source
-{
-    enum SocketState State;         /* state of the socket */
-    struct Source *Next;
-};
-
-
-void SocketAddIgnoreLevel(Picoc *pc) {
-    struct IgnoreLevel *newIgnoreLevel = (struct IgnoreLevel *) malloc(sizeof(struct IgnoreLevel));
-
-    newIgnoreLevel->Level = pc->Level;
-    newIgnoreLevel->Next = pc->SourceIgnoreLevel;
-
-    pc->SourceIgnoreLevel = newIgnoreLevel;
+    pc->SocketList = NULL;
+    pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
+    pc->VarIdList = NULL;
+    pc->FuncIdList = NULL;
+    pc->CharacteristicList = NULL;
 }
 
-
-void SocketRemoveIgnoreLevel(Picoc *pc) {
-    struct IgnoreLevel *head = pc->SourceIgnoreLevel, *prev;
-
-    if (head != NULL && head->Level == pc->Level) 
-    { 
-        pc->SourceIgnoreLevel = head->Next;
-        // free(temp);               // free old head 
-        return; 
-    } 
-  
-    while (head != NULL && head->Level == pc->Level) 
-    { 
-        prev = head; 
-        head = head->Next; 
-    } 
-  
-    // If key was not present in linked list 
-    if (head == NULL) return; 
-  
-    // Unlink the node from linked list 
-    prev->Next = head->Next;
-}
-
-int SocketCheckIgnoreLevel(Picoc *pc) {
-    struct IgnoreLevel *head = pc->SourceIgnoreLevel;
-    int level = pc->Level;
-    // struct IgnoreLevel *newIgnoreLevel = (struct IgnoreLevel *) malloc(sizeof(struct IgnoreLevel));
-
-    while(head != NULL) {
-        if (head->Level == level) {
-            return FALSE;
-        }
-
-        head = head->Next;
-    }
-
-    return TRUE;
-}
-
+// create copy of socket list
 void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
-    // memcpy((void *)newSocketList, (void *)pc->SocketList, sizeof(*newSocketList));
-
     struct Socket *head = pc->SocketList;
     struct Socket *nSL = NULL;
 
@@ -93,17 +29,6 @@ void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
         newSocket->Line = head->Line;
         newSocket->Dup2Arr = head->Dup2Arr;
         newSocket->Next = nSL;
-        struct Source *sourceHead = head->SourceStack;
-
-        while (sourceHead != NULL) {
-            struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
-            newSource->State = sourceHead->State;
-            newSource->Next = newSocket->SourceStack;
-
-            newSocket->SourceStack = newSource;
-
-            sourceHead = sourceHead->Next;
-        }
 
         nSL = newSocket;
         
@@ -113,67 +38,24 @@ void SocketCopy(Picoc *pc, struct Socket *newSocketList) {
         *newSocketList = *nSL;
 }
 
-/*  */
-void SocketInit(Picoc *pc)
-{
-    // struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
-    // newSocket->FileDescriptor = -1;
-    // newSocket->Next = NULL;
-
-    pc->SocketList = NULL;
-    pc->Level = 0;
-    pc->PreviousToken = TokenNone;
-    pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
-    pc->VarIdList = NULL;
-    pc->FuncIdList = NULL;
-    pc->CharacteristicList = NULL;
-}
-
-// void AddSocket(Picoc *pc, int fd, int type, short int line, int parent) {
+// add socket to socket list
 void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char* parent) {
     struct Socket *head = pc->SocketList;
     struct Socket *newSocket = (struct Socket *) malloc(sizeof(struct Socket));
-    struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
-    struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
-    struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
-
-    newSocketStateGraph->State = NotListening;
-    newSocketStateGraph->Line = line;
-    newSocketStateGraph->Next = NULL;
-
-    newSource->State = Initial;
-    newSource->Next = NULL;
-
 
     newSocket->CurrentState = Initial;
 
-    if (strcmp(parent,"") && !strcmp(sockettype,"")) { // parent is not "" and type is ""
-        newSocketStateGraph->State = Connected;
-        newSource->State = Connected;
+    if (strcmp(parent,"")) { // parent is not empty string
         newSocket->CurrentState = NotReadingOrWriting;
     }
 
-
-    newSocketNFA->SourceState = None;
-    newSocketNFA->DestState = newSource->State;
-    newSocketNFA->Line = line;
-    newSocketNFA->Next = NULL;
-
-    // newSocket->FileDescriptor = fd;
+    // assign socket details
     newSocket->Identifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
     strcpy(newSocket->Identifier, identifier);
     newSocket->SocketType = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
     strcpy(newSocket->SocketType, sockettype);
-    newSocket->StateGraph = newSocketStateGraph;
-    newSocket->NFA = newSocketNFA;
-    // newSocket->NFA = NULL;
-    // newSocket->Source = newSource;
-    newSocket->SourceStack = newSource;
-
     newSocket->ParentIdentifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
     strcpy(newSocket->ParentIdentifier, parent);
-
-    // newSocket->ParentFileDescriptor = parent;
     newSocket->Line = line;
     newSocket->Dup2Arr = (int *) calloc(3, sizeof(int));
 
@@ -182,22 +64,9 @@ void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, ch
     pc->SocketList = newSocket;
 }
 
-struct Socket *FindSocket(struct Socket *s, int fd) {
-    while(s != NULL) {
-        if (s->FileDescriptor == fd) {
-        // if (!strcmp(s->Identifier, 0)) {
-
-            return s;
-        }
-        s = s->Next;
-    }
-
-    return NULL;
-}
-
+// find socket by its identifier
 struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier) {
     while(s != NULL) {
-        // if (s->FileDescriptor == fd) {
         if (!strcmp(s->Identifier, identifier)) {
 
             return s;
@@ -208,70 +77,7 @@ struct Socket *FindSocketByIdentifier(struct Socket *s, char *identifier) {
     return NULL;
 }
 
-int CheckFuncOfInterest(const char *FuncName) {
-    // char * fn [] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork", "execl", "execlp", "execle", "execv", "execvp", "execvpe"};
-    int len = sizeof(INTERESTEDFUNC)/sizeof(INTERESTEDFUNC[0]);
-    int i;
-
-    for(i = 0; i < len; ++i)
-    {
-        if(!strcmp(INTERESTEDFUNC[i], FuncName))
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
-int CheckIfReadFunc(const char *FuncName) {
-    char * fn [] = { "read", "recv", "recvfrom" };
-    int len = sizeof(fn)/sizeof(fn[0]);
-    int i;
-
-    for(i = 0; i < len; ++i)
-    {
-        if(!strcmp(fn[i], FuncName))
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
-int CheckIfWriteFunc(const char *FuncName) {
-    char * fn [] = { "write", "send", "sendto" };
-    int len = sizeof(fn)/sizeof(fn[0]);
-    int i;
-
-    for(i = 0; i < len; ++i)
-    {
-        if(!strcmp(fn[i], FuncName))
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
-int CheckIfExecFunc(const char *FuncName) {
-    char * fn [] = { "execl", "execlp", "execle", "execv", "execvp", "execvpe" };
-    int len = sizeof(fn)/sizeof(fn[0]);
-    int i;
-
-    for(i = 0; i < len; ++i)
-    {
-        if(!strcmp(fn[i], FuncName))
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
+// find concrete state based on function
 enum SocketState FindState(const char *FuncName) {
     enum SocketState s = -1;
 
@@ -279,36 +85,18 @@ enum SocketState FindState(const char *FuncName) {
         s = Binding;
     } else if (!strcmp(FuncName, "listen") || !strcmp(FuncName, "accept")) {
         s = Listening;
-    // } else if (!strcmp(FuncName, "accept")) {
-    //     s = AwaitConnection;
     } else if (!strcmp(FuncName, "close")) {
         s = Closed;
-    } else if (CheckIfReadFunc(FuncName) /*!strcmp(FuncName, "read")*/) {
+    } else if (CheckIfReadFunc(FuncName)) {
         s = Reading;
-    } else if (CheckIfWriteFunc(FuncName) /*!strcmp(FuncName, "send")*/) {
+    } else if (CheckIfWriteFunc(FuncName)) {
         s = Writing;
     }
 
     return s;
 }
 
-enum SocketState StateAbstraction(enum SocketState state) {
-    enum SocketState abstractState = -1;
-
-    if (state == Initial) {
-        abstractState = NotListening;
-    } else if (state == Binding || state == Listening) {
-        abstractState = MayBeListening;
-    } else if (state == Connected) {
-        abstractState = NotReadingOrWriting;
-    } else if (state == Reading || state == Writing) {
-        abstractState = MayBeReadingOrWriting;
-    }
-
-    return abstractState;
-}
-
-
+// get string of state
 char *GetStateNameString(enum SocketState state, char *stateStr) {
     switch (state) {
         case 0: strcpy(stateStr, ""); break;
@@ -328,140 +116,12 @@ char *GetStateNameString(enum SocketState state, char *stateStr) {
     return stateStr;
 }
 
-int NFAEdgeExists(struct SocketNFA *socketNFAHead, enum SocketState src, enum SocketState dst, int line) {
-    struct SocketNFA *temp = socketNFAHead;
-
-    while(temp != NULL) {
-        if (temp->SourceState == src && temp->DestState == dst && temp->Line == line) {
-            return TRUE;
-        }
-
-        temp = temp->Next;
-    }
-
-    return FALSE;
-}
-
-void UpdateSource(Picoc *pc, int fd, const char *FuncName) {
-    struct Socket *head = pc->SocketList; 
-    struct Socket *socket = FindSocket(head, fd);
-    // struct Source *source = socket->SourceStack;
-    struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
-    
-    newSource->State = FindState(FuncName);
-    newSource->Next = NULL;
-
-    socket->SourceStack = newSource;
-    // while (source != NULL) {
-    //     source->FindState(FuncName);
-    // }
-
-}
-
-void AddSocketNFA(Picoc *pc, int fd, short int line, const char *FuncName) {
-    struct Socket *head = pc->SocketList;
-    struct Socket *s = FindSocket(head, fd);
-    // struct SocketNFA *curSocketNFA = s->NFA;
-    
-    if (s == NULL) {
-        return;
-    }
-
-    int loop = 0;
-
-    if (CheckIfReadFunc(FuncName) || CheckIfWriteFunc(FuncName)) {
-        loop = 1;
-    }
-
-    enum SocketState dst = FindState(FuncName);
-
-    struct Source *source = s->SourceStack;
-
-    while (source != NULL) {
-        if (!NFAEdgeExists(s->NFA, source->State, dst, line)) {
-            struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
-            newSocketNFA->SourceState = source->State;
-            newSocketNFA->DestState = dst;
-            newSocketNFA->Line = line;
-            newSocketNFA->Next = s->NFA;
-
-            s->NFA = newSocketNFA;
-        }
-
-        if (loop && !NFAEdgeExists(s->NFA, dst, source->State, line)) {
-            struct SocketNFA *newSocketNFA = (struct SocketNFA *) malloc(sizeof(struct SocketNFA));
-            newSocketNFA->SourceState = dst;
-            newSocketNFA->DestState = source->State;
-            newSocketNFA->Line = line;
-            newSocketNFA->Next = s->NFA;
-
-            s->NFA = newSocketNFA;
-        }
-
-        source = source->Next;
-    }
-    // newSocketNFA->SourceState = s->Source;
-    // newSocketNFA->DestState = dst;
-    // newSocketNFA->Line = line;
-    // newSocketNFA->Next = curSocketNFA;
-
-    // s->Source = dst;
-    if (!loop)
-        UpdateSource(pc, fd, FuncName);
-}
-
-// void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName) {
-void AddSocketStateGraph(Picoc *pc, char *identifier, short int line, const char *FuncName) {
-    struct Socket *head = pc->SocketList;
-    struct Socket *s = FindSocketByIdentifier(head, identifier);
-
-    if (s) {
-        struct SocketStateGraph *curSocketStateGraph = s->StateGraph;
-        struct SocketStateGraph *newSocketStateGraph = (struct SocketStateGraph *) malloc(sizeof(struct SocketStateGraph));
-
-        if (!strcmp(FuncName, "bind")) {
-            if (!strcmp(s->SocketType, "SOCK_STREAM")) {
-                newSocketStateGraph->State = Binding;
-            } else {
-                newSocketStateGraph->State = Listening;
-            }
-        } else {
-            newSocketStateGraph->State = FindState(FuncName);
-        }
-        // else if (strcmp(FuncName, "listen") == 0) {
-        //     newSocketStateGraph->State = Passive;
-        // } else if (strcmp(FuncName, "accept") == 0) {
-        //     newSocketStateGraph->State = AwaitConnection;
-        // } else if (strcmp(FuncName, "close") == 0) {
-        //     newSocketStateGraph->State = Closed;
-        // }
-
-        newSocketStateGraph->Line = line;
-        newSocketStateGraph->Next = curSocketStateGraph;
-
-        s->StateGraph = newSocketStateGraph;
-    }
-}
-
+// display socket information
 void DisplaySocket(Picoc *pc) {
     struct Socket *head = pc->SocketList;
 
     while (head != NULL) {
-        // printf("Socket FD %d - ", head->FileDescriptor);
         printf("\nSocket ID %s - ", head->Identifier);
-        if (!strcmp(head->SocketType, "SOCK_STREAM")) {
-            printf("TCP: ");
-        } else if (!strcmp(head->SocketType, "SOCK_DGRAM")) {
-            printf("UDP: ");
-        }
-
-        struct SocketStateGraph *headSSG = head->StateGraph;
-
-        while (headSSG != NULL) {
-            char stateStr[20];
-            printf("%s (line %d) <- ", GetStateNameString(headSSG->State, stateStr), headSSG->Line);
-            headSSG = headSSG->Next;
-        }
 
         char stateStr[20];
         printf("\nParent: %s | Current State: %s", head->ParentIdentifier, GetStateNameString(head->CurrentState, stateStr));
@@ -471,108 +131,99 @@ void DisplaySocket(Picoc *pc) {
     }
 }
 
-void DisplayNFA(Picoc *pc) {
-    struct Socket *head = pc->SocketList;
-    char stateStr[20];
+// check if function is of interest
+int CheckFuncOfInterest(const char *FuncName) {
+    int len = sizeof(INTERESTEDFUNC)/sizeof(INTERESTEDFUNC[0]);
 
-    while (head != NULL) {
-        // printf("Socket FD %d - ", head->FileDescriptor);
-        printf("Socket ID %s - ", head->Identifier);
-        if (!strcmp(head->SocketType, "SOCK_STREAM")) {
-            printf("TCP - ");
-        } else if (!strcmp(head->SocketType, "SOCK_DGRAM")) {
-            printf("UDP - ");
-        } else if (!strcmp(head->SocketType, "")) {
-            printf("Child of FD %d - ", head->ParentFileDescriptor);
+    for(int i = 0; i < len; ++i)
+    {
+        if(!strcmp(INTERESTEDFUNC[i], FuncName))
+        {
+            return TRUE;
         }
-
-        printf("NFA: \n");
-
-        struct SocketNFA *headNFA = head->NFA;
-
-        while (headNFA != NULL) {
-            printf("Line %d : ", headNFA->Line);
-            printf("(%s -> ", GetStateNameString(headNFA->SourceState, stateStr));
-            printf("%s)\n", GetStateNameString(headNFA->DestState, stateStr));
-            headNFA = headNFA->Next;
-        }
-
-        printf("\n");
-        head = head->Next;
     }
+
+    return FALSE;
 }
 
-void SocketRevertSource(Picoc *pc, struct Socket *oldSocketList) {
-    struct Socket *head = pc->SocketList;
-    struct Socket *oldHead = oldSocketList;
+// check if the functions are for reading
+int CheckIfReadFunc(const char *FuncName) {
+    char * fn [] = { "read", "recv", "recvfrom" };
+    int len = sizeof(fn)/sizeof(fn[0]);
+    int i;
 
-    if (pc->SocketList != NULL)
-        while (oldHead != NULL) {
-            int fd = oldHead->FileDescriptor;
-            struct Socket *s = FindSocket(head, fd);
-
-            s->SourceStack = oldHead->SourceStack;
-
-            oldHead = oldHead->Next;
+    for(i = 0; i < len; ++i)
+    {
+        if(!strcmp(fn[i], FuncName))
+        {
+            return TRUE;
         }
-}
-
-void SocketCombineSource(Picoc *pc, struct Socket *oldSocketList) {
-    struct Socket *head = pc->SocketList;
-    struct Socket *oldHead = oldSocketList;
-
-    while(head != NULL) {
-        while(oldHead != NULL) {
-            if (head->FileDescriptor == oldHead->FileDescriptor) {
-                struct Source *sourceHead = head->SourceStack;
-
-                while(sourceHead->Next != NULL) {
-                    sourceHead = sourceHead->Next;
-                }
-
-                sourceHead->Next = oldHead->SourceStack;
-
-                struct Source *sourceHead2, *dup; 
-                sourceHead = head->SourceStack;
-                while (sourceHead != NULL && sourceHead->Next != NULL) 
-                { 
-                    sourceHead2 = sourceHead; 
-              
-                    /* Compare the picked element with rest 
-                       of the elements */
-                    while (sourceHead2->Next != NULL) 
-                    { 
-                        /* If duplicate then delete it */
-                        if (sourceHead->State == sourceHead2->Next->State) 
-                        { 
-                            /* sequence of steps is important here */
-                            dup = sourceHead2->Next; 
-                            sourceHead2->Next = sourceHead2->Next->Next; 
-                            // delete(dup); 
-                        } 
-                        else /* This is tricky */
-                            sourceHead2 = sourceHead2->Next; 
-                    } 
-                    sourceHead = sourceHead->Next; 
-                } 
-                break;
-            }
-
-            oldHead = oldHead->Next;
-        }
-
-        oldHead = oldSocketList;
-        head = head->Next;
     }
+
+    return FALSE;
 }
 
+// check if the functions are for writing
+int CheckIfWriteFunc(const char *FuncName) {
+    char * fn [] = { "write", "send", "sendto" };
+    int len = sizeof(fn)/sizeof(fn[0]);
+
+    for(int i = 0; i < len; ++i)
+    {
+        if(!strcmp(fn[i], FuncName))
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+// check if the functions are for executing
+int CheckIfExecFunc(const char *FuncName) {
+    char * fn [] = { "execl", "execlp", "execle", "execv", "execvp", "execvpe" };
+    int len = sizeof(fn)/sizeof(fn[0]);
+
+    for(int i = 0; i < len; ++i)
+    {
+        if(!strcmp(fn[i], FuncName))
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+// abstraction function - maps concrete states to abstract states
+enum SocketState StateAbstraction(enum SocketState state) {
+    enum SocketState abstractState = -1;
+
+    if (state == Initial) {
+        abstractState = NotListening;
+    } else if (state == Binding || state == Listening) {
+        abstractState = MayBeListening;
+    } else if (state == Connected) {
+        abstractState = NotReadingOrWriting;
+    } else if (state == Reading || state == Writing) {
+        abstractState = MayBeReadingOrWriting;
+    }
+
+    return abstractState;
+}
+
+// merge abstract state
 enum SocketState MergeStates(enum SocketState state1, enum SocketState state2) {
     enum SocketState state;
 
-    if (state1 == MayBeListening || state2 == MayBeListening) {
+    // if either one is MayBeListening, the evaluated state is MayBeListening
+    if (state1 == MayBeListening || state2 == MayBeListening) { 
         state = MayBeListening;
+
+    // if either one is MayBeReadingOrWriting, the evaluated state is MayBeReadingOrWriting
     } else if (state1 == MayBeReadingOrWriting || state2 == MayBeReadingOrWriting) {
         state = MayBeReadingOrWriting;
+
     } else {
         state = state1;
     }
@@ -580,39 +231,15 @@ enum SocketState MergeStates(enum SocketState state1, enum SocketState state2) {
     return state;
 }
 
-
-void MergeSockets(Picoc *pc, struct Socket *oldSocketList) {
-    struct Socket *head = pc->SocketList;
-    struct Socket *oldHead = oldSocketList;
-    // int newSocket;
-
-    while(head != NULL) {
-        // newSocket = 1;
-        while(oldHead != NULL) {
-            if (!strcmp(head->Identifier, oldHead->Identifier)) {
-                head->CurrentState = MergeStates(head->CurrentState, oldHead->CurrentState);
-                break;
-            }
-
-            oldHead = oldHead->Next;
-        }
-
-        oldHead = oldSocketList;
-        head = head->Next;
-    }
-}
-
+// update the abstract state
 void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
-    if (/*CheckIfWriteFunc(FuncName) || CheckIfReadFunc(FuncName) || */!strcmp("close", FuncName)) {
+    if (!strcmp("close", FuncName)) {
         return;
     }
+
     struct Socket *head = pc->SocketList; 
     struct Socket *socket = FindSocketByIdentifier(head, identifier);
-    // struct Source *source = socket->SourceStack;
-    // struct Source *newSource = (struct Source *) malloc(sizeof(struct Source));
-    
-    // newSource->State = FindState(FuncName);
-    // newSource->Next = NULL;
+
     if (socket) {
         enum SocketState concreteState = FindState(FuncName);
         enum SocketState abstractState = StateAbstraction(concreteState);
@@ -621,12 +248,9 @@ void UpdateCurrentState(Picoc *pc, char *identifier, const char *FuncName) {
         if (abstractState != -1)
             socket->CurrentState = MergeStates(SocketCurrentState, abstractState);
     }
-    // socket->SourceStack = newSource;
-    // while (source != NULL) {
-    //     source->FindState(FuncName);
-    // }
 }
 
+// add either variable or function identifier to the respective lists
 void AddId(Picoc *pc, char *identifier, int type) {
     struct Id *temp;
     int unique = 1;
@@ -637,26 +261,21 @@ void AddId(Picoc *pc, char *identifier, int type) {
         temp = pc->FuncIdList;
     }
 
-
-    // if (temp == NULL) {
-    //     unique = 1;
-    // } else {
-        while (temp != NULL) {
-            if (!strcmp(temp->Identifier, identifier)) {
-                unique = 0;
-                break;
-            }
-
-            temp = temp->Next;
+    // if the identifier is not found in the list, add to the list
+    while (temp != NULL) {
+        if (!strcmp(temp->Identifier, identifier)) {
+            unique = 0;
+            break;
         }
-    // }
+
+        temp = temp->Next;
+    }
 
     if (unique) {
         struct Id *newId = (struct Id *) malloc(sizeof(struct Id));
 
         newId->Identifier = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
         strcpy(newId->Identifier, identifier);
-
 
         if (type == 0) {
             newId->Next =  pc->VarIdList;
@@ -668,6 +287,7 @@ void AddId(Picoc *pc, char *identifier, int type) {
     }
 }
 
+// display the identifiers in the identifier list
 void DisplayIdList(struct Id *IdList) {
     struct Id *temp = IdList;
 
@@ -680,10 +300,12 @@ void DisplayIdList(struct Id *IdList) {
     printf("\n");
 }
 
+// add the respective characteristics to the characteristic list
 void AddCharacteristic(Picoc *pc, int type, int line) {
     struct Characteristic *temp = pc->CharacteristicList;
     int distinct = 1;
 
+    // if the characteristic-line pair is not found in the list, add to the list
     while (temp != NULL) {
         if (temp->CharacteristicType == type && temp->Line == line) {
             distinct = 0;
@@ -704,6 +326,7 @@ void AddCharacteristic(Picoc *pc, int type, int line) {
     }
 }
 
+// update the dup array of the socket
 void UpdateDup(Picoc *pc, char *identifier, char *dup) {
     struct Socket *head = pc->SocketList; 
     struct Socket *socket = FindSocketByIdentifier(head, identifier);
@@ -714,6 +337,7 @@ void UpdateDup(Picoc *pc, char *identifier, char *dup) {
     }
 }
 
+// convert the dup array to a list string for JSON
 char *GenerateDupListString(struct Socket *socket) {
     char *dupListStr = (char *)calloc(12, sizeof(char));
     char *str = (char *)calloc(5, sizeof(char));
@@ -735,58 +359,7 @@ char *GenerateDupListString(struct Socket *socket) {
     return dupListStr;
 }
 
-void GenerateForCmpReport(Picoc *pc) {
-    struct Socket *socketHead = pc->SocketList;
-    struct Characteristic *characteristicHead = pc->CharacteristicList;
-    char stateStr[20];
-
-    printf("===ALL SOCKETS===\n");
-    while (socketHead != NULL) {
-        printf("%s:%s:%s:%s:%d\n",
-            socketHead->Identifier, socketHead->ParentIdentifier, 
-            GetStateNameString(socketHead->CurrentState, stateStr), GenerateDupListString(socketHead),
-            socketHead->Line);
-
-        socketHead = socketHead->Next;
-    }
-
-    printf("===MAY BE LISTENING SOCKETS===\n");
-    socketHead = pc->SocketList;
-    while (socketHead != NULL) {
-        if (socketHead->CurrentState == MayBeListening)
-            printf("%s:%s:%s:%s:%d\n",
-                socketHead->Identifier, socketHead->ParentIdentifier, 
-                GetStateNameString(socketHead->CurrentState, stateStr), GenerateDupListString(socketHead),
-                socketHead->Line);
-
-        socketHead = socketHead->Next;
-    }
-
-    printf("===FORK ON LINE===\n");
-    while(characteristicHead != NULL) {
-        if (characteristicHead->CharacteristicType == Fork)
-            printf("%d\n", characteristicHead->Line);
-
-        characteristicHead = characteristicHead->Next;
-    }
-
-    printf("===EXEC ON LINE===\n");
-    characteristicHead = pc->CharacteristicList;
-    while(characteristicHead != NULL) {
-        if (characteristicHead->CharacteristicType == Exec)
-            printf("%d\n", characteristicHead->Line);
-
-        characteristicHead = characteristicHead->Next;
-    }
-
-    printf("===END===");
-
-    // cause need exec info at the end as well
-    // need to remove the non-essential print statements
-
-
-}
-
+// convert socket information to json
 void generateSocketJson(cJSON *socket_array, struct Socket *socketHead, int type) {
     cJSON *socket = NULL;
     cJSON *dup = NULL;
@@ -825,6 +398,7 @@ void generateSocketJson(cJSON *socket_array, struct Socket *socketHead, int type
     }
 }
 
+// convert characteristic information to json
 void generateCharacteristicJson(cJSON *characteristic_array, struct Characteristic *characteristicHead, enum CharacteristicType type) {
     cJSON *line = NULL;
 
@@ -838,6 +412,7 @@ void generateCharacteristicJson(cJSON *characteristic_array, struct Characterist
     }
 }
 
+// convert identifier list information to json
 void generateIdJson(cJSON *id_array, struct Id *idHead) {
     cJSON *identifier = NULL;
 
@@ -849,6 +424,7 @@ void generateIdJson(cJSON *id_array, struct Id *idHead) {
     }
 }
 
+// generate the output in json format
 char *generateOutputJson(Picoc *pc)
 {
     char *string = NULL;
@@ -860,6 +436,7 @@ char *generateOutputJson(Picoc *pc)
     double time_spent = (pc->EndTime.tv_sec - pc->StartTime.tv_sec) +
                         (pc->EndTime.tv_nsec - pc->StartTime.tv_nsec) / 1000000000.0;
 
+    // create json attributes and objects
     cJSON *monitor = cJSON_CreateObject();
     cJSON *all_sockets = cJSON_CreateArray();
     cJSON *maybelistening_sockets = cJSON_CreateArray();
@@ -890,7 +467,6 @@ char *generateOutputJson(Picoc *pc)
         fprintf(stderr, "Failed to print monitor.\n");
     }
 
-end:
     cJSON_Delete(monitor);
     return string;
 }
