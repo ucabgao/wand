@@ -117,8 +117,7 @@ with open(sys.argv[1], 'r') as myfile:
 					socketObj.line = lineNum
 					socket_dict[socket] = socketObj
 
-				if funcName == "bind" or funcName == "listen":
-					socket_dict[socket].state = "MayBeListening"
+				socket_dict[socket].state = "MayBeListening"
 
 			# functions pertaining to child sockets
 			elif funcName in ["read", "recv", "recvfrom", "write", "send", "sendto"]:
