@@ -673,7 +673,7 @@ extern struct LibraryFunction SocketFunctions[];
 void SocketSetupFunc(Picoc *pc); 
 
 /* absint.c */
-void SocketInit(Picoc *pc);
+void AbsIntInit(Picoc *pc);
 // void AddSocket(Picoc *pc, int fd, int type, short int line, int parent);
 void AddSocket(Picoc *pc, char *identifier, char *sockettype, short int line, char *parent);
 // void AddSocketStateGraph(Picoc *pc, int fd, short int line, const char *FuncName);

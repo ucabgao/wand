@@ -26,7 +26,7 @@ void PicocInitialise(Picoc *pc, int StackSize)
 #endif
     PlatformLibraryInit(pc);
     DebugInit(pc);
-    SocketInit(pc);
+    AbsIntInit(pc);
 }
 
 /* free memory */

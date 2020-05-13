@@ -5,7 +5,7 @@
 const char * INTERESTEDFUNC[] = { "socket", "bind", "listen", "accept", "close", "read", "recv", "recvfrom", "write", "send", "sendto", "dup2", "fork", "execl", "execlp", "execle", "execv", "execvp", "execvpe"};
 
 // initialise absint related
-void SocketInit(Picoc *pc)
+void AbsIntInit(Picoc *pc)
 {
     pc->SocketList = NULL;
     pc->IdentifierAssignedTo = (char *) calloc(MAX_IDENTIFIER_SIZE, sizeof(char));
