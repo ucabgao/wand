@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     clock_gettime(CLOCK_REALTIME, &(pc.EndTime));
 
     // print output
-    printf("===JSON OUTPUT===\n%s\n===END===\n", create_monitor(&pc));
+    printf("===JSON OUTPUT===\n%s\n===END===\n", generateOutputJson(&pc));
 
     return pc.PicocExitValue;
 }

@@ -849,7 +849,7 @@ void generateIdJson(cJSON *id_array, struct Id *idHead) {
     }
 }
 
-char *create_monitor(Picoc *pc)
+char *generateOutputJson(Picoc *pc)
 {
     char *string = NULL;
     struct Socket *socketHead = pc->SocketList;

@@ -45,6 +45,7 @@ void PicocPlatformScanFile(Picoc *pc, const char *FileName); /* platform_unix.c 
 /* include.c */
 void PicocIncludeAllSystemHeaders(Picoc *pc);
 
-char *create_monitor(Picoc *pc);
+/* absint.c */
+char *generateOutputJson(Picoc *pc);
 
 #endif /* PICOC_H */
