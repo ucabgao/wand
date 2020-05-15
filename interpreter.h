@@ -714,10 +714,9 @@ enum CharacteristicType
 struct Socket
 {
     char *Identifier;                       /* socket identifier */
-    int FileDescriptor;                     /* file descriptor of the socket */
     char *SocketType;                       /* socket type (e.g. SOCK_STREAM or SOCK_DGRAM) [Not used]*/
-    enum SocketState CurrentState;          /* current abstract state */
     char *ParentIdentifier;                 /* socket parent identifier - empty string if parent socket*/
+    enum SocketState CurrentState;          /* current abstract state */
     int Line;                               /* line in which socket is declared in or first identified */
     int *Dup2Arr;                           /* dup2 fd array */
     struct Socket *Next;                    /* next socket in the list */
